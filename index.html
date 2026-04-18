@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 AI 魔法课堂 · 阿楠的AI之旅</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', '微软雅黑', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+
+.container { max-width: 760px; margin: 0 auto; }
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+.header .star { font-size: 3em; margin-bottom: 16px; display: block; }
+.header h1 {
+  font-size: 2.8em;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(120, 200, 255, 0.9), 0 0 80px rgba(120, 200, 255, 0.4);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.header p {
+  color: #a0c4ff;
+  font-size: 1.15em;
+  line-height: 1.7;
+}
+
+/* ── Lesson Cards ── */
+.lessons { margin-top: 20px; }
+
+.lesson-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin: 20px 0;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.lesson-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+.lesson-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+}
+.lesson-card.lesson-1::before { background: linear-gradient(90deg, #f7971e, #ffd200, #667eea, #43e97b); }
+
+/* Coming soon style */
+.lesson-card.coming-soon {
+  opacity: 0.55;
+  cursor: default;
+}
+.lesson-card.coming-soon:hover {
+  transform: none;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+}
+.lesson-card.coming-soon::before { background: linear-gradient(90deg, #555, #888); }
+
+/* Icon */
+.lesson-icon {
+  font-size: 2.8em;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0f4ff, #e0e8ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Content */
+.lesson-content { flex: 1; }
+.lesson-num {
+  font-size: 0.78em;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.lesson-title {
+  font-size: 1.35em;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+}
+.lesson-desc {
+  font-size: 0.92em;
+  color: #666;
+  line-height: 1.6;
+}
+.lesson-topics {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.topic-tag {
+  font-size: 0.78em;
+  background: #f0f4ff;
+  color: #4a5fc1;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-weight: 500;
+}
+
+/* Arrow */
+.lesson-arrow {
+  font-size: 1.4em;
+  color: #bbb;
+  flex-shrink: 0;
+}
+.lesson-card.coming-soon .lesson-arrow { display: none; }
+
+.coming-badge {
+  display: inline-block;
+  font-size: 0.75em;
+  background: #f0f0f0;
+  color: #999;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Link wrapper */
+a.lesson-link {
+  text-decoration: none;
+  display: block;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 50px 0 30px;
+  color: #6a7fad;
+  font-size: 0.88em;
+  line-height: 1.8;
+}
+.footer span { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <span class="star">🚀</span>
+    <h1>AI 魔法课堂</h1>
+    <p>阿楠的 AI 探索之旅<br>从零开始，一步步了解人工智能的数学与工程原理</p>
+  </div>
+
+  <div class="lessons">
+
+    <!-- Lesson 1 -->
+    <a class="lesson-link" href="ai-for-anan-1.html">
+      <div class="lesson-card lesson-1">
+        <div class="lesson-icon">🧠</div>
+        <div class="lesson-content">
+          <div class="lesson-num">第一课</div>
+          <div class="lesson-title">AI 是怎么学会分辨东西的？</div>
+          <div class="lesson-desc">从苹果和香蕉的分类出发，理解机器学习的核心：神经网络、梯度下降、反向传播。</div>
+          <div class="lesson-topics">
+            <span class="topic-tag">线性分类</span>
+            <span class="topic-tag">神经网络</span>
+            <span class="topic-tag">梯度下降</span>
+            <span class="topic-tag">手写识别</span>
+            <span class="topic-tag">语言模型</span>
+            <span class="topic-tag">反向传播</span>
+          </div>
+        </div>
+        <div class="lesson-arrow">›</div>
+      </div>
+    </a>
+
+    <!-- Lesson 2 - Coming soon -->
+    <div class="lesson-card coming-soon">
+      <div class="lesson-icon">🔮</div>
+      <div class="lesson-content">
+        <div class="lesson-num">第二课</div>
+        <div class="lesson-title">敬请期待…</div>
+        <div class="lesson-desc">下一堂课正在制作中。</div>
+        <span class="coming-badge">即将上线</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>专为阿楠定制 · 爸爸制作 ❤️</span>
+    <span style="margin-top:6px">ai.chenwanyang.com</span>
+  </div>
+
+</div>
+</body>
+</html>
