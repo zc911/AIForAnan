@@ -3148,55 +3148,128 @@ function bpDraw() {
   ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0,0,CW,CH);
 
   const step = bpDemo.step;
-  const R = 24;
   const d = bpDemo;
+  const R = 26;
 
-  // Network occupies left ~480px; weight table panel on right ~340px
-  const IX = 70,  IY = [100, 250];
-  const HX = 240, HY = [55,  165, 275];
-  const OX = 420, OY = [100, 250];
-  const PX = 495; // panel x start
+  // Full-width network layout
+  const IX = 90,  IY = [100, 260];
+  const HX = 300, HY = [60,  175, 290];
+  const OX = 530, OY = [100, 260];
 
-  // ── edge (line only, thickness = |weight|) ──
-  function edge(x1,y1,x2,y2, color, alpha, lw) {
+  // ── weight pill drawn at position (lx, ly) ──
+  // mode: 'normal' | 'fwd' | 'delta' | 'updated' | 'dim'
+  // At step 6 weights are already updated: wVal=new, wVal+dw=old
+  // At steps 4-5 weights not yet updated: wVal=old, wVal-dw=new
+  function wPill(lx, ly, wVal, dw, mode) {
+    const fmt = v => (v>=0?'+':'')+v.toFixed(2);
+    let line1, line2=null, col1, col2, bg;
+
+    if (mode==='updated') {
+      line1=fmt(wVal+dw)+'→'; col1='#ef9a9a';
+      line2=fmt(wVal);         col2='#a5d6a7';
+      bg='rgba(8,45,18,0.96)';
+    } else if (mode==='delta') {
+      line1=fmt(wVal);         col1='#ffcc80';
+      line2='→'+fmt(wVal-dw); col2='#ff7096';
+      bg='rgba(65,8,22,0.96)';
+    } else if (mode==='fwd') {
+      line1=fmt(wVal); col1=wVal>=0?'#90caf9':'#ff8a80';
+      bg='rgba(55,32,4,0.93)';
+    } else if (mode==='dim') {
+      line1=fmt(wVal); col1='#3a3a5a';
+      bg='rgba(18,18,32,0.5)';
+    } else { // normal
+      line1=fmt(wVal); col1=wVal>=0?'#7eb8f7':'#f08080';
+      bg=wVal>=0?'rgba(16,32,68,0.92)':'rgba(52,10,10,0.92)';
+    }
+
     ctx.save();
-    ctx.globalAlpha=alpha; ctx.strokeStyle=color; ctx.lineWidth=lw;
-    ctx.beginPath(); ctx.moveTo(x1+R,y1); ctx.lineTo(x2-R,y2); ctx.stroke();
+    ctx.font='8px monospace';
+    const tw=Math.max(ctx.measureText(line1).width, line2?ctx.measureText(line2).width:0);
+    const pw=tw+10, ph=line2?24:14;
+
+    ctx.fillStyle=bg;
+    ctx.beginPath(); ctx.roundRect(lx-pw/2, ly-ph/2, pw, ph, 3); ctx.fill();
+
+    if (mode==='delta'||mode==='updated') {
+      ctx.strokeStyle=mode==='updated'?'#66bb6a':'#e91e63';
+      ctx.lineWidth=1.2; ctx.stroke();
+    } else if (mode==='fwd') {
+      ctx.strokeStyle='#ff9800'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    if (line2) {
+      ctx.fillStyle=col1; ctx.fillText(line1, lx, ly-6);
+      ctx.fillStyle=col2; ctx.fillText(line2, lx, ly+6);
+    } else {
+      ctx.fillStyle=col1; ctx.fillText(line1, lx, ly);
+    }
     ctx.restore();
   }
 
-  // Input → Hidden
-  for(let i=0;i<2;i++) for(let j=0;j<3;j++) {
-    const wAbs=d.W1?Math.abs(d.W1[j][i]):0.3, dAbs=d.dW1?Math.abs(d.dW1[j][i]):0;
-    let col='#333', alp=0.35, lw=1.2;
-    if(step===1)      {col='#ff9800';alp=0.85;lw=Math.max(1.5,wAbs*5);}
-    else if(step===5) {col='#e91e63';alp=0.8; lw=Math.max(1.5,dAbs*28+1);}
-    else if(step===6) {col='#66bb6a';alp=0.75;lw=Math.max(1.5,wAbs*5);}
-    else if(step>=2)  {col='#667eea';alp=0.3; lw=1.5;}
-    edge(IX,IY[i],HX,HY[j],col,alp,lw);
+  // ── draw one edge + its weight label ──
+  function edgePill(x1,y1,x2,y2, eCol,alpha,lw, wVal,dw, lx,ly, mode) {
+    ctx.save();
+    ctx.globalAlpha=alpha; ctx.strokeStyle=eCol; ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.moveTo(x1+R,y1); ctx.lineTo(x2-R,y2); ctx.stroke();
+    ctx.restore();
+    wPill(lx, ly, wVal, dw, mode);
   }
 
-  // Hidden → Output
-  for(let j=0;j<3;j++) for(let k=0;k<2;k++) {
-    const wAbs=d.W2?Math.abs(d.W2[k][j]):0.3, dAbs=d.dW2?Math.abs(d.dW2[k][j]):0;
-    let col='#333', alp=0.35, lw=1.2;
-    if(step===2)             {col='#ff9800';alp=0.85;lw=Math.max(1.5,wAbs*5);}
-    else if(step===3||step===4){col='#e91e63';alp=0.8; lw=Math.max(1.5,dAbs*20+1);}
-    else if(step===6)        {col='#66bb6a';alp=0.75;lw=Math.max(1.5,wAbs*5);}
-    else if(step>=2)         {col='#667eea';alp=0.3; lw=1.5;}
-    edge(HX,HY[j],OX,OY[k],col,alp,lw);
+  // ════ INPUT → HIDDEN edges ════
+  // i=0: label at t=0.30 (near input);  i=1: label at t=0.70 (near hidden)
+  // This places i=0 labels at x≈153 and i=1 labels at x≈220 — 67 px apart, no overlap.
+  for (let i=0; i<2; i++) for (let j=0; j<3; j++) {
+    const wVal=d.W1[j][i], dw=d.dW1?d.dW1[j][i]:0;
+    const ax=IX+R, ay=IY[i], bx=HX-R, by=HY[j];
+    const t = i===0 ? 0.30 : 0.70;
+    const lx=ax+t*(bx-ax), ly=ay+t*(by-ay);
+
+    let eCol='#2a2a4a', alp=0.5, lw=1.2, mode='normal';
+    if (step===1)       { eCol='#ff9800'; alp=0.9; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='fwd'; }
+    else if (step===5)  { eCol='#e91e63'; alp=0.9; lw=Math.max(1.5,Math.abs(dw)*32+1);  mode='delta'; }
+    else if (step===6)  { eCol='#66bb6a'; alp=0.85; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='updated'; }
+    else if (step>=2)   { eCol='#445'; alp=0.4; lw=1.5; mode='dim'; }
+
+    edgePill(IX,IY[i],HX,HY[j], eCol,alp,lw, wVal,dw, lx,ly, mode);
   }
 
-  // ── node ──
+  // ════ HIDDEN → OUTPUT edges ════
+  // All 6 midpoints share the same x = (ax+bx)/2.
+  // Split into two x-columns by output index k:
+  //   k=0 (apple)  → lx = midx - 30  (left column)
+  //   k=1 (banana) → lx = midx + 30  (right column)
+  // Within each column the 3 labels are 57 px apart vertically — no overlap
+  // even with 2-line pills (24 px tall). Cross-column pairs are 60 px apart
+  // in x, exceeding the max pill width (~44 px) — no overlap there either.
+  const H_ax=HX+R, H_bx=OX-R, H_midx=(H_ax+H_bx)/2;
+
+  for (let j=0; j<3; j++) for (let k=0; k<2; k++) {
+    const wVal=d.W2[k][j], dw=d.dW2?d.dW2[k][j]:0;
+    const ay=HY[j], by=OY[k];
+    const lx = H_midx + (k===0 ? -30 : +30);
+    const ly = (ay+by)/2;
+
+    let eCol='#2a2a4a', alp=0.5, lw=1.2, mode='normal';
+    if (step===2)               { eCol='#ff9800'; alp=0.9; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='fwd'; }
+    else if (step===3||step===4){ eCol='#e91e63'; alp=0.9; lw=Math.max(1.5,Math.abs(dw)*22+1);  mode='delta'; }
+    else if (step===6)          { eCol='#66bb6a'; alp=0.85; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='updated'; }
+    else if (step>=2)           { eCol='#445'; alp=0.4; lw=1.5; mode='dim'; }
+
+    edgePill(HX,HY[j],OX,OY[k], eCol,alp,lw, wVal,dw, lx,ly, mode);
+  }
+
+  // ════ nodes ════
   function node(cx,cy,top,bot,glow) {
     ctx.save();
-    if(glow){ctx.shadowColor=glow;ctx.shadowBlur=22;}
-    ctx.beginPath();ctx.arc(cx,cy,R,0,2*Math.PI);
-    ctx.fillStyle=glow?glow+'28':'#22223a'; ctx.fill();
+    if (glow) { ctx.shadowColor=glow; ctx.shadowBlur=22; }
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
+    ctx.fillStyle=glow?glow+'28':'#1e1e38'; ctx.fill();
     ctx.strokeStyle=glow||'#555'; ctx.lineWidth=2.5; ctx.stroke();
     ctx.restore();
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    if(bot!=null){
+    if (bot!=null) {
       ctx.font='bold 9px sans-serif'; ctx.fillStyle='#ccc'; ctx.fillText(top,cx,cy-9);
       ctx.font='10px monospace'; ctx.fillStyle=glow||'#aaa'; ctx.fillText(bot,cx,cy+8);
     } else {
@@ -3204,149 +3277,66 @@ function bpDraw() {
     }
   }
 
-  for(let i=0;i<2;i++)
-    node(IX,IY[i],i===0?'圆度':'黄度',d.x?d.x[i].toFixed(2):null,step>=1?'#667eea':null);
+  for (let i=0; i<2; i++)
+    node(IX,IY[i], i===0?'圆度':'黄度', d.x?d.x[i].toFixed(2):null, step>=1?'#667eea':null);
 
-  for(let j=0;j<3;j++){
-    let g=step===1?'#ff9800':step===4||step===5?'#e91e63':step>=2?'#66bb6a':null;
-    if(step===6) g='#66bb6a';
-    node(HX,HY[j],`h${j+1}`,step>=1&&d.a1?d.a1[j].toFixed(2):null,g);
-    if(step>=4&&d.d1){
-      ctx.font='9px monospace';ctx.textAlign='center';ctx.fillStyle='#ff7096';
-      ctx.fillText(`δ=${d.d1[j].toFixed(3)}`,HX,HY[j]+R+12);
+  for (let j=0; j<3; j++) {
+    let g = step===1?'#ff9800' : step===4||step===5?'#e91e63' : step>=2?'#66bb6a' : null;
+    if (step===6) g='#66bb6a';
+    node(HX,HY[j], `h${j+1}`, step>=1&&d.a1?d.a1[j].toFixed(2):null, g);
+    if (step>=4 && d.d1) {
+      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.fillStyle='#ff7096';
+      ctx.fillText(`δ=${d.d1[j].toFixed(3)}`, HX, HY[j]+R+13);
     }
   }
 
-  for(let k=0;k<2;k++){
-    let g=step===2?'#ff9800':step>=3&&step<=5?'#e91e63':step===6?'#66bb6a':null;
-    node(OX,OY[k],k===0?'🍎':'🍌',step>=2&&d.a2?d.a2[k].toFixed(2):null,g);
-    if(step>=3&&d.d2){
-      ctx.font='9px monospace';ctx.textAlign='center';ctx.fillStyle='#ff7096';
-      ctx.fillText(`δ=${d.d2[k].toFixed(3)}`,OX,OY[k]+R+12);
+  for (let k=0; k<2; k++) {
+    const g = step===2?'#ff9800' : step>=3&&step<=5?'#e91e63' : step===6?'#66bb6a' : null;
+    node(OX,OY[k], k===0?'🍎':'🍌', step>=2&&d.a2?d.a2[k].toFixed(2):null, g);
+    if (step>=3 && d.d2) {
+      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.fillStyle='#ff7096';
+      ctx.fillText(`δ=${d.d2[k].toFixed(3)}`, OX, OY[k]+R+13);
     }
   }
 
-  // Layer labels + direction arrows
+  // layer labels
   ctx.fillStyle='#555'; ctx.font='11px sans-serif'; ctx.textAlign='center';
   ctx.fillText('输入层',IX,CH-8); ctx.fillText('隐藏层',HX,CH-8); ctx.fillText('输出层',OX,CH-8);
+
+  // direction arrows
   const AMY=CH/2;
-  if(step===1||step===2){
-    ctx.fillStyle='rgba(255,152,0,0.4)';ctx.font='20px sans-serif';ctx.textAlign='center';
-    if(step===1) ctx.fillText('→',(IX+HX)/2+10,AMY);
-    if(step===2){ctx.fillText('→',(IX+HX)/2+10,AMY);ctx.fillText('→',(HX+OX)/2+10,AMY);}
+  if (step===1||step===2) {
+    ctx.fillStyle='rgba(255,152,0,0.38)'; ctx.font='20px sans-serif'; ctx.textAlign='center';
+    if (step===1) ctx.fillText('→',(IX+HX)/2+15,AMY);
+    if (step===2) { ctx.fillText('→',(IX+HX)/2+15,AMY); ctx.fillText('→',(HX+OX)/2+15,AMY); }
   }
-  if(step>=3&&step<=5){
-    ctx.fillStyle='rgba(233,30,99,0.4)';ctx.font='20px sans-serif';ctx.textAlign='center';
-    ctx.fillText('←',(IX+HX)/2+10,AMY);ctx.fillText('←',(HX+OX)/2+10,AMY);
-  }
-  if(step===0){
-    ctx.fillStyle='#555';ctx.font='14px sans-serif';ctx.textAlign='center';
-    ctx.fillText('请先从上方选择一个样本',IX+(OX-IX)/2,CH/2);
+  if (step>=3&&step<=5) {
+    ctx.fillStyle='rgba(233,30,99,0.38)'; ctx.font='20px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('←',(IX+HX)/2+15,AMY); ctx.fillText('←',(HX+OX)/2+15,AMY);
   }
 
-  // ═══ RIGHT PANEL: Weight Matrix Table ═══
-  const PW = CW-PX-6;
-  const RH = 30, LBW = 28; // row height, label col width
-
-  // panel background
-  ctx.fillStyle='rgba(255,255,255,0.04)';
-  ctx.beginPath();ctx.roundRect(PX,8,PW,CH-16,8);ctx.fill();
-
-  // ── wCell: draw one table cell ──
-  // wVal = current weight in bpDemo; dw = stored update amount
-  // mode: 'normal'|'fwd'|'delta'|'updated'|'dim'
-  function wCell(cx,cy,cw,ch, wVal,dw, mode){
-    const fmt = v => (v>=0?'+':'')+v.toFixed(2);
-    let bg, line1, line2=null, col1, col2;
-    if(mode==='updated'){
-      // step6: wVal=new, wVal+dw=old
-      bg='rgba(15,50,20,0.95)';
-      line1=fmt(wVal+dw)+'→'; col1='#ef9a9a';
-      line2=fmt(wVal);        col2='#a5d6a7';
-    } else if(mode==='delta'){
-      // step4/5: wVal=old, wVal-dw=new
-      bg='rgba(70,8,25,0.95)';
-      line1=fmt(wVal);        col1='#ffcc80';
-      line2='→'+fmt(wVal-dw); col2='#ff7096';
-    } else if(mode==='fwd'){
-      bg=wVal>=0?'rgba(20,50,100,0.9)':'rgba(80,20,20,0.9)';
-      line1=fmt(wVal); col1=wVal>=0?'#90caf9':'#ff8a80';
-    } else if(mode==='dim'){
-      bg='rgba(20,20,35,0.5)'; line1=fmt(wVal); col1='#444';
-    } else {
-      bg=wVal>=0?'rgba(18,35,65,0.85)':'rgba(55,12,12,0.85)';
-      line1=fmt(wVal); col1=wVal>=0?'#90caf9':'#ff8a80';
-    }
-    ctx.fillStyle=bg;
-    ctx.beginPath();ctx.roundRect(cx+1,cy+1,cw-2,ch-2,3);ctx.fill();
-    if(mode==='delta'||mode==='updated'||mode==='fwd'){
-      ctx.strokeStyle=mode==='updated'?'#66bb6a':mode==='fwd'?'#ff9800':'#e91e63';
-      ctx.lineWidth=1.2;ctx.stroke();
-    }
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    if(line2){
-      ctx.font='8px monospace'; ctx.fillStyle=col1; ctx.fillText(line1,cx+cw/2,cy+ch*0.33);
-      ctx.font='8px monospace'; ctx.fillStyle=col2; ctx.fillText(line2,cx+cw/2,cy+ch*0.67);
-    } else {
-      ctx.font='9px monospace'; ctx.fillStyle=col1; ctx.fillText(line1,cx+cw/2,cy+ch/2);
-    }
+  if (step===0) {
+    ctx.fillStyle='#555'; ctx.font='14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('请先从上方选择一个样本', CW/2, CH/2);
   }
 
-  // ── W1 table (3 hidden × 2 inputs) ──
-  const W1Y0=20;
-  const CW1=(PW-LBW-6)/2;
-  ctx.fillStyle='#777';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
-  ctx.fillText('W₁',PX+LBW/2,W1Y0+RH/2);
-  ['圆度','黄度'].forEach((h,ci)=>ctx.fillText(h,PX+LBW+6+CW1*ci+CW1/2,W1Y0+RH/2));
-
-  ['h₁','h₂','h₃'].forEach((lbl,j)=>{
-    const ry=W1Y0+RH*(j+1);
-    ctx.fillStyle='#666';ctx.font='9px sans-serif';ctx.textAlign='center';
-    ctx.fillText(lbl,PX+LBW/2,ry+RH/2);
-    [0,1].forEach(i=>{
-      const wVal=d.W1[j][i], dw=d.dW1?d.dW1[j][i]:0;
-      let mode='normal';
-      if(step===1)      mode='fwd';
-      else if(step===5) mode='delta';
-      else if(step===6) mode='updated';
-      else if(step>=2&&step<=4) mode='dim';
-      wCell(PX+LBW+6+CW1*i,ry,CW1,RH,wVal,dw,mode);
-    });
-  });
-
-  // ── W2 table (2 outputs × 3 hidden) ──
-  const W2Y0=W1Y0+RH*4+16;
-  const CW2=(PW-LBW-6)/3;
-  ctx.fillStyle='#777';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
-  ctx.fillText('W₂',PX+LBW/2,W2Y0+RH/2);
-  ['h₁','h₂','h₃'].forEach((h,ci)=>ctx.fillText(h,PX+LBW+6+CW2*ci+CW2/2,W2Y0+RH/2));
-
-  ['🍎','🍌'].forEach((lbl,k)=>{
-    const ry=W2Y0+RH*(k+1);
-    ctx.fillStyle='#777';ctx.font='10px sans-serif';ctx.textAlign='center';
-    ctx.fillText(lbl,PX+LBW/2,ry+RH/2);
-    [0,1,2].forEach(j=>{
-      const wVal=d.W2[k][j], dw=d.dW2?d.dW2[k][j]:0;
-      let mode='normal';
-      if(step===2)             mode='fwd';
-      else if(step===3||step===4) mode='delta';
-      else if(step===6)        mode='updated';
-      else if(step===5)        mode='dim';
-      wCell(PX+LBW+6+CW2*j,ry,CW2,RH,wVal,dw,mode);
-    });
-  });
-
-  // ── panel legend ──
-  const LY=W2Y0+RH*3+14;
-  const items=[['#90caf9','正权重(+)'],['#ff8a80','负权重(−)']];
-  if(step>=4&&step<=5) items.push(['#ff7096','红=将更新']);
-  if(step===6)         items.push(['#a5d6a7','绿=已更新']);
-  ctx.font='9px sans-serif';
-  items.forEach((it,idx)=>{
-    const lx=PX+6+(idx%2)*(PW/2), ly=LY+Math.floor(idx/2)*14;
-    ctx.fillStyle=it[0]; ctx.fillRect(lx,ly,8,8);
-    ctx.fillStyle='#666'; ctx.textAlign='left'; ctx.fillText(it[1],lx+11,ly+8);
-  });
+  // mini legend (top-right corner)
+  const LX=CW-170, LY=14;
+  ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(LX-6,LY-4,168,step>=4?66:46);
+  ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillStyle='#555'; ctx.fillText('线宽 = |权重|',LX,LY+11);
+  ctx.fillStyle='#7eb8f7'; ctx.fillRect(LX,LY+20,10,8);
+  ctx.fillStyle='#666';    ctx.fillText('正权重',LX+13,LY+28);
+  ctx.fillStyle='#f08080'; ctx.fillRect(LX+62,LY+20,10,8);
+  ctx.fillStyle='#666';    ctx.fillText('负权重',LX+75,LY+28);
+  if (step>=4&&step<=5) {
+    ctx.fillStyle='#ffcc80'; ctx.fillText('橙=旧值',LX,LY+44);
+    ctx.fillStyle='#ff7096'; ctx.fillText('粉=新值(将改)',LX+60,LY+44);
+  }
+  if (step===6) {
+    ctx.fillStyle='#ef9a9a'; ctx.fillText('红=旧值',LX,LY+44);
+    ctx.fillStyle='#a5d6a7'; ctx.fillText('绿=新值(已改)',LX+60,LY+44);
+  }
 }
 
 function bpUpdateMath() {
