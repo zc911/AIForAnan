@@ -1,0 +1,3454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 AI 魔法课堂</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', '微软雅黑', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+
+.container { max-width: 920px; margin: 0 auto; }
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  padding: 40px 0 30px;
+}
+.header h1 {
+  font-size: 2.8em;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(120, 200, 255, 0.9), 0 0 80px rgba(120, 200, 255, 0.4);
+  letter-spacing: 2px;
+}
+.header p { color: #a0c4ff; font-size: 1.2em; margin-top: 10px; }
+
+/* ── Cards ── */
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px;
+  margin: 24px 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  overflow: hidden;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+}
+.card:nth-child(1)::before { background: linear-gradient(90deg, #f7971e, #ffd200); } /* ML入门 */
+.card:nth-child(2)::before { background: linear-gradient(90deg, #667eea, #764ba2); } /* 神经网络 */
+.card:nth-child(3)::before { background: linear-gradient(90deg, #f093fb, #f5576c); } /* 梯度下降 */
+.card:nth-child(4)::before { background: linear-gradient(90deg, #4facfe, #00f2fe); } /* 画板识别 */
+.card:nth-child(5)::before { background: linear-gradient(90deg, #fa709a, #fee140); } /* 优化实验室 */
+.card:nth-child(6)::before { background: linear-gradient(90deg, #43e97b, #38f9d7); } /* 画板识别 */
+
+.card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.badge {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em; font-weight: 900; color: white; flex-shrink: 0;
+}
+.badge-0 { background: linear-gradient(135deg, #f7971e, #ffd200); color: #333; }
+.badge-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+.badge-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.badge-3 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.badge-4 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.badge-5 { background: linear-gradient(135deg, #fa709a, #fee140); color: #333; }
+.card h2 { font-size: 1.7em; color: #222; }
+
+.analogy {
+  background: linear-gradient(135deg, #fffde7, #fff8e1);
+  border-left: 5px solid #ffc107;
+  padding: 14px 18px;
+  border-radius: 0 14px 14px 0;
+  margin: 14px 0;
+  font-size: 1.05em;
+  line-height: 1.7;
+}
+.analogy strong { color: #e65100; }
+.analogy::before { content: "💡 生活类比："; font-weight: bold; color: #e65100; display: block; margin-bottom: 6px; }
+
+.math-hint {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  border: 2px solid #66bb6a;
+  padding: 12px 18px;
+  border-radius: 14px;
+  margin: 14px 0;
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+  line-height: 1.8;
+}
+.math-hint::before { content: "🔢 数学原理："; font-weight: bold; color: #2e7d32; font-family: '微软雅黑', sans-serif; display: block; margin-bottom: 4px; }
+
+/* ── Simple explanation box (child-friendly) ── */
+.simple-explain {
+  background: linear-gradient(135deg, #ede7f6, #e8eaf6);
+  border: 2px dashed #7c4dff;
+  padding: 12px 18px;
+  border-radius: 14px;
+  margin: 0 0 14px;
+  font-size: 1.02em;
+  line-height: 1.85;
+  font-family: 'PingFang SC', '微软雅黑', sans-serif;
+}
+.simple-explain::before {
+  content: "🤔 小朋友看这里：";
+  font-weight: bold; color: #512da8;
+  display: block; margin-bottom: 5px;
+}
+
+.demo {
+  background: #f7f8fc;
+  border-radius: 16px;
+  padding: 22px;
+  margin: 18px 0;
+  text-align: center;
+}
+.demo h3 { color: #444; font-size: 1.15em; margin-bottom: 14px; }
+
+/* ── Buttons ── */
+.btn {
+  border: none;
+  padding: 11px 26px;
+  border-radius: 25px;
+  font-size: 1.05em;
+  cursor: pointer;
+  margin: 6px;
+  transition: all 0.25s;
+  font-weight: 600;
+  color: white;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.btn:active { transform: translateY(0); }
+.btn-purple { background: linear-gradient(135deg, #667eea, #764ba2); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+.btn-green  { background: linear-gradient(135deg, #56ab2f, #a8e063); box-shadow: 0 4px 15px rgba(86,171,47,0.4); }
+.btn-pink   { background: linear-gradient(135deg, #f093fb, #f5576c); box-shadow: 0 4px 15px rgba(240,147,251,0.4); }
+.btn-orange { background: linear-gradient(135deg, #f7971e, #ffd200); box-shadow: 0 4px 15px rgba(247,151,30,0.4); color: #333; }
+.btn-grey   { background: #bbb; box-shadow: none; }
+
+/* ── Toggle switches ── */
+.switch-wrap { display: flex; align-items: center; gap: 12px; font-size: 1.05em; margin: 8px 0; justify-content: center; }
+.switch { position: relative; width: 56px; height: 28px; }
+.switch input { display: none; }
+.tog {
+  position: absolute; inset: 0;
+  background: #ccc; border-radius: 28px; cursor: pointer; transition: .3s;
+}
+.tog::before {
+  content: '';
+  position: absolute;
+  width: 22px; height: 22px;
+  border-radius: 50%; background: white;
+  top: 3px; left: 3px; transition: .3s;
+}
+.switch input:checked + .tog { background: linear-gradient(135deg, #667eea, #764ba2); }
+.switch input:checked + .tog::before { transform: translateX(28px); }
+
+/* ── Progress bars ── */
+.pbar-wrap { margin: 6px 0; }
+.pbar-label { display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 3px; }
+.pbar-track { background: #e9ecef; border-radius: 10px; height: 22px; overflow: hidden; }
+.pbar-fill {
+  height: 100%; border-radius: 10px;
+  display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+  color: white; font-size: 0.85em; font-weight: bold;
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  min-width: 36px;
+}
+
+/* ── Summary box ── */
+.summary {
+  background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-top: 18px;
+}
+.summary h3 { color: #333; font-size: 1.1em; margin-bottom: 10px; }
+.summary ul { line-height: 2.1; padding-left: 20px; font-size: 1.02em; }
+
+/* ── Optimization lab ── */
+.opt-mode-btn {
+  border: 2.5px solid #ddd; border-radius: 14px; padding: 10px 16px;
+  cursor: pointer; background: #fff; transition: all 0.2s;
+  min-width: 130px; text-align: center; font-family: inherit;
+}
+.opt-mode-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.opt-mode-btn.active { border-width: 3px; box-shadow: 0 0 0 3px rgba(0,0,0,0.08); }
+.opt-mode-btn .opt-icon { font-size: 1.5em; }
+.opt-mode-btn .opt-name { font-weight: bold; font-size: 1em; margin: 4px 0 2px; }
+.opt-mode-btn .opt-arch { font-size: 0.75em; color: #888; }
+
+/* ── Word buttons (LM demo) ── */
+.word-choices { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0; }
+.word-choice {
+  background: white; border: 2.5px solid #667eea; color: #667eea;
+  padding: 8px 20px; border-radius: 20px; font-size: 1.1em;
+  cursor: pointer; transition: all 0.25s; font-weight: 600;
+}
+.word-choice:hover { background: #667eea; color: white; }
+.word-choice.ai-pick { background: #ffd700; border-color: #ffa000; color: #333; animation: pulse 0.5s ease; }
+.word-choice.user-pick { background: #667eea; color: white; }
+
+/* ── Story display ── */
+.story-box {
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  border-radius: 16px;
+  padding: 18px 24px;
+  font-size: 1.35em;
+  line-height: 2;
+  min-height: 70px;
+  color: #333;
+  text-align: center;
+  margin: 14px 0;
+}
+
+/* ── Final summary card ── */
+.final-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  border-radius: 24px;
+  padding: 32px;
+  margin: 24px 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.final-card h2 { color: #a0c4ff; text-align: center; font-size: 1.8em; margin-bottom: 24px; }
+.final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.final-cell { background: rgba(255,255,255,0.08); border-radius: 14px; padding: 18px; }
+.final-cell h3 { color: #ffd700; font-size: 1.1em; margin-bottom: 8px; }
+.final-cell p { color: #ccc; font-size: 0.98em; line-height: 1.6; }
+
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+@keyframes glow-in { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+.glow-in { animation: glow-in 0.35s ease forwards; }
+
+canvas { display: block; margin: 0 auto; }
+
+input[type=range] {
+  width: 180px; cursor: pointer; vertical-align: middle;
+  accent-color: #667eea;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>🤖 AI 魔法课堂</h1>
+  <p>爸爸带你探索 AI 背后的秘密 ✨</p>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 0 · ML INTRO — SCATTER CLASSIFICATION
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-0">★</div>
+    <h2>🍎 第一步：教电脑认识苹果和香蕉</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    <strong>机器学习</strong>是什么意思？就是<strong>给电脑看很多例子，让它自己找到规律</strong>！
+    不用我们告诉它规则——它通过数据自己学出来。
+  </p>
+
+  <div class="analogy">
+    你看了 100 张苹果和香蕉的照片，就能认出没见过的新水果。
+    机器学习也一样——我们给电脑每种水果的<strong>特征数字</strong>
+    （比如"圆不圆""黄不黄"），让它找到一条<strong>分界线</strong>，把两种水果分开。
+    <br><br>
+    这条线就是电脑"学到的规律"。找线的过程就叫<strong>训练</strong>！
+  </div>
+
+  <div class="demo">
+    <h3>🎮 拖动滑块，找到最好的分界线！</h3>
+    <p style="color:#888;font-size:0.9em;margin-bottom:10px">
+      🍎 苹果：圆、不黄 &emsp; 🍌 香蕉：不圆、很黄 &emsp; 红圈 = 分错了的！
+    </p>
+
+    <canvas id="clsCv" width="420" height="310" style="border-radius:12px"></canvas>
+
+    <div style="margin:14px 0;font-size:1.05em">
+      <label>分界线位置：</label>
+      <input type="range" id="clsSlider" min="-50" max="60" value="40" oninput="onClsSlider()">
+      <span id="clsThrDisplay" style="font-weight:bold;margin-left:6px"></span>
+    </div>
+
+    <div style="font-size:1.1em;margin:8px 0">
+      答对了：<strong id="clsAcc">— / 20</strong>
+      &emsp;准确率：<strong id="clsPct">—</strong>
+    </div>
+
+    <button class="btn btn-orange" onclick="aiLearnCls()">🤖 让 AI 自动学习！</button>
+    <button class="btn btn-grey" onclick="resetCls()">🔄 重置</button>
+
+    <div id="clsMsg" style="margin-top:12px;font-size:1.1em;min-height:30px"></div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li><strong>机器学习</strong>= 给电脑看例子，让它自己找规律</li>
+      <li><strong>特征</strong>= 用来区分事物的数字（这里是"圆不圆""黄不黄"）</li>
+      <li><strong>分类器</strong>= 找到一条线（或更复杂的界限）把不同类别分开</li>
+      <li>线越准，<strong>准确率</strong>越高——但真实数据不总是 100% 完美！</li>
+      <li>下面几关会讲 AI 怎么用神经网络来做这件事 👇</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 1 · NEURAL NETWORK
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-1">1</div>
+    <h2>🧠 神经网络——多层计算来判断苹果和香蕉</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    第一关我们用一条直线分苹果和香蕉。<strong>神经网络</strong>更厉害——
+    它让信号经过好几排"神经元"反复加工，能学会比直线复杂得多的规律！
+    每个神经元把收到的信号<strong>加权求和</strong>，再决定要不要"激活"传给下一排。
+  </p>
+
+  <div class="analogy">
+    想象一个<strong>水果裁判团</strong>：你把苹果的两个特征（圆不圆？黄不黄？）告诉第一排裁判，
+    他们各自计算一个分数传给第二排……最后一排宣布：
+    <strong>"🍎 苹果可能性 92%，🍌 香蕉可能性 8%！"</strong><br><br>
+    这和第一关一模一样的特征，但现在网络会<strong>自动学会</strong>怎么组合它们——不需要人画线！
+  </div>
+
+  <div class="math-hint">
+    每个神经元计算：<strong>输出 = σ(w₁×输入₁ + w₂×输入₂ + w₃×输入₃ + 偏置)</strong><br>
+    σ 是 sigmoid 函数，把任意数压缩到 0~1：σ(x) = 1 / (1 + e<sup>−x</sup>)<br>
+    <span style="color:#555">权重 w = 每个信号的"重要程度"，偏置 b = 让神经元更容易开/关</span>
+  </div>
+  <div class="simple-explain">
+    <strong>直接在下面的游戏里看！</strong><br>
+    连接线上的数字就是<strong>权重 w</strong>：绿色正数表示"这个特征越强越支持我激活"，红色负数表示"这个特征越强我越不想激活"。节点里面的数字是激活程度（0=完全不亮，1=完全点亮）。<br><br>
+    👉 点"🍎 典型苹果"：圆度高、黄度低 → 看 H₁ 节点（它的权重是 <strong>圆+3.0、黄−3.0</strong>）会亮起来！<br>
+    👉 点"🍌 典型香蕉"：黄度高、圆度低 → 看 H₂ 节点（权重 <strong>圆−3.0、黄+3.0</strong>）会亮起来！<br>
+    👉 点"❓ 难以判断"：H₁ H₂ 都半亮，最后苹果/香蕉概率接近 50%。<br><br>
+    下方的<strong>逐步计算面板</strong>会实时显示每个节点的具体算法过程。
+  </div>
+
+  <div class="demo">
+    <h3>🎮 拖动滑块输入水果特征，看神经网络如何层层判断</h3>
+    <p style="color:#888;font-size:0.9em;margin-bottom:12px">和第一关同样的两个特征：圆不圆 + 黄不黄 → 苹果还是香蕉？连接线上的数字是权重，节点内的数字是激活值。</p>
+
+    <!-- 滑块行 -->
+    <div style="display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+      <div style="min-width:200px;flex:1;max-width:300px">
+        <div style="display:flex;justify-content:space-between;font-size:1em;margin-bottom:4px">
+          <span>🔵 圆不圆</span>
+          <span id="nnRound" style="font-weight:bold;color:#667eea">5.0</span>
+        </div>
+        <input type="range" id="nnSlider1" min="0" max="100" value="50"
+               oninput="updateNN()" style="width:100%;accent-color:#667eea">
+        <div style="display:flex;justify-content:space-between;font-size:0.78em;color:#999;margin-top:2px">
+          <span>不圆（🍌）</span><span>很圆（🍎）</span>
+        </div>
+      </div>
+      <div style="min-width:200px;flex:1;max-width:300px">
+        <div style="display:flex;justify-content:space-between;font-size:1em;margin-bottom:4px">
+          <span>🟡 黄不黄</span>
+          <span id="nnYellow" style="font-weight:bold;color:#f7971e">5.0</span>
+        </div>
+        <input type="range" id="nnSlider2" min="0" max="100" value="50"
+               oninput="updateNN()" style="width:100%;accent-color:#f7971e">
+        <div style="display:flex;justify-content:space-between;font-size:0.78em;color:#999;margin-top:2px">
+          <span>不黄（🍎）</span><span>很黄（🍌）</span>
+        </div>
+      </div>
+      <div style="text-align:center;padding-bottom:4px">
+        <div style="font-size:0.85em;color:#888;margin-bottom:6px">快速测试：</div>
+        <button class="btn" style="background:linear-gradient(135deg,#e74c3c,#c0392b);padding:7px 12px;font-size:0.88em;margin:3px" onclick="setNNPreset(7.5,2.0)">🍎 典型苹果</button>
+        <button class="btn btn-orange" style="padding:7px 12px;font-size:0.88em;margin:3px" onclick="setNNPreset(2.0,8.5)">🍌 典型香蕉</button>
+        <button class="btn btn-grey" style="padding:7px 12px;font-size:0.88em;margin:3px" onclick="setNNPreset(5.0,5.2)">❓ 难以判断</button>
+      </div>
+    </div>
+
+    <!-- 网络画布 -->
+    <canvas id="nnCanvas" width="720" height="300" style="width:100%;max-width:720px;display:block;margin:0 auto"></canvas>
+
+    <div id="nnResult" style="font-size:1.2em;font-weight:bold;min-height:30px;margin-top:10px;text-align:center"></div>
+
+    <!-- 逐步计算面板 -->
+    <div id="nnFormula" style="margin-top:14px;background:#f9f9fe;border:1.5px solid #c5cae9;border-radius:14px;padding:14px 18px;font-family:'Courier New',monospace;font-size:0.88em;line-height:2.0"></div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li>神经网络 = 多层神经元连在一起，输入→隐藏层→输出</li>
+      <li>每个神经元：<strong>加权求和 → sigmoid → 激活值（0~1）</strong></li>
+      <li>绿线 = 正权重（这个特征越强越支持激活），红线 = 负权重（压制激活）</li>
+      <li>线越粗 = 当前信号越强，节点越亮 = 激活程度越高</li>
+      <li>这叫<strong>前向传播（Forward Pass）</strong>——下一关学它是怎么被"训练"出来的</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 2 · GRADIENT DESCENT
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-2">2</div>
+    <h2>📉 梯度下降——AI 如何从苹果香蕉数据中学会？</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    神经网络刚建好时，权重全是随机数，什么都不知道。
+    <strong>训练</strong>就是让 AI 反复看苹果香蕉数据，每次看完一个，
+    就根据"答错了多少"来调整权重——让下次答得更准。这个调整方法叫<strong>梯度下降</strong>。
+  </p>
+
+  <div class="analogy">
+    就像你练习投篮：投一个，看偏了多少（<strong>误差</strong>）→ 下次稍微调一点方向
+    （<strong>调整权重</strong>）→ 再投…… 练得越多越准！<br><br>
+    训练的完整循环是：<strong>① 看一个苹果/香蕉 → ② 网络猜一下 → ③ 算误差
+    → ④ 梯度告诉每个权重该往哪调 → ⑤ 调一小步 → 回到①</strong><br><br>
+    下面的游戏就是真实地在你眼前做这件事！观察左边的"决策边界"
+    如何从一团乱到越来越准确地把苹果和香蕉分开。
+  </div>
+
+  <div class="math-hint">
+    损失函数：<strong>L = (AI答案 − 正确答案)²</strong>（答得越准 L 越小）<br>
+    梯度：∂L/∂w（告诉我们 w 往哪调能让 L 减小）<br>
+    <strong>更新规则：w_新 = w_旧 − 学习率 α × 梯度</strong>
+  </div>
+  <div class="simple-explain">
+    <strong>用苹果香蕉来理解：</strong><br>
+    AI 看到 🍎 苹果（圆度7.5, 黄度2.0），目前随机权重猜"苹果概率 23%"——明显猜错了！<br>
+    <strong>误差 L = (0.23 − 1.00)² = 0.59</strong>（差得越多，平方后数字越大）<br><br>
+    <strong>梯度 ∂L/∂w</strong>：对每个权重 w 求导数，告诉我们"w 增大一点点，L 会怎么变？"<br>
+    如果 w 增大导致 L 减小（导数 &lt; 0），那就把 w 调大一点；反之调小一点。<br>
+    这就是"往误差减小的方向调"——梯度告诉方向，学习率 α 决定步子大小。<br><br>
+    <strong>反向传播（Backprop）</strong>：从输出层开始，把误差"逆流"传回每一层，
+    计算每个权重的梯度。每训练一个样本，所有权重都更新一次。
+  </div>
+
+  <div class="demo">
+    <h3>🎮 观看 AI 从零开始，一步步学会区分苹果和香蕉！</h3>
+    <p style="color:#888;font-size:0.9em;margin-bottom:10px">
+      上图：神经网络当前权重（数字随每次训练更新），显示当前样本在网络中的激活情况<br>
+      下左：AI 当前决策边界（红=苹果区，黄=香蕉区）；下右：误差和准确率曲线
+    </p>
+
+    <!-- 神经网络权重图（随训练变化） -->
+    <div style="margin-bottom:12px">
+      <div style="text-align:center;font-size:0.88em;color:#555;margin-bottom:4px;font-weight:bold">🧠 当前神经网络——权重随训练步骤不断调整</div>
+      <canvas id="gdNet" width="720" height="280" style="width:100%;max-width:720px;display:block;margin:0 auto;border-radius:10px;border:2px solid #ddd"></canvas>
+    </div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
+      <div>
+        <div style="text-align:center;font-size:0.88em;color:#666;margin-bottom:4px;font-weight:bold">当前决策边界</div>
+        <canvas id="gdScatter" width="256" height="240" style="border-radius:10px;border:2px solid #ddd;display:block"></canvas>
+        <div style="font-size:0.78em;color:#888;margin-top:5px;line-height:1.7">
+          🔴背景=AI认为是苹果区 &nbsp;🟡背景=香蕉区<br>
+          <span style="color:#e53935;font-weight:bold">红色圆圈</span> = AI 现在答错了这个点<br>
+          紫色虚圆圈 = 刚刚学过的那个样本
+        </div>
+      </div>
+      <div>
+        <div style="text-align:center;font-size:0.88em;color:#666;margin-bottom:4px;font-weight:bold">误差 &amp; 准确率曲线</div>
+        <canvas id="gdLoss" width="256" height="240" style="border-radius:10px;border:2px solid #ddd;display:block"></canvas>
+      </div>
+    </div>
+
+    <div id="gdDetail" style="background:#f0f4ff;border-radius:12px;padding:14px;margin:10px 0;font-size:0.95em;line-height:1.9;text-align:left;min-height:80px">
+      <span style="color:#888">点击"看下一个样本"，AI 会逐个学习苹果和香蕉的特征！</span>
+    </div>
+
+    <div style="font-size:1.05em;margin:8px 0">
+      训练轮次：<strong id="gdEpoch">0</strong>
+      &emsp;总误差：<strong id="gdTotalLoss">—</strong>
+      &emsp;准确率：<strong id="gdAccuracy">—</strong>
+    </div>
+
+    <button class="btn btn-purple" onclick="gdStep1()">👀 看下一个样本</button>
+    <button class="btn btn-green" onclick="gdTrain50()">⚡ 训练 50 步</button>
+    <button class="btn btn-grey" onclick="gdReset()">🔄 重新开始</button>
+
+    <div id="gdMsg2" style="margin-top:10px;font-size:1.1em;min-height:28px"></div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li>训练循环：<strong>看数据 → 算误差 → 求梯度 → 更新权重</strong>，反复循环</li>
+      <li><strong>误差（Loss）</strong>= (预测值 − 正确值)²，越小越好</li>
+      <li><strong>梯度</strong>= 每个权重对误差的影响方向，通过<strong>反向传播</strong>计算</li>
+      <li>随着训练步数增加，AI 的决策边界越来越准，误差曲线不断下降</li>
+      <li>训练 GPT-4 做了类似的事情，只不过数据是几万亿个词，权重有 1 万亿个！</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 2.5 · MODEL OPTIMIZATION LAB
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-5">🔬</div>
+    <h2>🔬 模型优化实验室——如何从 90% 到 100%？</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    Card ★ 中我们用<strong>圆度</strong>和<strong>黄度</strong>区分苹果和香蕉，但有两个"边界难题"总是出错——
+    它们的圆度和黄度太接近了！工程师有哪些方法来<strong>提升准确率</strong>？
+  </p>
+
+  <div class="analogy">
+    好比你用"身高"一个特征猜男女同学，准确率只有 85%（有的女生很高，有的男生很矮，分不清）。<br>
+    解决方法：<br>
+    &emsp;① <strong>加特征</strong>——再看看声音，立刻清晰了！<br>
+    &emsp;② <strong>加层数</strong>——神经网络更深，能学习更复杂的分界线。<br>
+    &emsp;③ <strong>两个都用</strong>——效果最好！
+  </div>
+
+  <div class="simple-explain">
+    <strong>两个"难题"样本：</strong><br>
+    🍎 <em>难点苹果</em>：圆度 5.0，黄度 5.5 ← 中等圆、中等黄，<strong style="color:#7b1fa2">甜度 7.5 = 很甜 → 是苹果！</strong><br>
+    🍌 <em>难点香蕉</em>：圆度 5.1，黄度 5.4 ← 几乎一模一样！<strong style="color:#7b1fa2">甜度 3.2 = 不甜 → 是香蕉！</strong><br>
+    <br>
+    <span style="color:#512da8">光靠圆度+黄度，两个点在图上几乎重叠 😅。加上甜度，一眼就分出来了！</span>
+    <br><br>
+    <span style="color:#444">👇 点击一个方案，AI 自动训练 800 步，看看效果有多大差别：</span>
+  </div>
+
+  <div class="demo">
+    <h3>🧪 选择优化方案，点击自动训练！</h3>
+
+    <!-- Mode selection buttons (rendered by JS) -->
+    <div id="optBtnArea" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px"></div>
+
+    <!-- Status bar -->
+    <div id="optModeInfo" style="text-align:center;font-size:1.0em;min-height:22px;color:#777;margin-bottom:10px">
+      ← 点击上面的方案开始实验
+    </div>
+
+    <!-- Network architecture diagram -->
+    <div style="margin-bottom:14px">
+      <div style="text-align:center;font-size:0.83em;color:#555;font-weight:bold;margin-bottom:4px">
+        🧠 神经网络结构图（以"难题苹果"为输入，看信号如何流动）
+      </div>
+      <canvas id="optNetCanvas" width="720" height="170" style="width:100%;max-width:720px;display:block;margin:0 auto;border:2px solid #ddd;border-radius:10px"></canvas>
+    </div>
+
+    <!-- Visualizations -->
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start">
+
+      <!-- Scatter -->
+      <div>
+        <div style="text-align:center;font-size:0.83em;color:#555;font-weight:bold;margin-bottom:4px">🗺️ 决策边界（圆度×黄度）</div>
+        <canvas id="optScatter" width="220" height="220" style="border:2px solid #ddd;border-radius:10px;display:block"></canvas>
+        <div style="font-size:0.74em;color:#888;margin-top:4px;line-height:1.6">
+          🔴圆圈 = 答错 &nbsp; 紫虚线圆 = 难题样本<br>红背景 = 苹果区，黄背景 = 香蕉区
+        </div>
+      </div>
+
+      <!-- Accuracy gauge -->
+      <div style="flex:1;min-width:160px;text-align:center;padding-top:16px">
+        <div style="font-size:0.88em;color:#555;font-weight:bold;margin-bottom:6px">当前准确率</div>
+        <div id="optAccNum" style="font-size:3.4em;font-weight:900;color:#333;line-height:1;letter-spacing:-2px">—</div>
+        <div style="background:#e9ecef;border-radius:20px;height:20px;overflow:hidden;margin:10px 0">
+          <div id="optAccBar" style="height:100%;width:0%;border-radius:20px;background:#4caf50;transition:width 0.25s,background 0.25s"></div>
+        </div>
+        <div style="font-size:0.85em;color:#888">训练步数：<strong id="optSteps">0</strong></div>
+        <div id="optStatus" style="margin-top:10px;font-size:0.9em;min-height:44px;color:#888;line-height:1.7"></div>
+        <div id="optHardResult" style="margin-top:8px;font-size:0.85em;line-height:1.8;min-height:44px"></div>
+      </div>
+
+      <!-- Accuracy curve -->
+      <div>
+        <div style="text-align:center;font-size:0.83em;color:#555;font-weight:bold;margin-bottom:4px">📈 准确率曲线</div>
+        <canvas id="optLossCanvas" width="200" height="180" style="border:2px solid #ddd;border-radius:10px;display:block"></canvas>
+        <div style="font-size:0.74em;color:#888;margin-top:4px">横轴：训练步数  纵轴：准确率</div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div id="optComparison" style="margin-top:18px"></div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li><strong>加特征</strong>：当问题缺少关键信息时（两点在 2D 空间重叠），新特征能从根本上解决</li>
+      <li><strong>加层数</strong>：让网络学到更<strong>复杂的边界形状</strong>，但无法解决信息不足的问题</li>
+      <li><strong>特征工程 + 网络设计</strong>一起优化 = AI 工程师最核心的日常工作！</li>
+      <li>现实项目中，"加更多好特征"往往比"加更多层"更有效</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 3 · DRAWING RECOGNITION
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-3">3</div>
+    <h2>✏️ 在格子里画画，让 AI 来猜！</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    真正的图像识别 AI（比如手写数字识别）就是这样工作的：
+    把图片变成一格一格的像素数字，输入神经网络，得出答案。
+  </p>
+
+  <div class="analogy">
+    AI 看图就像看一个<strong>数字方格表</strong>：黑色格子 = 1，白色格子 = 0。
+    你画的形状其实就是一堆 0 和 1！神经网络把这些数字输入，
+    经过层层处理，判断出"这是数字几"或"这是什么字母"。
+    <br><br>
+    这类网络叫 <strong>CNN（卷积神经网络）</strong>，特别擅长看图！
+  </div>
+
+  <div class="demo">
+    <h3>🎮 在格子里画个形状（点击/拖动），看神经网络实时处理！</h3>
+    <p style="color:#888;font-size:0.9em;margin-bottom:12px">推荐：画数字 0、1、7，或字母 L、T、H、X。右边的网络图会随着你的笔触实时更新。</p>
+
+    <!-- 上方：画板 + 分类结果 -->
+    <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px">
+      <div>
+        <canvas id="gridCanvas" width="300" height="300" style="cursor:crosshair;border:3px solid #ddd;border-radius:12px;display:block"></canvas>
+        <div style="margin:12px 0">
+          <button class="btn btn-purple" onclick="classifyIt()">🔍 让 AI 猜猜！</button>
+          <button class="btn btn-grey" onclick="clearGrid()">🗑️ 清除</button>
+        </div>
+      </div>
+      <div id="classifyResult" style="flex:1;min-width:180px;padding-top:4px"></div>
+    </div>
+
+    <!-- 下方：全宽神经网络权重图 -->
+    <div>
+      <div style="text-align:center;font-size:0.88em;color:#555;font-weight:bold;margin-bottom:6px">
+        🧠 神经网络实时权重图（画一笔，看像素如何经过特征层流向输出）
+      </div>
+      <canvas id="gridNetCanvas" width="720" height="380" style="width:100%;max-width:720px;display:block;margin:0 auto;border-radius:10px;border:2px solid #ddd"></canvas>
+      <div style="font-size:0.78em;color:#888;margin-top:6px;line-height:1.7;text-align:center">
+        左：25个输入像素（黑=1，白=0）&nbsp;→&nbsp; 中：8个特征检测神经元（亮=激活）&nbsp;→&nbsp; 右：8个输出类别（按概率排序）<br>
+        绿色连线=正权重（支持激活），红色连线=负权重（抑制激活），线上数字=权重值
+      </div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li>图片 = 像素矩阵，每格是 0（白）或 1（黑）</li>
+      <li>CNN 先检测<strong>边缘</strong>，再检测<strong>形状</strong>，最后识别<strong>物体</strong></li>
+      <li>真实的手写数字识别（MNIST 数据集）准确率超过 <strong>99%</strong>！</li>
+      <li>AI 给出的不是确定答案，而是每个可能性的<strong>概率</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CARD 4 · LANGUAGE MODEL
+══════════════════════════════════════════════ -->
+<div class="card">
+  <div class="card-header">
+    <div class="badge badge-4">4</div>
+    <h2>📖 大语言模型——和 AI 一起续写故事</h2>
+  </div>
+
+  <p style="line-height:1.8;font-size:1.05em">
+    ChatGPT、Claude 这类大模型，是怎么会说话的？
+    秘密是：它们<strong>学会了预测"下一个词"</strong>！
+    通过读了互联网上几乎所有文字（几万亿个词），
+    它们知道什么词最可能接在什么词后面。
+  </p>
+
+  <div class="analogy">
+    就像你读了一万本故事书，有人说"从前有座……"，你马上想到"山"！
+    大模型也一样——只不过它读了<strong>一万亿个词</strong>，记住了所有词与词之间的联系。
+    <br><br>
+    它的核心叫 <strong>Transformer + Attention（注意力机制）</strong>：
+    处理每个词时，AI 会"注意"句子里其他哪些词最重要。
+    GPT-4 有大约 <strong>1 万亿个参数</strong>（权重）！
+  </div>
+
+  <div class="math-hint">
+    大模型在做：<strong>P(下一个词 | 前面所有的词)</strong><br>
+    Attention 公式：softmax(QK<sup>T</sup> / √d) × V<br>
+    <span style="color:#555">Q=查询, K=键, V=值——帮 AI 找到哪些词最相关</span>
+  </div>
+  <div class="simple-explain">
+    <strong>P(下一个词 | 前面所有的词)</strong> 是什么意思？<br>
+    就是：给定"一只小猫在花园里……"这些词，下一个词是"玩耍"的概率是多少？
+    是"睡觉"的概率是多少？AI 把所有可能的词都算一遍，选概率最高的！<br><br>
+    <strong>Attention（注意力）公式</strong> 是什么？<br>
+    想象你在看一本侦探小说，读到"<em>它</em>跑走了"时，你要想想"它"指的是前面的猫还是狗？
+    Attention 让 AI 做同样的事：处理每个词时，"扫描"一遍前面所有的词，
+    判断哪些词最相关。<br>
+    &nbsp;&nbsp;• <strong>Q（查询）</strong>= 当前词在问："谁和我最有关？"<br>
+    &nbsp;&nbsp;• <strong>K（键）</strong>= 每个历史词的"标签"<br>
+    &nbsp;&nbsp;• <strong>V（值）</strong>= 每个历史词的实际内容<br>
+    &nbsp;&nbsp;• <strong>softmax</strong>= 把相关度变成概率（加起来=100%，最相关的那个权重最大）
+  </div>
+
+  <div class="demo">
+    <h3>🎮 和 AI 一起续写故事！点击词语或让 AI 自动选</h3>
+    <p style="color:#888;font-size:0.9em;margin-bottom:10px">
+      进度条 = AI 认为这个词接下来出现的概率
+    </p>
+
+    <div class="story-box" id="storyBox">一只小猫</div>
+
+    <div id="wordProbs" style="max-width:400px;margin:0 auto"></div>
+
+    <div class="word-choices" id="wordChoices"></div>
+
+    <button class="btn btn-pink" onclick="aiPick()">🤖 让 AI 选词！</button>
+    <button class="btn btn-grey" onclick="resetStory()">🔄 重新开始</button>
+
+    <div id="storyNote" style="color:#888;font-size:0.9em;margin-top:10px"></div>
+
+    <!-- Transformer diagram -->
+    <div style="margin-top:18px">
+      <div style="text-align:center;font-size:0.88em;color:#555;font-weight:bold;margin-bottom:5px">
+        🧠 Transformer 注意力机制——AI 如何"回望"故事来预测下一个词（实时更新）
+      </div>
+      <canvas id="transformerCanvas" width="720" height="340" style="width:100%;max-width:720px;display:block;margin:0 auto;border-radius:10px;border:2px solid #ddd"></canvas>
+      <div style="font-size:0.78em;color:#888;margin-top:5px;line-height:1.7;text-align:center">
+        左：注意力权重（越长/越暖 = 越关注）&nbsp;|&nbsp; 右：Q·K 匹配原理（颜色维度重叠越多 → 分数越高）&nbsp;|&nbsp; 点击词语切换视角
+      </div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <h3>📚 学到了什么？</h3>
+    <ul>
+      <li>大模型 = 超级大的神经网络（数千亿参数）</li>
+      <li>训练方式：<strong>预测下一个词</strong>，学了几万亿个词</li>
+      <li><strong>Transformer</strong> 是大模型的核心架构（2017 年 Google 发明）</li>
+      <li><strong>Attention（注意力）</strong>让 AI 知道哪些词最相关</li>
+      <li>ChatGPT、Claude、Gemini 都是大语言模型！</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FINAL SUMMARY
+══════════════════════════════════════════════ -->
+<div class="final-card">
+  <h2>🎓 今天学到的 AI 全景图</h2>
+  <div class="final-grid">
+    <div class="final-cell">
+      <h3>🧠 机器学习</h3>
+      <p>让计算机从大量例子中自己找规律，而不是人工写死规则</p>
+    </div>
+    <div class="final-cell">
+      <h3>🌊 深度学习</h3>
+      <p>用很多层神经网络来学习，层数越深能学的规律越复杂</p>
+    </div>
+    <div class="final-cell">
+      <h3>📉 梯度下降</h3>
+      <p>通过不断调整权重来减小误差，就像蒙眼睛在山上找最低点</p>
+    </div>
+    <div class="final-cell">
+      <h3>📖 大语言模型</h3>
+      <p>学会预测下一个词的超大神经网络，读了几万亿个词</p>
+    </div>
+  </div>
+  <p style="text-align:center;color:#a0c4ff;margin-top:24px;font-size:1.15em">
+    🎉 你已经掌握了 AI 工程师每天工作的基础概念！太厉害了！
+  </p>
+</div>
+
+
+<!-- ═══ ADVANCED CARD: BACKPROPAGATION ═══ -->
+<div class="card" id="bpCard" style="border-top:4px solid #e91e63">
+  <div class="card-header">
+    <div class="badge" style="background:linear-gradient(135deg,#e91e63,#9c27b0)">🎓</div>
+    <h2>🔬 进阶：反向传播——AI 怎么算出梯度？</h2>
+  </div>
+
+  <div class="analogy">
+    每次 AI 猜错了，它要追问自己：<strong>"到底是哪个权重造成的错误，该怎么调？"</strong>
+    这个追责的过程叫 <strong>反向传播（Backpropagation）</strong>——从输出层往回算，用<strong>链式法则</strong>把"责任"分配给每一个权重。
+  </div>
+
+  <div class="demo">
+    <h3>🍎/🍌 神经网络的一次完整学习过程——逐步演示</h3>
+
+    <div style="margin-bottom:14px">
+      <span style="color:#555;font-size:0.95em;font-weight:600">① 选一个样本：</span><br style="display:none">
+      <button class="btn btn-orange" style="margin-top:8px" onclick="bpSelectSample(0)">典型苹果 🍎 (圆=7.5, 黄=2.0)</button>
+      <button class="btn btn-purple" style="margin-top:8px" onclick="bpSelectSample(1)">典型香蕉 🍌 (圆=2.0, 黄=8.5)</button>
+      <button class="btn btn-pink"   style="margin-top:8px" onclick="bpSelectSample(2)">边界苹果 🍎❓ (圆=5.0, 黄=5.5)</button>
+    </div>
+
+    <div id="bpStepBar" style="display:flex;justify-content:center;gap:6px;margin-bottom:14px;flex-wrap:wrap"></div>
+
+    <canvas id="bpCanvas" width="840" height="360" style="border-radius:12px;max-width:100%"></canvas>
+
+    <div id="bpMath" style="text-align:left;margin-top:14px;min-height:130px;
+         background:#1a1a2e;color:#e0e0e0;border-radius:12px;padding:16px 22px;
+         font-family:'Courier New',monospace;font-size:0.9em;line-height:2"></div>
+
+    <div style="margin-top:14px">
+      <button class="btn btn-pink"  id="bpNextBtn" onclick="bpNext()" disabled>下一步 →</button>
+      <button class="btn btn-grey"  onclick="bpReset()">重置</button>
+    </div>
+  </div>
+
+  <div class="simple-explain">
+    反向传播的核心是<strong>链式法则</strong>：如果损失 L 经过多层计算得来，那么<br>
+    <strong>∂L/∂W = ∂L/∂a₂ × ∂a₂/∂z₂ × ∂z₂/∂W = δ₂ × a₁</strong><br>
+    就像"是谁让我猜错的"——一层一层往前追责！每追一层就用一次链式法则。
+  </div>
+
+  <div class="summary">
+    <h3>📌 反向传播六步总结</h3>
+    <ul>
+      <li><strong>① 前向传播（层1）</strong>：x → z₁ = W₁x + b₁ → a₁ = σ(z₁)</li>
+      <li><strong>② 前向传播（层2）</strong>：a₁ → z₂ = W₂a₁ + b₂ → a₂ = σ(z₂)</li>
+      <li><strong>③ 计算损失</strong>：L = ½Σ(a₂ - target)²</li>
+      <li><strong>④ 输出层梯度</strong>：δ₂ = (a₂ - target) · a₂ · (1 - a₂) ← sigmoid 导数！</li>
+      <li><strong>⑤ 隐藏层梯度</strong>：δ₁ = (W₂ᵀδ₂) · a₁ · (1 - a₁) ← 链式法则传回来</li>
+      <li><strong>⑥ 更新权重</strong>：W₂ -= lr · δ₂ · a₁ᵀ，W₁ -= lr · δ₁ · xᵀ</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+'use strict';
+
+// Polyfill for roundRect (not in older Safari/Chrome)
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    this.closePath();
+  };
+}
+
+/* ════════════════════════════════════════════
+   SECTION 0 — ML INTRO: SCATTER CLASSIFICATION
+   Features: x=roundness(圆不圆), y=yellowness(黄不黄)
+   Classes: 0=苹果🍎, 1=香蕉🍌
+   Boundary: x - y > threshold → apple, else banana
+════════════════════════════════════════════ */
+
+const clsData = [
+  // 苹果: 高圆度(6-9), 低黄度(1-5)
+  {x:7.5, y:2.0, label:0}, {x:8.2, y:3.5, label:0}, {x:6.8, y:1.5, label:0},
+  {x:9.0, y:2.8, label:0}, {x:7.0, y:4.5, label:0}, {x:8.5, y:1.8, label:0},
+  {x:6.2, y:3.2, label:0}, {x:7.8, y:5.0, label:0},
+  {x:6.5, y:5.5, label:0},  // 接近边界
+  {x:5.0, y:5.5, label:0},  // 跨边界（难点）
+  // 香蕉: 低圆度(1-5), 高黄度(6-9)
+  {x:2.0, y:8.5, label:1}, {x:3.0, y:7.8, label:1}, {x:1.5, y:9.0, label:1},
+  {x:4.0, y:8.2, label:1}, {x:2.5, y:7.5, label:1}, {x:3.5, y:7.0, label:1},
+  {x:1.8, y:8.8, label:1}, {x:4.5, y:7.2, label:1},
+  {x:5.5, y:6.0, label:1},  // 接近边界
+  {x:4.8, y:5.5, label:1},  // 接近边界
+];
+
+let clsThr = 4.0; // 初始值：分界线偏高，很多苹果被错误分成香蕉
+
+const clsCv = document.getElementById('clsCv');
+const clsCtx = clsCv.getContext('2d');
+const CLW = clsCv.width, CLH = clsCv.height;
+const CLpx = 52, CLpy = 28, CLpw = CLW - CLpx - 20, CLph = CLH - CLpy - 44;
+
+function clsPredict(p, thr) {
+  return (p.x - p.y) > thr ? 0 : 1;  // 苹果:0, 香蕉:1
+}
+
+function clsAccuracy(thr) {
+  const correct = clsData.filter(p => clsPredict(p, thr) === p.label).length;
+  return { correct, total: clsData.length };
+}
+
+// 数据坐标 → 画布坐标 (x:0-10 → right, y:0-10 → up)
+function clsDC(dx, dy) {
+  return {
+    cx: CLpx + dx / 10 * CLpw,
+    cy: CLpy + CLph - dy / 10 * CLph
+  };
+}
+
+function drawCls() {
+  clsCtx.clearRect(0, 0, CLW, CLH);
+
+  // 背景底色
+  clsCtx.fillStyle = '#f9fafb';
+  clsCtx.fillRect(0, 0, CLW, CLH);
+
+  // 分区域着色：边界线 y = x - clsThr
+  // 苹果区（y < x - thr，即 x - y > thr）→ 右下方
+  // 香蕉区（y > x - thr）→ 左上方
+  for (let i = 0; i < CLpw; i++) {
+    const xD = (i / CLpw) * 10;
+    const lineYD = xD - clsThr;
+    const lineCy = CLpy + CLph - Math.max(0, Math.min(10, lineYD)) / 10 * CLph;
+    // 香蕉区（上方）
+    clsCtx.fillStyle = 'rgba(255, 220, 50, 0.18)';
+    clsCtx.fillRect(CLpx + i, CLpy, 1, Math.max(0, lineCy - CLpy));
+    // 苹果区（下方）
+    clsCtx.fillStyle = 'rgba(255, 80, 80, 0.10)';
+    clsCtx.fillRect(CLpx + i, Math.min(CLpy + CLph, Math.max(CLpy, lineCy)), 1,
+                    Math.max(0, CLpy + CLph - lineCy));
+  }
+
+  // 网格线
+  clsCtx.strokeStyle = '#e0e0e0'; clsCtx.lineWidth = 0.5;
+  for (let i = 0; i <= 10; i += 2) {
+    const {cx} = clsDC(i, 0);
+    clsCtx.beginPath(); clsCtx.moveTo(cx, CLpy); clsCtx.lineTo(cx, CLpy + CLph); clsCtx.stroke();
+    const {cy} = clsDC(0, i);
+    clsCtx.beginPath(); clsCtx.moveTo(CLpx, cy); clsCtx.lineTo(CLpx + CLpw, cy); clsCtx.stroke();
+  }
+
+  // 画分界线（虚线对角线）
+  const {cx: lx1, cy: ly1} = clsDC(0, -clsThr);
+  const {cx: lx2, cy: ly2} = clsDC(10, 10 - clsThr);
+  clsCtx.setLineDash([10, 5]);
+  clsCtx.beginPath();
+  clsCtx.moveTo(lx1, Math.max(CLpy, ly1));
+  clsCtx.lineTo(lx2, Math.min(CLpy + CLph, ly2));
+  clsCtx.strokeStyle = '#333'; clsCtx.lineWidth = 2.5; clsCtx.stroke();
+  clsCtx.setLineDash([]);
+
+  // 区域标签
+  clsCtx.font = 'bold 13px sans-serif'; clsCtx.textAlign = 'center';
+  clsCtx.fillStyle = 'rgba(180,130,0,0.9)';
+  clsCtx.fillText('🍌 香蕉区', CLpx + CLpw * 0.22, CLpy + CLph * 0.28);
+  clsCtx.fillStyle = 'rgba(180,0,0,0.7)';
+  clsCtx.fillText('🍎 苹果区', CLpx + CLpw * 0.78, CLpy + CLph * 0.78);
+
+  // 画数据点
+  clsData.forEach(p => {
+    const {cx, cy} = clsDC(p.x, p.y);
+    const predicted = clsPredict(p, clsThr);
+    const correct = predicted === p.label;
+
+    // 错误预测：红色警示圈
+    if (!correct) {
+      clsCtx.beginPath(); clsCtx.arc(cx, cy, 21, 0, 2 * Math.PI);
+      clsCtx.fillStyle = 'rgba(229, 57, 53, 0.2)'; clsCtx.fill();
+      clsCtx.strokeStyle = '#e53935'; clsCtx.lineWidth = 2.5; clsCtx.stroke();
+      // ✗ 标记
+      clsCtx.fillStyle = '#e53935'; clsCtx.font = 'bold 14px sans-serif';
+      clsCtx.textAlign = 'center'; clsCtx.textBaseline = 'middle';
+      clsCtx.fillText('✗', cx + 16, cy - 14);
+    }
+
+    clsCtx.beginPath(); clsCtx.arc(cx, cy, 13, 0, 2*Math.PI);
+    clsCtx.fillStyle = 'rgba(255,255,255,0.82)'; clsCtx.fill();
+    clsCtx.font = '22px sans-serif'; clsCtx.textAlign = 'center'; clsCtx.textBaseline = 'middle';
+    clsCtx.fillText(p.label === 0 ? '🍎' : '🍌', cx, cy);
+  });
+
+  // 坐标轴标签
+  clsCtx.fillStyle = '#666'; clsCtx.font = '11px sans-serif'; clsCtx.textBaseline = 'alphabetic';
+  clsCtx.textAlign = 'center';
+  clsCtx.fillText('← 不圆　　　圆不圆　　　很圆 →', CLpx + CLpw / 2, CLpy + CLph + 28);
+  clsCtx.save();
+  clsCtx.translate(13, CLpy + CLph / 2);
+  clsCtx.rotate(-Math.PI / 2); clsCtx.textAlign = 'center';
+  clsCtx.fillText('← 不黄  黄不黄  很黄 →', 0, 0);
+  clsCtx.restore();
+
+  // 更新统计
+  const { correct, total } = clsAccuracy(clsThr);
+  document.getElementById('clsAcc').textContent = `${correct} / ${total}`;
+  document.getElementById('clsPct').textContent = `${(correct / total * 100).toFixed(0)}%`;
+  document.getElementById('clsThrDisplay').textContent = `（当前位置 ${clsThr.toFixed(1)}）`;
+
+  const msg = document.getElementById('clsMsg');
+  const pct = correct / total;
+  if (pct >= 0.95) {
+    msg.innerHTML = '<span style="color:#2e7d32;font-weight:bold">🎉 太棒了！AI 找到了最好的分界线——这就是机器学习的魔法！</span>';
+  } else if (pct >= 0.8) {
+    msg.innerHTML = '<span style="color:#1565c0">👍 还不错！继续调整分界线，还能答对更多！</span>';
+  } else {
+    msg.innerHTML = '<span style="color:#e53935">😅 分界线位置还不太对，快调一调！（提示：把线往左下移）</span>';
+  }
+}
+
+function onClsSlider() {
+  clsThr = parseInt(document.getElementById('clsSlider').value) / 10;
+  drawCls();
+}
+
+let clsAnimTimer = null;
+function aiLearnCls() {
+  if (clsAnimTimer) clearInterval(clsAnimTimer);
+  // 找最优 threshold（穷举搜索）
+  let bestThr = 0, bestAcc = 0;
+  for (let t = -5; t <= 6; t += 0.05) {
+    const { correct } = clsAccuracy(t);
+    if (correct > bestAcc) { bestAcc = correct; bestThr = t; }
+  }
+  // 动画：clsThr 渐变到 bestThr
+  const startThr = clsThr;
+  const totalSteps = 40;
+  let step = 0;
+  clsAnimTimer = setInterval(() => {
+    step++;
+    clsThr = startThr + (bestThr - startThr) * (step / totalSteps);
+    document.getElementById('clsSlider').value = Math.round(clsThr * 10);
+    drawCls();
+    if (step >= totalSteps) {
+      clearInterval(clsAnimTimer);
+      clsThr = bestThr;
+      document.getElementById('clsSlider').value = Math.round(clsThr * 10);
+      drawCls();
+    }
+  }, 35);
+}
+
+function resetCls() {
+  if (clsAnimTimer) clearInterval(clsAnimTimer);
+  clsThr = 4.0;
+  document.getElementById('clsSlider').value = 40;
+  document.getElementById('clsMsg').innerHTML = '';
+  drawCls();
+}
+
+drawCls();
+
+
+/* ════════════════════════════════════════════
+   SECTION 1 — NEURAL NETWORK (Apple/Banana)
+   Architecture: 2 → 3 → 2
+   Inputs: roundness(圆不圆), yellowness(黄不黄)
+   Outputs: 苹果概率, 香蕉概率
+   Pre-trained weights: hand-designed to correctly classify
+════════════════════════════════════════════ */
+
+// Pre-trained weights for apple/banana classification
+// h0: "more round than yellow" → apple detector
+// h1: "more yellow than round" → banana detector
+// h2: general magnitude
+const nnW1 = [
+  [ 3.0, -3.0],  // h0
+  [-3.0,  3.0],  // h1
+  [ 1.2,  1.2],  // h2
+];
+const nnB1 = [-1.2, -1.2, -1.4];
+
+const nnW2 = [
+  [ 4.0, -4.0,  0.5],  // apple output
+  [-4.0,  4.0,  0.5],  // banana output
+];
+const nnB2 = [0.0, 0.0];
+
+function nnSig(x) { return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, x)))); }
+
+function nnForward(roundness, yellowness) {
+  const x = [roundness / 10, yellowness / 10];
+  const hz = nnW1.map((row, i) => row.reduce((s,w,j) => s + w*x[j], nnB1[i]));
+  const h  = hz.map(z => nnSig(z));
+  const oz = nnW2.map((row, i) => row.reduce((s,w,j) => s + w*h[j], nnB2[i]));
+  const out = oz.map(z => nnSig(z));
+  return { x, hz, h, oz, out };
+}
+
+function nnNodeColor(v) {
+  // 0 → cool blue, 1 → warm amber
+  return `rgb(${Math.round(50+v*205)},${Math.round(120+v*80)},${Math.round(230-v*180)})`;
+}
+
+function drawNN(roundness, yellowness) {
+  const cv = document.getElementById('nnCanvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const fwd = nnForward(roundness, yellowness);
+  const { x: inp, hz, h, oz, out } = fwd;
+  const layers = [inp, h, out];
+
+  // Layer x positions: input, hidden, output
+  const lxArr = [72, 310, 645];
+  const R = 24; // node radius
+
+  function nodePos(li, ni, total) {
+    const spacing = Math.min(78, (H - 60) / total);
+    return { x: lxArr[li], y: H/2 + (ni - (total-1)/2) * spacing };
+  }
+  const positions = layers.map((layer, li) =>
+    layer.map((_, ni) => nodePos(li, ni, layer.length))
+  );
+
+  // ── Draw connections with weight labels ──
+  const wSets = [nnW1, nnW2];
+  for (let l = 0; l < 2; l++) {
+    for (let j = 0; j < layers[l+1].length; j++) {
+      for (let i = 0; i < layers[l].length; i++) {
+        const w = wSets[l][j][i];
+        const sig = Math.abs(layers[l][i]) * Math.abs(w);
+        const alpha = Math.min(0.9, 0.12 + sig * 0.75);
+        const from = positions[l][i], to = positions[l+1][j];
+        const fx = from.x + R, fy = from.y;
+        const tx = to.x - R,  ty = to.y;
+
+        // Draw line
+        ctx.beginPath();
+        ctx.moveTo(fx, fy); ctx.lineTo(tx, ty);
+        ctx.strokeStyle = w > 0 ? `rgba(40,160,40,${alpha})` : `rgba(210,40,40,${alpha})`;
+        ctx.lineWidth = Math.max(0.5, Math.min(5, sig * 6));
+        ctx.stroke();
+
+        // Weight label: for input→hidden use t based on source row (avoid overlap)
+        // for hidden→output use t based on source row
+        const tArr = l === 0
+          ? [0.72, 0.28]          // from I0 closer-to-hidden, from I1 closer-to-input
+          : [0.70, 0.50, 0.30];   // from H0, H1, H2
+        const t = tArr[i];
+        const lx = fx + t * (tx - fx);
+        const ly = fy + t * (ty - fy);
+
+        const wStr = (w > 0 ? '+' : '') + w.toFixed(1);
+        const wColor = w > 0 ? '#1a6b1a' : '#b71c1c';
+
+        // Small pill background for readability
+        ctx.font = 'bold 9px sans-serif';
+        const tw2 = ctx.measureText(wStr).width;
+        ctx.fillStyle = 'rgba(255,255,255,0.82)';
+        ctx.beginPath();
+        ctx.roundRect(lx - tw2/2 - 3, ly - 7, tw2 + 6, 14, 4);
+        ctx.fill();
+
+        ctx.fillStyle = wColor;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(wStr, lx, ly);
+      }
+    }
+  }
+
+  // ── Draw nodes ──
+  const nodeLabels = [
+    ['圆不圆', '黄不黄'],
+    ['H₁', 'H₂', 'H₃'],
+    ['🍎', '🍌']
+  ];
+  const nodeSubLabels = [
+    ['', ''],
+    ['圆>黄?', '黄>圆?', '综合'],
+    ['苹果', '香蕉']
+  ];
+
+  layers.forEach((layer, li) => {
+    layer.forEach((val, ni) => {
+      const { x: nx, y: ny } = positions[li][ni];
+
+      // Glow for active nodes
+      if (val > 0.45) {
+        const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, R + 16);
+        g.addColorStop(0, `rgba(255,200,50,${(val-0.45)*0.7})`);
+        g.addColorStop(1, 'rgba(255,200,50,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(nx, ny, R + 16, 0, 2*Math.PI); ctx.fill();
+      }
+
+      // Node circle
+      ctx.beginPath(); ctx.arc(nx, ny, R, 0, 2*Math.PI);
+      ctx.fillStyle = nnNodeColor(val); ctx.fill();
+      ctx.strokeStyle = val > 0.5 ? '#e08a00' : '#bbb';
+      ctx.lineWidth = 2; ctx.stroke();
+
+      // Activation value inside node
+      ctx.fillStyle = 'white'; ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(val.toFixed(2), nx, ny);
+
+      // Node label (above) and sub-label (below)
+      ctx.fillStyle = '#333'; ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      if (li === 0) {
+        ctx.textAlign = 'right';
+        ctx.fillText(nodeLabels[li][ni], nx - R - 5, ny);
+      } else if (li === 2) {
+        ctx.font = '18px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(nodeLabels[li][ni], nx + R + 5, ny - 4);
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(nodeSubLabels[li][ni], nx + R + 5, ny + 12);
+      } else {
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(nodeLabels[li][ni], nx, ny - R - 16);
+        ctx.fillStyle = '#666'; ctx.font = '9px sans-serif';
+        ctx.fillText(nodeSubLabels[li][ni], nx, ny - R - 5);
+
+        // Bias label just below node
+        const bStr = 'b=' + (nnB1[ni] > 0 ? '+' : '') + nnB1[ni].toFixed(1);
+        ctx.fillStyle = '#888'; ctx.font = '8px sans-serif';
+        ctx.fillText(bStr, nx, ny + R + 10);
+      }
+    });
+  });
+
+  // Bias for output nodes
+  ['b=0.0', 'b=0.0'].forEach((bStr, ni) => {
+    const { x: nx, y: ny } = positions[2][ni];
+    ctx.fillStyle = '#888'; ctx.font = '8px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(bStr, nx, ny + R + 10);
+  });
+
+  // Layer headers
+  ctx.fillStyle = '#999'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('输入层', lxArr[0], H - 6);
+  ctx.fillText('隐藏层（3个神经元）', lxArr[1], H - 6);
+  ctx.fillText('输出层', lxArr[2], H - 6);
+
+  // ── Update result ──
+  const aP = (out[0]*100).toFixed(1), bP = (out[1]*100).toFixed(1);
+  const winner = out[0] > out[1] ? '🍎 苹果' : '🍌 香蕉';
+  const conf = Math.abs(out[0] - out[1]);
+  const confTxt = conf > 0.5 ? '非常确定！' : conf > 0.2 ? '比较确信' : '不太确定…';
+  document.getElementById('nnResult').innerHTML =
+    `AI 判断：<span style="color:#667eea;font-size:1.15em"><strong>${winner}</strong></span>
+     （🍎 ${aP}% / 🍌 ${bP}%）<span style="color:#888;font-size:0.9em"> — ${confTxt}</span>`;
+
+  // ── Update formula panel ──
+  const r = roundness.toFixed(1), yy = yellowness.toFixed(1);
+  const xN = [roundness/10, yellowness/10];
+  const hNames = ['H₁（圆>黄 探测器）', 'H₂（黄>圆 探测器）', 'H₃（综合强度）'];
+  const oNames = ['🍎 苹果', '🍌 香蕉'];
+
+  function fmtTerm(w, val, varName) {
+    const wStr = (w > 0 ? '+' : '') + w.toFixed(1);
+    const color = w > 0 ? '#1a6b1a' : '#b71c1c';
+    return `<span style="color:${color}">${wStr}</span>×${val.toFixed(2)}`;
+  }
+
+  let html = '<span style="color:#444;font-family:sans-serif;font-size:0.95em;font-weight:bold">🔢 逐步计算过程（圆度=' + r + '，黄度=' + yy + '）</span><br>';
+  html += '<span style="color:#777;font-family:sans-serif;font-size:0.85em">（输入先除以10变成0~1的小数：圆度=' + xN[0].toFixed(2) + '，黄度=' + xN[1].toFixed(2) + '）</span><br><br>';
+
+  // Hidden layer
+  html += '<span style="color:#555;font-family:sans-serif">【隐藏层】</span><br>';
+  for (let j = 0; j < 3; j++) {
+    const terms = nnW1[j].map((w, i) => fmtTerm(w, xN[i], i===0?'圆':'黄')).join(' ');
+    const bStr = (nnB1[j] > 0 ? '+' : '') + nnB1[j].toFixed(1);
+    const zColor = hz[j] >= 0 ? '#1a6b1a' : '#b71c1c';
+    html += `${hNames[j]}：z = ${terms} <span style="color:#555">${bStr}</span> = <span style="color:${zColor}">${hz[j].toFixed(3)}</span>`;
+    html += ` &nbsp;→&nbsp; σ(${hz[j].toFixed(2)}) = <strong style="color:#512da8">${(h[j]*100).toFixed(0)}%</strong><br>`;
+  }
+
+  html += '<br><span style="color:#555;font-family:sans-serif">【输出层】</span><br>';
+  for (let j = 0; j < 2; j++) {
+    const terms = nnW2[j].map((w, i) => fmtTerm(w, h[i], 'H'+(i+1))).join(' ');
+    const bStr = nnB2[j] >= 0 ? '+' + nnB2[j].toFixed(1) : nnB2[j].toFixed(1);
+    const zColor = oz[j] >= 0 ? '#1a6b1a' : '#b71c1c';
+    html += `${oNames[j]}：z = ${terms} <span style="color:#555">${bStr}</span> = <span style="color:${zColor}">${oz[j].toFixed(3)}</span>`;
+    html += ` &nbsp;→&nbsp; σ(${oz[j].toFixed(2)}) = <strong style="color:#512da8">${(out[j]*100).toFixed(0)}%</strong><br>`;
+  }
+
+  document.getElementById('nnFormula').innerHTML = html;
+}
+
+function updateNN() {
+  const r = parseInt(document.getElementById('nnSlider1').value) / 10;
+  const y = parseInt(document.getElementById('nnSlider2').value) / 10;
+  document.getElementById('nnRound').textContent = r.toFixed(1);
+  document.getElementById('nnYellow').textContent = y.toFixed(1);
+  drawNN(r, y);
+}
+
+function setNNPreset(r, y) {
+  document.getElementById('nnSlider1').value = Math.round(r * 10);
+  document.getElementById('nnSlider2').value = Math.round(y * 10);
+  updateNN();
+}
+
+updateNN();
+
+
+/* ════════════════════════════════════════════
+   SECTION 2 — GRADIENT DESCENT TRAINING
+   Real backpropagation on clsData (apple/banana)
+   Network: 2 → 3 → 2  (same features as Section 0)
+════════════════════════════════════════════ */
+
+class TrainNet {
+  constructor() {
+    // Intentionally bad starting weights → mostly outputs ~0.5 (random guessing)
+    this.W1 = [[ 0.5,-0.3],[-0.4, 0.5],[ 0.2, 0.2]];
+    this.b1 = [ 0.1,  0.1, -0.1];
+    this.W2 = [[ 0.4,-0.3, 0.2],[-0.3, 0.4,-0.2]];
+    this.b2 = [0.0, 0.0];
+    this.lr = 0.9;
+  }
+
+  sig(x) { return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, x)))); }
+
+  forward(x) {
+    const a1 = this.W1.map((row,i) => this.sig(row.reduce((s,w,j)=>s+w*x[j], this.b1[i])));
+    const a2 = this.W2.map((row,i) => this.sig(row.reduce((s,w,j)=>s+w*a1[j], this.b2[i])));
+    return { a1, a2 };
+  }
+
+  // Train on one sample; returns {pred (before update), loss, target, isCorrect}
+  trainOne(p) {
+    const x = [p.x/10, p.y/10];
+    const target = p.label === 0 ? [1,0] : [0,1];
+    const { a1, a2 } = this.forward(x);
+    const pred = a2.slice();
+    const loss = target.reduce((s,t,i) => s + 0.5*(a2[i]-t)**2, 0);
+
+    // Backprop output layer
+    const d2 = a2.map((a,i) => (a - target[i]) * a * (1-a));
+    for (let i=0;i<2;i++) {
+      for (let j=0;j<3;j++) this.W2[i][j] -= this.lr * d2[i] * a1[j];
+      this.b2[i] -= this.lr * d2[i];
+    }
+    // Backprop hidden layer
+    const d1 = a1.map((a,j) => {
+      const e = this.W2.reduce((s,row,i)=>s+row[j]*d2[i], 0);
+      return e * a * (1-a);
+    });
+    for (let j=0;j<3;j++) {
+      for (let k=0;k<2;k++) this.W1[j][k] -= this.lr * d1[j] * x[k];
+      this.b1[j] -= this.lr * d1[j];
+    }
+
+    const isCorrect = (pred[0] >= pred[1] ? 0 : 1) === p.label;
+    return { pred, loss, target, isCorrect };
+  }
+
+  totalLoss() {
+    return clsData.reduce((s,p) => {
+      const { a2 } = this.forward([p.x/10, p.y/10]);
+      const t = p.label===0 ? [1,0] : [0,1];
+      return s + t.reduce((ss,tv,i) => ss + 0.5*(a2[i]-tv)**2, 0);
+    }, 0);
+  }
+
+  accuracy() {
+    return clsData.filter(p => {
+      const { a2 } = this.forward([p.x/10, p.y/10]);
+      return (a2[0]>=a2[1]?0:1) === p.label;
+    }).length / clsData.length;
+  }
+
+  predict(xD, yD) {
+    return this.forward([xD/10, yD/10]).a2;
+  }
+}
+
+let trainNet = new TrainNet();
+let gdSampleIdx = 0;
+let gdEpochCount = 0;
+let gdLossHist = [];
+let gdAccHist  = [];
+let gdLastP = null;
+
+const gdScatterCv  = document.getElementById('gdScatter');
+const gdScatterCtx = gdScatterCv.getContext('2d');
+const gdLossCv     = document.getElementById('gdLoss');
+const gdLossCtx    = gdLossCv.getContext('2d');
+const gdNetCv      = document.getElementById('gdNet');
+const gdNetCtx     = gdNetCv.getContext('2d');
+
+function gdRecord() {
+  gdLossHist.push(trainNet.totalLoss());
+  gdAccHist.push(trainNet.accuracy());
+}
+
+function gdReset() {
+  trainNet = new TrainNet();
+  gdSampleIdx = 0; gdEpochCount = 0;
+  gdLossHist = []; gdAccHist = []; gdLastP = null;
+  gdRecord();
+  document.getElementById('gdMsg2').innerHTML = '';
+  document.getElementById('gdDetail').innerHTML =
+    '<span style="color:#888">点击"看下一个样本"，AI 会逐个学习苹果和香蕉的特征！</span>';
+  gdDrawNet(); gdDrawScatter(); gdDrawLoss(); gdUpdateStats();
+}
+
+function gdStep1() {
+  const p = clsData[gdSampleIdx % clsData.length];
+  const { pred, loss, target, isCorrect } = trainNet.trainOne(p);
+  gdLastP = p;
+  gdSampleIdx++;
+  if (gdSampleIdx % clsData.length === 0) { gdEpochCount++; gdRecord(); }
+
+  const fruit   = p.label===0 ? '🍎 苹果' : '🍌 香蕉';
+  const pA = (pred[0]*100).toFixed(0), pB = (pred[1]*100).toFixed(0);
+  const tA = (target[0]*100).toFixed(0), tB = (target[1]*100).toFixed(0);
+  const lStr = loss.toFixed(4);
+  const lColor = loss > 0.15 ? '#e53935' : '#2e7d32';
+
+  document.getElementById('gdDetail').innerHTML = `
+    <div style="line-height:2.1">
+      <strong>第 ${gdSampleIdx} 步：</strong>看到 ${fruit}（圆度 ${p.x.toFixed(1)}，黄度 ${p.y.toFixed(1)}）<br>
+      网络当前预测：🍎 <strong>${pA}%</strong> &nbsp;/&nbsp; 🍌 <strong>${pB}%</strong>
+      &emsp;｜&emsp;正确答案：🍎 <strong>${tA}%</strong> &nbsp;/&nbsp; 🍌 <strong>${tB}%</strong><br>
+      误差 L = (${(pred[0]).toFixed(2)}−${target[0]})² + (${(pred[1]).toFixed(2)}−${target[1]})²
+        = <strong style="color:${lColor}">${lStr}</strong><br>
+      <span style="color:${isCorrect?'#2e7d32':'#e53935'}">
+        ${isCorrect
+          ? '✅ 答对了！权重做小幅微调以巩固'
+          : '❌ 答错了！反向传播计算梯度，调整所有权重让误差减小'}
+      </span>
+    </div>`;
+
+  gdDrawNet(); gdDrawScatter(); gdDrawLoss(); gdUpdateStats();
+  if (trainNet.accuracy() >= 0.95)
+    document.getElementById('gdMsg2').innerHTML =
+      '<span style="color:#2e7d32;font-weight:bold">🎉 准确率达到 95%+！梯度下降收敛了！</span>';
+}
+
+function gdTrain50() {
+  for (let i=0; i<50; i++) {
+    trainNet.trainOne(clsData[gdSampleIdx % clsData.length]);
+    gdSampleIdx++;
+    if (gdSampleIdx % clsData.length === 0) { gdEpochCount++; gdRecord(); }
+  }
+  gdRecord();
+  const acc = (trainNet.accuracy()*100).toFixed(0);
+  document.getElementById('gdDetail').innerHTML = `
+    <div style="line-height:2">
+      ⚡ <strong>已完成 50 步训练</strong>，累计看了 ${gdSampleIdx} 个样本（${gdEpochCount} 轮）<br>
+      准确率：<strong style="color:#2e7d32">${acc}%</strong>
+      &emsp;总误差：<strong>${trainNet.totalLoss().toFixed(3)}</strong><br>
+      <span style="color:#555">观察左图：决策边界越来越接近第一关的最优分界线！</span>
+    </div>`;
+  gdDrawNet(); gdDrawScatter(); gdDrawLoss(); gdUpdateStats();
+  if (trainNet.accuracy() >= 0.95)
+    document.getElementById('gdMsg2').innerHTML =
+      '<span style="color:#2e7d32;font-weight:bold">🎉 准确率达到 95%+！梯度下降完成！</span>';
+}
+
+function gdUpdateStats() {
+  document.getElementById('gdEpoch').textContent = gdEpochCount;
+  document.getElementById('gdTotalLoss').textContent = trainNet.totalLoss().toFixed(3);
+  document.getElementById('gdAccuracy').textContent = (trainNet.accuracy()*100).toFixed(0) + '%';
+}
+
+// ── Network canvas: show trainNet's current weights + activations for gdLastP ──
+function gdDrawNet() {
+  const cv = gdNetCv, ctx = gdNetCtx;
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Forward pass on current sample (or neutral 5,5 if none yet)
+  const xRaw = gdLastP ? gdLastP.x : 5;
+  const yRaw = gdLastP ? gdLastP.y : 5;
+  const xN   = [xRaw / 10, yRaw / 10];
+  const { a1, a2 } = trainNet.forward(xN);
+  const layers = [xN, a1, a2];
+
+  const lxArr = [72, 310, 645];
+  const R = 22;
+
+  function gdNodePos(li, ni, total) {
+    const spacing = Math.min(78, (H - 60) / total);
+    return { x: lxArr[li], y: H / 2 + (ni - (total - 1) / 2) * spacing };
+  }
+  const positions = layers.map((layer, li) =>
+    layer.map((_, ni) => gdNodePos(li, ni, layer.length))
+  );
+
+  // ── Connections with weight labels ──
+  const wSets = [trainNet.W1, trainNet.W2];
+  for (let l = 0; l < 2; l++) {
+    for (let j = 0; j < layers[l + 1].length; j++) {
+      for (let i = 0; i < layers[l].length; i++) {
+        const w = wSets[l][j][i];
+        const sig = Math.abs(layers[l][i]) * Math.abs(w);
+        const alpha = Math.min(0.9, 0.15 + sig * 0.7);
+        const from = positions[l][i], to = positions[l + 1][j];
+        const fx = from.x + R, fy = from.y;
+        const tx = to.x - R, ty = to.y;
+
+        // Line
+        ctx.beginPath();
+        ctx.moveTo(fx, fy); ctx.lineTo(tx, ty);
+        ctx.strokeStyle = w > 0 ? `rgba(40,160,40,${alpha})` : `rgba(210,40,40,${alpha})`;
+        ctx.lineWidth = Math.max(0.5, Math.min(5.5, Math.abs(w) * 1.3 + 0.3));
+        ctx.stroke();
+
+        // Weight label: stagger t to avoid overlapping labels
+        const tArr = l === 0 ? [0.72, 0.28] : [0.70, 0.50, 0.30];
+        const t = tArr[i];
+        const lx = fx + t * (tx - fx);
+        const ly = fy + t * (ty - fy);
+        const wStr = (w >= 0 ? '+' : '') + w.toFixed(2);
+        const wColor = w > 0 ? '#1a6b1a' : '#b71c1c';
+
+        ctx.font = 'bold 9px sans-serif';
+        const tw2 = ctx.measureText(wStr).width;
+        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        ctx.beginPath();
+        ctx.roundRect(lx - tw2 / 2 - 3, ly - 7, tw2 + 6, 14, 4);
+        ctx.fill();
+        ctx.fillStyle = wColor;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(wStr, lx, ly);
+      }
+    }
+  }
+
+  // ── Nodes ──
+  const nodeLabels    = [['圆不圆', '黄不黄'], ['H₁', 'H₂', 'H₃'], ['🍎', '🍌']];
+  const nodeSubLabels = [['', ''], ['圆>黄?', '黄>圆?', '综合'], ['苹果', '香蕉']];
+
+  layers.forEach((layer, li) => {
+    layer.forEach((val, ni) => {
+      const { x: nx, y: ny } = positions[li][ni];
+
+      // Glow
+      if (val > 0.45) {
+        const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, R + 14);
+        g.addColorStop(0, `rgba(255,200,50,${(val - 0.45) * 0.65})`);
+        g.addColorStop(1, 'rgba(255,200,50,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(nx, ny, R + 14, 0, 2 * Math.PI); ctx.fill();
+      }
+
+      // Circle
+      ctx.beginPath(); ctx.arc(nx, ny, R, 0, 2 * Math.PI);
+      ctx.fillStyle = nnNodeColor(val); ctx.fill();
+      ctx.strokeStyle = val > 0.5 ? '#e08a00' : '#bbb';
+      ctx.lineWidth = 2; ctx.stroke();
+
+      // Activation value
+      ctx.fillStyle = 'white'; ctx.font = 'bold 10px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(val.toFixed(2), nx, ny);
+
+      // Labels
+      if (li === 0) {
+        ctx.fillStyle = '#333'; ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(nodeLabels[li][ni], nx - R - 5, ny);
+      } else if (li === 2) {
+        ctx.font = '17px sans-serif'; ctx.textAlign = 'left';
+        ctx.fillText(nodeLabels[li][ni], nx + R + 5, ny - 4);
+        ctx.fillStyle = '#333'; ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(nodeSubLabels[li][ni], nx + R + 5, ny + 12);
+        // Bias for output
+        const bStr = 'b=' + (trainNet.b2[ni] >= 0 ? '+' : '') + trainNet.b2[ni].toFixed(2);
+        ctx.fillStyle = '#999'; ctx.font = '8px sans-serif';
+        ctx.fillText(bStr, nx, ny + R + 10);
+      } else {
+        ctx.fillStyle = '#333'; ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(nodeLabels[li][ni], nx, ny - R - 16);
+        ctx.fillStyle = '#666'; ctx.font = '9px sans-serif';
+        ctx.fillText(nodeSubLabels[li][ni], nx, ny - R - 5);
+        // Bias for hidden
+        const bStr = 'b=' + (trainNet.b1[ni] >= 0 ? '+' : '') + trainNet.b1[ni].toFixed(2);
+        ctx.fillStyle = '#999'; ctx.font = '8px sans-serif';
+        ctx.fillText(bStr, nx, ny + R + 10);
+      }
+    });
+  });
+
+  // Current sample info (top-left)
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  if (gdLastP) {
+    const fruitEmoji = gdLastP.label === 0 ? '🍎' : '🍌';
+    const fruitName  = gdLastP.label === 0 ? '苹果' : '香蕉';
+    ctx.fillStyle = '#444'; ctx.font = 'bold 11px sans-serif';
+    ctx.fillText(`当前样本：${fruitEmoji}${fruitName}（圆度 ${gdLastP.x.toFixed(1)}，黄度 ${gdLastP.y.toFixed(1)}）`, 6, 4);
+  } else {
+    ctx.fillStyle = '#aaa'; ctx.font = '11px sans-serif';
+    ctx.fillText('（点击下方按钮开始训练，观察权重数字如何变化）', 6, 4);
+  }
+
+  // Step count (top-right)
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#888'; ctx.font = '10px sans-serif';
+  ctx.fillText(`第 ${gdSampleIdx} 步`, W - 6, 4);
+
+  // Layer headers
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#999'; ctx.font = '11px sans-serif';
+  ctx.fillText('输入层', lxArr[0], H - 6);
+  ctx.fillText('隐藏层（3个神经元）', lxArr[1], H - 6);
+  ctx.fillText('输出层', lxArr[2], H - 6);
+}
+
+// ── Scatter canvas: show current decision regions + data points ──
+function gdDrawScatter() {
+  const cv = gdScatterCv, ctx = gdScatterCtx;
+  const W=cv.width, H=cv.height;
+  const px=34, py=18, pw=W-px-8, ph=H-py-28;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f8f9fa'; ctx.fillRect(0,0,W,H);
+
+  // Color regions by network prediction (25×25 grid)
+  const res=25, dw=pw/res, dh=ph/res;
+  for (let i=0;i<res;i++) {
+    for (let j=0;j<res;j++) {
+      const xD=(i+0.5)/res*10, yD=(j+0.5)/res*10;
+      const [aP,bP] = trainNet.predict(xD,yD);
+      const conf = Math.abs(aP-bP);
+      ctx.fillStyle = aP>bP
+        ? `rgba(255,80,80,${0.12+conf*0.38})`
+        : `rgba(255,200,50,${0.12+conf*0.38})`;
+      ctx.fillRect(px+i*dw, py+ph-(j+1)*dh, dw+1, dh+1);
+    }
+  }
+
+  // Data points
+  function dc(xD,yD) {
+    return { cx: px+xD/10*pw, cy: py+ph-yD/10*ph };
+  }
+  clsData.forEach(p => {
+    const {cx,cy}=dc(p.x,p.y);
+    const [aP,bP]=trainNet.predict(p.x,p.y);
+    if ((aP>=bP?0:1)!==p.label) {
+      ctx.beginPath(); ctx.arc(cx,cy,16,0,2*Math.PI);
+      ctx.strokeStyle='#e53935'; ctx.lineWidth=2.5; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, 10, 0, 2*Math.PI);
+    ctx.fillStyle='rgba(255,255,255,0.82)'; ctx.fill();
+    ctx.font='15px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(p.label===0?'🍎':'🍌', cx, cy);
+  });
+
+  // Highlight current sample with purple ring
+  if (gdLastP) {
+    const {cx,cy}=dc(gdLastP.x,gdLastP.y);
+    ctx.beginPath(); ctx.arc(cx,cy,20,0,2*Math.PI);
+    ctx.strokeStyle='#7c4dff'; ctx.lineWidth=3;
+    ctx.setLineDash([5,3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  // Axes labels
+  ctx.fillStyle='#666'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('← 不圆  圆不圆  很圆 →', px+pw/2, py+ph+16);
+  ctx.save(); ctx.translate(10,py+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('← 不黄  黄不黄  很黄 →',0,0); ctx.restore();
+
+  ctx.fillStyle='#555'; ctx.font='bold 9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('第'+gdSampleIdx+'步', px, py+10);
+
+  // Legend: red ring = misclassified
+  const lx = px+pw-2, ly = py+ph-2;
+  ctx.strokeStyle='#e53935'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(lx-30, ly-6, 7, 0, 2*Math.PI); ctx.stroke();
+  ctx.fillStyle='#e53935'; ctx.font='8px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('= 答错了', lx-20, ly-3);
+}
+
+// ── Loss canvas: draw loss & accuracy curves ──
+function gdDrawLoss() {
+  const cv=gdLossCv, ctx=gdLossCtx;
+  const W=cv.width, H=cv.height;
+  const px=38, py=18, pw=W-px-8, ph=H-py-28;
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f8f9fa'; ctx.fillRect(0,0,W,H);
+
+  if (gdLossHist.length < 2) {
+    ctx.fillStyle='#bbb'; ctx.font='12px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('训练后显示误差曲线', W/2, H/2);
+    return;
+  }
+
+  const maxL = Math.max(...gdLossHist, 0.5);
+  const n = gdLossHist.length;
+
+  // Loss line (red)
+  ctx.beginPath();
+  gdLossHist.forEach((l,i)=>{
+    const cx=px+(i/(n-1))*pw, cy=py+(1-l/maxL)*ph;
+    i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+  });
+  ctx.strokeStyle='#e53935'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // Accuracy line (green)
+  ctx.beginPath();
+  gdAccHist.forEach((a,i)=>{
+    const cx=px+(i/(n-1))*pw, cy=py+(1-a)*ph;
+    i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+  });
+  ctx.strokeStyle='#2e7d32'; ctx.lineWidth=2.5; ctx.stroke();
+
+  // 95% accuracy reference line
+  ctx.beginPath();
+  ctx.moveTo(px, py+ph*0.05);
+  ctx.lineTo(px+pw, py+ph*0.05);
+  ctx.strokeStyle='rgba(46,125,50,0.3)'; ctx.lineWidth=1;
+  ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(46,125,50,0.6)'; ctx.font='9px sans-serif'; ctx.textAlign='right';
+  ctx.fillText('95%', px+pw, py+ph*0.05-3);
+
+  // Legend
+  ctx.font='10px sans-serif'; ctx.textAlign='left';
+  ctx.fillStyle='#e53935'; ctx.fillText('— 误差（越低越好）', px, py+10);
+  ctx.fillStyle='#2e7d32'; ctx.fillText('— 准确率（越高越好）', px, py+22);
+
+  // Axis
+  ctx.fillStyle='#888'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('训练轮次 →', px+pw/2, py+ph+16);
+
+  // Current values at right edge
+  const lastL=gdLossHist[n-1], lastA=gdAccHist[n-1];
+  ctx.fillStyle='#e53935'; ctx.textAlign='right';
+  ctx.fillText(lastL.toFixed(2), W-2, py+(1-lastL/maxL)*ph+4);
+  ctx.fillStyle='#2e7d32';
+  ctx.fillText((lastA*100).toFixed(0)+'%', W-2, py+(1-lastA)*ph+4);
+}
+
+gdReset();
+
+
+/* ════════════════════════════════════════════
+   SECTION 3 — DRAWING GRID (10×10)
+════════════════════════════════════════════ */
+
+const GSIZ = 10, CELL = 30;
+const gCv = document.getElementById('gridCanvas');
+const gCtx = gCv.getContext('2d');
+let grid = Array.from({length:GSIZ}, () => new Array(GSIZ).fill(0));
+let isDrawing = false, drawVal = 1;
+
+function posToCell(e) {
+  const rect = gCv.getBoundingClientRect();
+  const scaleX = gCv.width / rect.width;
+  const scaleY = gCv.height / rect.height;
+  let clientX, clientY;
+  if (e.touches) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX; clientY = e.clientY;
+  }
+  return {
+    r: Math.floor((clientY - rect.top) * scaleY / CELL),
+    c: Math.floor((clientX - rect.left) * scaleX / CELL)
+  };
+}
+
+function paintCell(r, c) {
+  if (r < 0 || r >= GSIZ || c < 0 || c >= GSIZ) return;
+  grid[r][c] = drawVal;
+  renderGrid();
+}
+
+gCv.addEventListener('mousedown', e => {
+  const {r,c} = posToCell(e);
+  if (r>=0&&r<GSIZ&&c>=0&&c<GSIZ) { isDrawing=true; drawVal=grid[r][c]?0:1; paintCell(r,c); }
+});
+gCv.addEventListener('mousemove', e => { if(isDrawing) { const {r,c}=posToCell(e); paintCell(r,c); } });
+document.addEventListener('mouseup', () => { isDrawing=false; });
+
+gCv.addEventListener('touchstart', e => { e.preventDefault(); const {r,c}=posToCell(e); if(r>=0&&r<GSIZ&&c>=0&&c<GSIZ){isDrawing=true;drawVal=grid[r][c]?0:1;paintCell(r,c);} }, {passive:false});
+gCv.addEventListener('touchmove', e => { e.preventDefault(); const {r,c}=posToCell(e); paintCell(r,c); }, {passive:false});
+gCv.addEventListener('touchend', () => { isDrawing=false; });
+
+function renderGrid() {
+  gCtx.clearRect(0, 0, gCv.width, gCv.height);
+  for (let r=0; r<GSIZ; r++) {
+    for (let c=0; c<GSIZ; c++) {
+      gCtx.fillStyle = grid[r][c] ? '#2c3e50' : '#ecf0f1';
+      gCtx.fillRect(c*CELL, r*CELL, CELL, CELL);
+      gCtx.strokeStyle = '#bdc3c7'; gCtx.lineWidth = 0.5;
+      gCtx.strokeRect(c*CELL, r*CELL, CELL, CELL);
+    }
+  }
+  drawGridNet();
+}
+
+function clearGrid() {
+  grid = Array.from({length:GSIZ}, () => new Array(GSIZ).fill(0));
+  renderGrid();
+  document.getElementById('classifyResult').innerHTML = '';
+}
+
+// Feature extraction for simple heuristics
+function extractFeatures() {
+  let total=0, topH=0, botH=0, leftH=0, rightH=0;
+  let cCol=0, oCol=0, cRow=0, oRow=0;
+  let topRow=0, botRow=0, cCross=0;
+  let tl=0, tr=0, bl=0, br=0;
+  const N=GSIZ;
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++) {
+    if(!grid[r][c]) continue;
+    total++;
+    if(r<5) topH++; else botH++;
+    if(c<5) leftH++; else rightH++;
+    const inCC = c>=3&&c<=6;
+    const inCR = r>=3&&r<=6;
+    if(inCC) cCol++; else oCol++;
+    if(inCR) cRow++; else oRow++;
+    if(r===0) topRow++;
+    if(r===N-1) botRow++;
+    if((r===4||r===5)&&c>=2&&c<=7) cCross++;
+    if(r<5&&c<5) tl++;
+    if(r<5&&c>=5) tr++;
+    if(r>=5&&c<5) bl++;
+    if(r>=5&&c>=5) br++;
+  }
+  return {total,topH,botH,leftH,rightH,cCol,oCol,cRow,oRow,topRow,botRow,cCross,tl,tr,bl,br};
+}
+
+/* ── Card 4 MLP: 5×5 downsampled pixels → 8 feature neurons → 8 classes ──
+   5×5 index layout:   0  1  2  3  4
+                        5  6  7  8  9
+                       10 11 12 13 14
+                       15 16 17 18 19
+                       20 21 22 23 24
+─────────────────────────────────────────────────────────────────────────── */
+const GRID_FEAT_PATS  = [
+  [0,1,2,3,4],        // h0: 顶横线
+  [20,21,22,23,24],   // h1: 底横线
+  [2,7,12,17,22],     // h2: 中竖线
+  [0,5,10,15,20],     // h3: 左竖线
+  [4,9,14,19,24],     // h4: 右竖线
+  [10,11,12,13,14],   // h5: 中横线
+  [0,6,12,18,24],     // h6: ↘斜线 (TL→BR)
+  [4,8,12,16,20],     // h7: ↗斜线 (TR→BL)
+];
+const GRID_FEAT_NAMES = ['顶横线','底横线','中竖线','左竖线','右竖线','中横线','↘斜线','↗斜线'];
+const GRID_FEAT_ICONS = ['top','bot','vctr','lcol','rcol','hctr','diag1','diag2'];
+
+// W1: weight=+3.0 for each feature's 5 pattern pixels, 0 elsewhere; bias=-2.5
+const GRID_W1 = GRID_FEAT_PATS.map(pat => {
+  const row = new Array(25).fill(0);
+  pat.forEach(i => { row[i] = 3.0; });
+  return row;
+});
+const GRID_B1 = new Array(8).fill(-2.5);
+
+// W2[output_class][hidden_feature]: hand-designed weights
+// cols order: [h0_top, h1_bot, h2_cvctr, h3_lcol, h4_rcol, h5_crow, h6_diag1, h7_diag2]
+const GRID_CLASS_NAMES = ['数字1/I','数字0/O','字母T','字母L','数字7','字母H','字母X','字母Z'];
+const GRID_W2 = [
+  [-2,  -1,   5,  -1,  -1,  -2,   0,   0],  // 1/I: center col dominant
+  [ 3,   3,  -3,   3,   3,  -3,  -2,  -2],  // 0/O: all borders, no center
+  [ 4,  -2,   3,  -1,  -1, -.5,  -1,  -1],  // T:   top row + center col
+  [-1,   4,  -1,   4,  -2,  -1,  -1,  -1],  // L:   bottom row + left col
+  [ 4,  -2,  -1,  -2,   1,  -1,  -1,   3],  // 7:   top row + TR→BL diag
+  [-2,  -2,  -1,   3,   3,   4,  -1,  -1],  // H:   left+right col + center row
+  [-2,  -2,  -1,  -2,  -2,  -2,   4,   4],  // X:   both diagonals
+  [ 3,   3,  -2,  -2,  -1,  -1,  -1,   3],  // Z:   top+bottom row + TR→BL diag
+];
+const GRID_B2 = [-0.5, -3, -2, -2, -2, -3, -1, -3];
+
+function gridSig(x) { return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, x)))); }
+
+function downsample5x5() {
+  const px = [];
+  for (let r = 0; r < 5; r++)
+    for (let c = 0; c < 5; c++) {
+      const s = grid[r*2][c*2] + grid[r*2][c*2+1] + grid[r*2+1][c*2] + grid[r*2+1][c*2+1];
+      px.push(s >= 1 ? 1 : 0);
+    }
+  return px;
+}
+
+function gridForward(px) {
+  const a1 = GRID_W1.map((row, h) =>
+    gridSig(row.reduce((s, w, i) => s + w * px[i], GRID_B1[h]))
+  );
+  const logits = GRID_W2.map((row, k) =>
+    row.reduce((s, w, h) => s + w * a1[h], GRID_B2[k])
+  );
+  const maxL = Math.max(...logits);
+  const exps  = logits.map(l => Math.exp(l - maxL));
+  const sumE  = exps.reduce((a, b) => a + b, 0);
+  return { a1, a2: exps.map(e => e / sumE) };
+}
+
+function classifyIt() {
+  const px = downsample5x5();
+  if (px.reduce((a, b) => a + b, 0) < 3) {
+    document.getElementById('classifyResult').innerHTML =
+      '<p style="color:#999;margin-top:10px">画的太少了，再多画一点吧！</p>';
+    return;
+  }
+  const { a2 } = gridForward(px);
+  const probs = GRID_CLASS_NAMES
+    .map((name, i) => [name, a2[i]])
+    .sort((a, b) => b[1] - a[1]);
+
+  const colors = ['#667eea','#f5576c','#56ab2f','#b8860b','#f093fb','#17c3b2','#ff9f43','#a29bfe'];
+  let html = `<div class="glow-in">
+    <div style="font-size:1.2em;font-weight:bold;margin-bottom:12px">
+      🤖 AI 猜测：<span style="color:#667eea">${probs[0][0]}</span>
+      （${(probs[0][1]*100).toFixed(1)}%）
+    </div>`;
+  probs.slice(0, 5).forEach(([label, prob], i) => {
+    const pct = (prob * 100).toFixed(1);
+    html += `<div class="pbar-wrap">
+      <div class="pbar-label"><span>${label}</span><span>${pct}%</span></div>
+      <div class="pbar-track">
+        <div class="pbar-fill" style="width:${pct}%;background:${colors[i]}">${pct}%</div>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  document.getElementById('classifyResult').innerHTML = html;
+}
+
+// ── Real-time network diagram ──
+const gridNetCv  = document.getElementById('gridNetCanvas');
+const gridNetCtx = gridNetCv.getContext('2d');
+
+function drawFeatIconG(ctx, ix, iy, sz, type) {
+  ctx.save();
+  ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.7;
+  ctx.strokeRect(ix, iy, sz, sz);
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  const m = 1;
+  switch (type) {
+    case 'top':   ctx.moveTo(ix+m, iy+1.5);    ctx.lineTo(ix+sz-m, iy+1.5); break;
+    case 'bot':   ctx.moveTo(ix+m, iy+sz-1.5); ctx.lineTo(ix+sz-m, iy+sz-1.5); break;
+    case 'vctr':  ctx.moveTo(ix+sz/2, iy+m);   ctx.lineTo(ix+sz/2, iy+sz-m); break;
+    case 'lcol':  ctx.moveTo(ix+1.5, iy+m);    ctx.lineTo(ix+1.5, iy+sz-m); break;
+    case 'rcol':  ctx.moveTo(ix+sz-1.5, iy+m); ctx.lineTo(ix+sz-1.5, iy+sz-m); break;
+    case 'hctr':  ctx.moveTo(ix+m, iy+sz/2);   ctx.lineTo(ix+sz-m, iy+sz/2); break;
+    case 'diag1': ctx.moveTo(ix+m, iy+m);       ctx.lineTo(ix+sz-m, iy+sz-m); break;
+    case 'diag2': ctx.moveTo(ix+sz-m, iy+m);    ctx.lineTo(ix+m, iy+sz-m); break;
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawGridNet() {
+  const cv = gridNetCv, ctx = gridNetCtx;
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f8f9fa'; ctx.fillRect(0, 0, W, H);
+
+  const px = downsample5x5();
+  const { a1, a2 } = gridForward(px);
+
+  // ── Layout ──
+  const R_in = 5, SP = 15;            // pixel node radius + grid spacing
+  const R_f  = 18, R_o = 18;
+  const lxFeat = 250, lxOut = 545;
+  const N = 8;
+  const featSp = (H - 60) / (N - 1); // ≈45.7 px
+
+  function pixPos(r, c) {
+    return { x: 10 + c * SP + SP/2, y: H/2 + (r - 2) * SP };
+  }
+  function featPos(h) { return { x: lxFeat, y: 30 + h * featSp }; }
+  function outPos(si) { return { x: lxOut,  y: 30 + si * featSp }; }
+
+  // Output nodes sorted by probability
+  const sortedOut = a2.map((v, i) => [i, v]).sort((a, b) => b[1] - a[1]);
+
+  // ── 1. Input → Feature connections ──
+  // Only draw non-zero connections (each feature's 5 pattern pixels)
+  GRID_FEAT_PATS.forEach((pat, h) => {
+    const fp = featPos(h);
+    pat.forEach(pidx => {
+      const r = Math.floor(pidx / 5), c = pidx % 5;
+      const pp = pixPos(r, c);
+      const lit = px[pidx];
+      ctx.beginPath();
+      ctx.moveTo(pp.x + R_in, pp.y);
+      ctx.lineTo(fp.x - R_f, fp.y);
+      ctx.strokeStyle = lit ? 'rgba(30,150,30,0.55)' : 'rgba(180,180,180,0.18)';
+      ctx.lineWidth = lit ? 1.8 : 0.5;
+      ctx.stroke();
+    });
+  });
+
+  // ── 2. Feature → Output connections (show W2 weights) ──
+  // Stagger label position along line by hidden-node index to avoid overlaps
+  const tOffsets = [0.28, 0.38, 0.48, 0.58, 0.68, 0.33, 0.53, 0.43];
+  sortedOut.forEach(([ki, prob], si) => {
+    const op = outPos(si);
+    GRID_W2[ki].forEach((w, h) => {
+      if (Math.abs(w) < 0.3) return;
+      const fp = featPos(h);
+      const isPos = w > 0;
+      const alpha = Math.min(0.8, Math.abs(w) * 0.16 + 0.05);
+      ctx.beginPath();
+      ctx.moveTo(fp.x + R_f, fp.y);
+      ctx.lineTo(op.x - R_o, op.y);
+      ctx.strokeStyle = isPos ? `rgba(30,140,30,${alpha})` : `rgba(200,40,40,${alpha})`;
+      ctx.lineWidth = Math.max(0.3, Math.abs(w) * 0.36);
+      ctx.stroke();
+
+      // Weight label for |w| ≥ 3
+      if (Math.abs(w) >= 3) {
+        const t  = tOffsets[h];
+        const lx = (fp.x + R_f) + t * ((op.x - R_o) - (fp.x + R_f));
+        const ly = fp.y + t * (op.y - fp.y);
+        const wStr = (w > 0 ? '+' : '') + w.toFixed(0);
+        ctx.font = 'bold 8px sans-serif';
+        const tw = ctx.measureText(wStr).width;
+        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        ctx.beginPath();
+        ctx.roundRect(lx - tw/2 - 2, ly - 6, tw + 4, 12, 3);
+        ctx.fill();
+        ctx.fillStyle = isPos ? '#1a6b1a' : '#b71c1c';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(wStr, lx, ly);
+      }
+    });
+  });
+
+  // ── 3. Pixel nodes (5×5) ──
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      const pidx = r * 5 + c;
+      const { x, y } = pixPos(r, c);
+      const v = px[pidx];
+      ctx.beginPath(); ctx.arc(x, y, R_in, 0, 2 * Math.PI);
+      ctx.fillStyle = v ? '#2c3e50' : '#ecf0f1';
+      ctx.fill();
+      ctx.strokeStyle = '#bdc3c7'; ctx.lineWidth = 0.8; ctx.stroke();
+      ctx.fillStyle = v ? 'rgba(255,255,255,0.9)' : '#bbb';
+      ctx.font = '5px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(v, x, y);
+    }
+  }
+
+  // Input layer annotation
+  ctx.fillStyle = '#555'; ctx.font = '9px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('输入层', 10 + 2 * SP, H - 6);
+  ctx.fillText('(5×5=25像素)', 10 + 2 * SP, H - 17);
+  // Annotate that all input→feature weights are +3.0
+  ctx.fillStyle = '#2a902a'; ctx.font = '7.5px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('输入→特征 权重均为 +3.0', 90, H - 10);
+
+  // ── 4. Feature nodes ──
+  GRID_FEAT_NAMES.forEach((name, h) => {
+    const { x, y } = featPos(h);
+    const v = a1[h];
+
+    if (v > 0.4) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, R_f + 12);
+      g.addColorStop(0, `rgba(255,200,50,${(v - 0.4) * 0.75})`);
+      g.addColorStop(1, 'rgba(255,200,50,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, R_f + 12, 0, 2 * Math.PI); ctx.fill();
+    }
+
+    ctx.beginPath(); ctx.arc(x, y, R_f, 0, 2 * Math.PI);
+    ctx.fillStyle = nnNodeColor(v); ctx.fill();
+    ctx.strokeStyle = v > 0.5 ? '#e08a00' : '#ccc'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    ctx.fillStyle = 'white'; ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(v.toFixed(2), x, y);
+
+    // Name + mini pattern icon
+    ctx.fillStyle = '#444'; ctx.font = '8.5px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(name, x + R_f + 3, y - 4);
+    drawFeatIconG(ctx, x + R_f + 3, y + 2, 12, GRID_FEAT_ICONS[h]);
+
+    // Bias label
+    ctx.fillStyle = '#999'; ctx.font = '7px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('b=−2.5', x, y + R_f + 9);
+  });
+
+  ctx.fillStyle = '#555'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('特征检测层', lxFeat, H - 6);
+  ctx.fillText('(8个神经元)', lxFeat, H - 17);
+
+  // ── 5. Output nodes (sorted by probability) ──
+  const outColors8 = ['#667eea','#f5576c','#56ab2f','#b8860b','#f093fb','#17c3b2','#ff9f43','#a29bfe'];
+  sortedOut.forEach(([ki, prob], si) => {
+    const { x, y } = outPos(si);
+
+    if (si === 0) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, R_o + 12);
+      g.addColorStop(0, `rgba(100,100,255,${prob * 0.55})`);
+      g.addColorStop(1, 'rgba(100,100,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, R_o + 12, 0, 2 * Math.PI); ctx.fill();
+    }
+
+    ctx.beginPath(); ctx.arc(x, y, R_o, 0, 2 * Math.PI);
+    ctx.fillStyle = outColors8[si];
+    ctx.globalAlpha = si === 0 ? 1.0 : 0.38 + prob * 0.62;
+    ctx.fill(); ctx.globalAlpha = 1.0;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    ctx.fillStyle = 'white'; ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText((prob * 100).toFixed(0) + '%', x, y);
+
+    // Bias label below node
+    const bVal = GRID_B2[ki];
+    ctx.fillStyle = '#999'; ctx.font = '7px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('b=' + (bVal >= 0 ? '+' : '') + bVal, x, y + R_o + 9);
+
+    // Class name to the right
+    ctx.fillStyle = si === 0 ? '#222' : '#888';
+    ctx.font = si === 0 ? 'bold 10px sans-serif' : '9px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(GRID_CLASS_NAMES[ki], x + R_o + 4, y + 3);
+  });
+
+  ctx.fillStyle = '#555'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('输出层', lxOut, H - 6);
+  ctx.fillText('(8个类别)', lxOut, H - 17);
+}
+
+renderGrid();
+
+
+/* ════════════════════════════════════════════
+   SECTION 4 — LANGUAGE MODEL (Story completion)
+════════════════════════════════════════════ */
+
+const storyData = {
+  '一只小猫': [
+    {w:'在花园里', p:0.35},
+    {w:'喜欢吃鱼', p:0.28},
+    {w:'跳上了床', p:0.22},
+    {w:'睡着了',   p:0.15},
+  ],
+  '在花园里': [
+    {w:'玩耍',   p:0.40},
+    {w:'发现了', p:0.32},
+    {w:'奔跑',   p:0.18},
+    {w:'躲起来', p:0.10},
+  ],
+  '玩耍': [
+    {w:'突然',   p:0.42},
+    {w:'直到天黑', p:0.35},
+    {w:'非常开心', p:0.23},
+  ],
+  '发现了': [
+    {w:'一只蝴蝶', p:0.45},
+    {w:'一根毛线', p:0.32},
+    {w:'一只老鼠', p:0.23},
+  ],
+  '突然': [
+    {w:'下起了雨', p:0.40},
+    {w:'看见了主人', p:0.38},
+    {w:'感到很饿', p:0.22},
+  ],
+  '喜欢吃鱼': [
+    {w:'和喝牛奶', p:0.42},
+    {w:'所以长得胖', p:0.32},
+    {w:'每天都去找', p:0.26},
+  ],
+  '和喝牛奶': [
+    {w:'每天都很快乐', p:0.50},
+    {w:'却不喜欢蔬菜', p:0.32},
+    {w:'还喜欢晒太阳', p:0.18},
+  ],
+  '跳上了床': [
+    {w:'蜷成一团', p:0.50},
+    {w:'开始打呼噜', p:0.32},
+    {w:'看着窗外', p:0.18},
+  ],
+  '蜷成一团': [
+    {w:'做了个梦', p:0.55},
+    {w:'睡了很久', p:0.28},
+    {w:'一动不动', p:0.17},
+  ],
+  '睡着了': [
+    {w:'做了个梦', p:0.55},
+    {w:'睡了很久', p:0.28},
+    {w:'直到天亮', p:0.17},
+  ],
+  '做了个梦': [
+    {w:'梦见了大鱼', p:0.48},
+    {w:'梦见了主人', p:0.32},
+    {w:'梦见了花园', p:0.20},
+  ],
+  // terminal states
+  '直到天黑': [{w:'故事结束 🌙', p:1.0}],
+  '每天都很快乐': [{w:'故事结束 🌙', p:1.0}],
+  '梦见了大鱼': [{w:'幸福地睡着了 😸 故事结束 🌙', p:1.0}],
+  '梦见了主人': [{w:'幸福地睡着了 😸 故事结束 🌙', p:1.0}],
+};
+
+const DEFAULT_NEXT = [
+  {w:'快乐地生活着', p:0.5},
+  {w:'幸福地入睡了', p:0.3},
+  {w:'故事结束 🌙', p:0.2},
+];
+
+let storyTokens = ['一只小猫'];
+let storyDone = false;
+
+function getNext(last) {
+  return storyData[last] || DEFAULT_NEXT;
+}
+
+function renderStory() {
+  attnQueryIdx = null;   // reset to last token on each story update
+  const last = storyTokens[storyTokens.length - 1];
+  document.getElementById('storyBox').textContent = storyTokens.join(' ');
+
+  if (storyDone || last.includes('故事结束') || storyTokens.length > 12) {
+    storyDone = true;
+    document.getElementById('wordProbs').innerHTML = '';
+    document.getElementById('wordChoices').innerHTML = '';
+    document.getElementById('storyNote').innerHTML =
+      '<strong style="color:#2e7d32">🎉 故事写完啦！这就是大模型的工作方式——一个词一个词地预测！</strong>';
+    drawTransformer();
+    return;
+  }
+
+  const choices = getNext(last);
+  const colors = ['#667eea','#f5576c','#56ab2f','#ffd200'];
+
+  // Probability bars
+  let probHtml = '';
+  choices.forEach(({w, p}, i) => {
+    const pct = (p*100).toFixed(0);
+    probHtml += `<div class="pbar-wrap">
+      <div class="pbar-label"><span>${w}</span><span>${pct}%</span></div>
+      <div class="pbar-track">
+        <div class="pbar-fill" style="width:${pct}%;background:${colors[i]}">${pct}%</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('wordProbs').innerHTML = probHtml;
+
+  // Word buttons
+  let btnHtml = '';
+  choices.forEach(({w}) => {
+    btnHtml += `<button class="word-choice" data-word="${w}" onclick="pickWord(this.dataset.word)">${w}</button>`;
+  });
+  document.getElementById('wordChoices').innerHTML = btnHtml;
+  document.getElementById('storyNote').textContent =
+    '💬 进度条 = AI 认为这个词出现的概率。你也可以自己点！';
+  drawTransformer();
+}
+
+function pickWord(w) {
+  document.querySelectorAll('.word-choice').forEach(btn => {
+    if (btn.dataset.word === w) btn.classList.add('user-pick');
+  });
+  setTimeout(() => {
+    storyTokens.push(w);
+    renderStory();
+  }, 250);
+}
+
+function aiPick() {
+  const last = storyTokens[storyTokens.length - 1];
+  const choices = getNext(last);
+  // Weighted random
+  const rand = Math.random();
+  let cum = 0, picked = choices[0].w;
+  for (const {w, p} of choices) { cum += p; if (rand <= cum) { picked = w; break; } }
+
+  // Highlight AI's pick
+  document.querySelectorAll('.word-choice').forEach(btn => {
+    if (btn.dataset.word === picked) btn.classList.add('ai-pick');
+  });
+  setTimeout(() => {
+    storyTokens.push(picked);
+    renderStory();
+  }, 600);
+}
+
+/* ── Attention weights ───────────────────────────────────────────────
+   Token types drive plausible linguistic attention patterns.
+   We only show the *result* (weights), never exposing Q/K/V internals.
+   Design: Jay Alammar "Illustrated Transformer" arc-connection style.  */
+const _TOK_TYPE = {
+  '一只小猫':'noun','在':'func','花园里':'loc','树上':'loc','家里':'loc',
+  '草地上':'loc','爬':'verb','躲':'verb','睡':'verb','找':'verb',
+  '玩耍':'verb','嬉戏':'verb','追':'verb','抓':'verb','叫':'verb',
+  '来了':'verb','吃东西':'verb','一只蝴蝶':'noun','小鸟':'noun',
+  '小虫':'noun','高兴':'adj','开心':'adj','困了':'adj','肚子饿':'adj',
+  '太阳':'noun','花朵':'noun',
+};
+// How much a token of queryType cares about a token of keyType
+const _AFFINITY = {
+  noun:{ noun:0.30, verb:0.20, loc:0.20, func:0.10, adj:0.20 },
+  verb:{ noun:0.70, verb:0.10, loc:0.50, func:0.10, adj:0.20 },
+  loc: { noun:0.20, verb:0.10, loc:0.45, func:0.80, adj:0.10 },
+  func:{ noun:0.70, verb:0.10, loc:0.20, func:0.20, adj:0.10 },
+  adj: { noun:0.60, verb:0.30, loc:0.10, func:0.10, adj:0.20 },
+};
+function _affinityScore(qTok, kTok, kPos, qPos) {
+  const qt = _TOK_TYPE[qTok] || 'noun', kt = _TOK_TYPE[kTok] || 'noun';
+  // linguistic affinity + tiny recency nudge
+  return (_AFFINITY[qt]||_AFFINITY.noun)[kt] + (kPos / Math.max(qPos, 1)) * 0.06;
+}
+function _softmaxSharp(arr) {           // temperature=3 → clearer visual contrast
+  const mx = Math.max(...arr);
+  const e = arr.map(v => Math.exp((v - mx) * 3));
+  const s = e.reduce((a, b) => a + b, 0);
+  return e.map(v => v / s);
+}
+function _attnWeights(toks, qIdx) {
+  const raw = toks.slice(0, qIdx + 1).map((t, j) => _affinityScore(toks[qIdx], t, j, qIdx));
+  return _softmaxSharp(raw);
+}
+
+let attnQueryIdx = null;   // null → default to last token
+let _tokClickBoxes = [];   // [{x,y,w,h,i}] for click hit-testing
+
+/* ─── drawTransformer ───────────────────────────────────────────────
+   Layout  (Jay Alammar arc style):
+   • Top:  curved arcs bow above the token row, thickness ∝ attention
+   • Mid:  token chips in a row; selected chip glows purple
+   • Right: compact bar chart for selected token's distribution
+   • Bot:  single formula strip                                       */
+function drawTransformer() {
+  const cv = document.getElementById('transformerCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f9f9fb'; ctx.fillRect(0, 0, W, H);
+
+  const toks = storyTokens.length > 6 ? storyTokens.slice(-6) : storyTokens.slice();
+  const n    = toks.length;
+  const sel  = (attnQueryIdx !== null && attnQueryIdx < n) ? attnQueryIdx : n - 1;
+  const wts  = _attnWeights(toks, sel);   // wts[0..sel]
+
+  /* ── Layout: token row & arc region ── */
+  const SPLIT_X = Math.round(W * 0.64);  // arc panel | bar chart panel
+  const TOK_Y   = 218;                   // top of token chips
+  const TOK_H   = 36;
+  const ARC_TOP = 26;                    // highest arc apex y
+  const GAP     = 9;                     // gap between chips
+
+  ctx.font = 'bold 13px sans-serif';
+  const chipW = toks.map(t => Math.min(ctx.measureText(t.slice(0,5)).width + 22, 86));
+  const totalCW = chipW.reduce((a, b) => a + b, 0) + (n - 1) * GAP;
+  let bx0 = Math.max(8, (SPLIT_X - totalCW) / 2);
+
+  _tokClickBoxes = toks.map((t, i) => {
+    const bx = bx0; bx0 += chipW[i] + GAP;
+    return { x: bx, cx: bx + chipW[i] / 2, w: chipW[i], i };
+  });
+
+  /* ── Draw arcs FIRST (behind chips) ── */
+  const selBox = _tokClickBoxes[sel];
+  for (let j = 0; j < sel; j++) {
+    const src = _tokClickBoxes[j];
+    const w   = wts[j];
+    const hue = 30 + (1 - w) * 195;           // warm orange → cool blue
+    const alp = 0.12 + w * 0.88;
+    const lw  = 0.6 + w * 11;
+    const dist = selBox.cx - src.cx;
+    // Higher apex for farther tokens; capped so arcs stay in canvas
+    const apexY = TOK_Y - Math.min(TOK_Y - ARC_TOP - 4, 22 + dist * 0.50);
+    const midX  = (src.cx + selBox.cx) / 2;
+
+    ctx.save();
+    ctx.strokeStyle = `hsla(${hue},82%,48%,${alp})`;
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = `hsla(${hue},80%,50%,${w * 0.45})`;
+    ctx.shadowBlur = lw * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(selBox.cx, TOK_Y + 3);
+    ctx.quadraticCurveTo(midX, apexY, src.cx, TOK_Y + 3);
+    ctx.stroke();
+    ctx.restore();
+
+    // Tiny filled circle at the arc's destination (context token)
+    ctx.beginPath();
+    ctx.arc(src.cx, TOK_Y + 3, Math.max(2, lw * 0.55), 0, 2 * Math.PI);
+    ctx.fillStyle = `hsla(${hue},78%,48%,${alp})`;
+    ctx.fill();
+  }
+
+  /* ── Draw token chips (on top of arcs) ── */
+  _tokClickBoxes.forEach(({ x, cx, w, i }) => {
+    const isSel = i === sel;
+    const isCtx = i < sel;
+    const isFut = i > sel;
+    const wt    = isCtx ? wts[i] : 0;
+    const hue   = 30 + (1 - wt) * 195;
+
+    ctx.save();
+    if (isSel) {
+      ctx.shadowColor = 'rgba(108,63,191,0.75)'; ctx.shadowBlur = 18;
+    } else if (isCtx && wt > 0.22) {
+      ctx.shadowColor = `hsla(${hue},80%,50%,0.55)`; ctx.shadowBlur = 10;
+    }
+    ctx.beginPath(); ctx.roundRect(x, TOK_Y, w, TOK_H, 9);
+    ctx.fillStyle = isSel ? '#6c3fbf' : isFut ? '#eee' : `hsl(${hue},60%,93%)`;
+    ctx.fill();
+    ctx.strokeStyle = isSel ? '#4527a0' : isFut ? '#ccc' : `hsl(${hue},52%,56%)`;
+    ctx.lineWidth = isSel ? 2.5 : 1.4;
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.fillStyle = isSel ? '#fff' : isFut ? '#bbb' : '#1a1a2e';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(toks[i].slice(0, 5), cx, TOK_Y + TOK_H / 2);
+
+    // Sub-label below chip
+    ctx.font = 'bold 9px sans-serif';
+    const labelY = TOK_Y + TOK_H + 14;
+    if (isSel) {
+      ctx.fillStyle = '#6c3fbf';
+      ctx.fillText('▲ 当前词', cx, labelY);
+    } else if (isCtx) {
+      const hue2 = 30 + (1 - wt) * 195;
+      ctx.fillStyle = `hsl(${hue2},55%,36%)`;
+      ctx.fillText((wt * 100).toFixed(0) + '%', cx, labelY);
+    } else {
+      ctx.fillStyle = '#ccc';
+      ctx.fillText('未来词', cx, labelY);
+    }
+  });
+
+  /* ── Arc region labels & hints ── */
+  ctx.fillStyle = '#666'; ctx.font = '8.5px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText('弧线越粗越暖（橙红）= AI 越关注那个词', SPLIT_X / 2, TOK_Y - 10);
+
+  ctx.fillStyle = '#aaa'; ctx.font = '8px sans-serif';
+  ctx.fillText('点击任意词切换视角', SPLIT_X / 2, ARC_TOP + 10);
+
+  /* ── Main title ── */
+  ctx.fillStyle = '#444'; ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText('🔍 Attention（注意力）— 当AI读到一个词，它会"回头看"之前的词，想：谁和我最有关？', 8, 16);
+
+  /* ── Callout: top attended token ── */
+  if (sel > 0) {
+    const maxW   = Math.max(...wts.slice(0, sel));
+    const maxJ   = wts.indexOf(maxW);
+    const topStr = toks[maxJ].slice(0, 6);
+    const selStr = toks[sel].slice(0, 6);
+    const callY  = TOK_Y + TOK_H + 32;
+    ctx.fillStyle = '#444'; ctx.font = '9.5px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(`"${selStr}" 最关注 `, 8, callY);
+    ctx.fillStyle = '#bf360c'; ctx.font = 'bold 9.5px sans-serif';
+    const afterX = 8 + ctx.measureText(`"${selStr}" 最关注 `).width;
+    // recalc with correct font
+    ctx.font = '9.5px sans-serif';
+    const pref = ctx.measureText(`"${selStr}" 最关注 `).width;
+    ctx.font = 'bold 9.5px sans-serif';
+    ctx.fillText(`"${topStr}"（${(maxW * 100).toFixed(0)}%）`, 8 + pref, callY);
+    ctx.fillStyle = '#888'; ctx.font = '9px sans-serif';
+    ctx.fillText('— 它对预测下一个词贡献最大', 8 + pref + ctx.measureText(`"${topStr}"（${(maxW*100).toFixed(0)}%）`).width + 4, callY);
+  }
+
+  /* ── Vertical divider ── */
+  ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(SPLIT_X + 3, 26); ctx.lineTo(SPLIT_X + 3, H - 20);
+  ctx.stroke();
+
+  /* ── Right panel: bar chart ── */
+  const RX   = SPLIT_X + 14;
+  const rToks = toks.slice(0, sel + 1);
+  const nR    = rToks.length;
+  const BLW   = 50, BMAX = W - RX - BLW - 42;
+  const RH    = Math.min(34, (H - 50 - 26) / Math.max(nR, 1));
+
+  ctx.fillStyle = '#5e35b1'; ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(`"${toks[sel].slice(0,6)}" 的注意力：`, RX, 22);
+
+  rToks.forEach((tok, i) => {
+    const wt  = wts[i];
+    const hue = 30 + (1 - wt) * 195;
+    const px  = Math.max(4, BMAX * wt);
+    const ry  = 32 + i * RH;
+    const my  = ry + (RH - 8) / 2;
+
+    ctx.fillStyle = '#e8e8e8';
+    ctx.beginPath(); ctx.roundRect(RX + BLW + 4, ry, BMAX, RH - 8, 4); ctx.fill();
+
+    const grd = ctx.createLinearGradient(RX + BLW + 4, 0, RX + BLW + 4 + px, 0);
+    grd.addColorStop(0, `hsl(${hue},74%,53%)`);
+    grd.addColorStop(1, `hsl(${Math.max(hue - 22, 8)},84%,43%)`);
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.roundRect(RX + BLW + 4, ry, px, RH - 8, 4); ctx.fill();
+
+    ctx.fillStyle = i === sel ? '#5e35b1' : '#333';
+    ctx.font = `bold ${nR > 5 ? 9 : 10}px sans-serif`;
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText(tok.slice(0, 5) + (tok.length > 5 ? '…' : ''), RX + BLW, my + 1);
+
+    ctx.fillStyle = '#333'; ctx.font = `bold ${nR > 5 ? 8 : 9}px sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText((wt * 100).toFixed(0) + '%', RX + BLW + 4 + px + 5, my + 1);
+  });
+
+  /* ── Bottom formula strip ── */
+  ctx.fillStyle = 'rgba(232,232,248,0.95)';
+  ctx.fillRect(6, H - 20, W - 12, 18);
+  ctx.fillStyle = '#888'; ctx.font = '8px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(
+    'Attention(Q,K,V) = softmax(QKᵀ/√d)·V  ·  Q=当前词的"问题"  K=每个词的"标签"  V=每个词的"内容"  ·  越相关的词贡献越多信息',
+    W / 2, H - 11
+  );
+}
+
+function resetStory() {
+  storyTokens = ['一只小猫'];
+  storyDone = false;
+  attnQueryIdx = null;
+  renderStory();
+}
+
+resetStory();
+
+// ── Canvas click: select token chip ──
+(function() {
+  const cv = document.getElementById('transformerCanvas');
+  if (!cv) return;
+  cv.style.cursor = 'pointer';
+  cv.addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (this.width  / rect.width);
+    const cy = (e.clientY - rect.top)  * (this.height / rect.height);
+    // TOK_Y=218, TOK_H=36 — hit zone is the chip row
+    for (const box of _tokClickBoxes) {
+      if (cx >= box.x && cx <= box.x + box.w && cy >= 218 && cy <= 254) {
+        attnQueryIdx = box.i;
+        drawTransformer();
+        break;
+      }
+    }
+  });
+})();
+
+/* ════════════════════════════════════════════
+   SECTION 5 — MODEL OPTIMIZATION LAB
+════════════════════════════════════════════ */
+
+// Extended dataset with sweetness (z).
+// Hard cases share identical (x,y) → impossible to separate with 2 features alone.
+const optData = [
+  // Apples: high roundness, low yellow, high sweetness
+  {x:7.5, y:2.0, z:8.0, label:0}, {x:8.2, y:3.5, z:7.5, label:0},
+  {x:6.8, y:1.5, z:8.5, label:0}, {x:9.0, y:2.8, z:9.0, label:0},
+  {x:7.0, y:4.5, z:7.0, label:0}, {x:8.5, y:1.8, z:8.2, label:0},
+  {x:6.2, y:3.2, z:7.8, label:0}, {x:7.8, y:5.0, z:6.5, label:0},
+  {x:6.5, y:5.5, z:7.2, label:0},
+  {x:5.0, y:5.5, z:7.5, label:0},  // ← 难点苹果（甜度7.5，很甜）
+  // Bananas: low roundness, high yellow, medium-low sweetness
+  {x:2.0, y:8.5, z:4.5, label:1}, {x:3.0, y:7.8, z:5.0, label:1},
+  {x:1.5, y:9.0, z:4.0, label:1}, {x:4.0, y:8.2, z:5.2, label:1},
+  {x:2.5, y:7.5, z:4.8, label:1}, {x:3.5, y:7.0, z:5.5, label:1},
+  {x:1.8, y:8.8, z:4.2, label:1}, {x:4.5, y:7.2, z:5.8, label:1},
+  {x:5.5, y:6.0, z:4.5, label:1},
+  {x:5.0, y:5.5, z:3.2, label:1},  // ← 难点香蕉（甜度3.2，不甜）—— 与苹果 xy 完全相同！
+];
+const OPT_HARD_A = 9;   // hard apple index
+const OPT_HARD_B = 19;  // hard banana index
+
+// ── FlexNet: tanh hidden layers + sigmoid output + Xavier init ──
+// Hidden-layer tanh has gradient ≤ 1.0 (vs sigmoid ≤ 0.25),
+// dramatically reducing vanishing gradient in deep networks.
+class FlexNet {
+  constructor(sizes, lr) {
+    this.sizes = sizes;
+    this.lr = lr || 0.5;
+    this.W = [];
+    this.b = [];
+    for (let i = 0; i < sizes.length - 1; i++) {
+      const r = sizes[i+1], c = sizes[i];
+      // Xavier uniform: scale = sqrt(6 / (fan_in + fan_out))
+      const sc = Math.sqrt(6 / (c + r));
+      this.W.push(Array.from({length:r}, () =>
+        Array.from({length:c}, () => (Math.random()*2-1)*sc)));
+      this.b.push(new Array(r).fill(0));
+    }
+  }
+  _tanh(v) { return Math.tanh(Math.max(-20, Math.min(20, v))); }
+  _sig(v)  { return 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, v)))); }
+  // Hidden: tanh; output: sigmoid
+  _act(v, isOut) { return isOut ? this._sig(v) : this._tanh(v); }
+  _dact(a, isOut) { return isOut ? a*(1-a) : (1-a*a); }
+
+  forward(x) {
+    const acts = [x.slice()];
+    const nW = this.W.length;
+    for (let l = 0; l < nW; l++) {
+      const prev = acts[l];
+      const isOut = (l === nW - 1);
+      acts.push(this.W[l].map((row, i) =>
+        this._act(row.reduce((s, w, j) => s + w*prev[j], this.b[l][i]), isOut)));
+    }
+    return acts;
+  }
+
+  trainOne(x, target) {
+    const acts = this.forward(x);
+    const nW = this.W.length;
+    const d = new Array(nW);
+    const out = acts[nW];
+    d[nW-1] = out.map((a, i) => (a - target[i]) * this._dact(a, true));
+    for (let l = nW-2; l >= 0; l--) {
+      d[l] = acts[l+1].map((a, j) => {
+        const e = this.W[l+1].reduce((s, row, i) => s + row[j]*d[l+1][i], 0);
+        return e * this._dact(a, false);
+      });
+    }
+    for (let l = 0; l < nW; l++) {
+      for (let i = 0; i < this.W[l].length; i++) {
+        for (let j = 0; j < this.W[l][i].length; j++)
+          this.W[l][i][j] -= this.lr * d[l][i] * acts[l][j];
+        this.b[l][i] -= this.lr * d[l][i];
+      }
+    }
+    return { pred: out.slice() };
+  }
+
+  predict(x) {
+    const a = this.forward(x);
+    return a[a.length-1];
+  }
+
+  accuracy(data, fx) {
+    return data.filter(p => {
+      const out = this.predict(fx(p));
+      return (out[0] >= 0.5 ? 0 : 1) === p.label;
+    }).length / data.length;
+  }
+}
+
+const OPT_MODES = {
+  base: { name:'基础版',    icon:'📦', color:'#e57373',
+    desc:'2个特征，浅层网络',   arch:'圆度+黄度 → 3 → 2',
+    layers:[2,3,2],   fx: p=>[p.x/10,p.y/10],          lr:0.65 },
+  feat: { name:'+甜度特征', icon:'🔬', color:'#66bb6a',
+    desc:'增加第3个特征：甜度',  arch:'圆度+黄度+甜度 → 3 → 2',
+    layers:[3,3,2],   fx: p=>[p.x/10,p.y/10,p.z/10],   lr:0.65 },
+  deep: { name:'+网络深度', icon:'🏗️', color:'#42a5f5',
+    desc:'更深的网络结构',       arch:'圆度+黄度 → 8 → 4 → 2',
+    layers:[2,8,4,2], fx: p=>[p.x/10,p.y/10],           lr:0.28 },
+  best: { name:'特征+深度', icon:'🚀', color:'#ffa726',
+    desc:'两种优化都用上！',     arch:'圆度+黄度+甜度 → 8 → 4 → 2',
+    layers:[3,8,4,2], fx: p=>[p.x/10,p.y/10,p.z/10],   lr:0.28 },
+};
+
+let optCurrentMode = null;
+let optNet = null;
+let optStep = 0;
+let optAccHist = [];
+let optTimer = null;
+const optFinalResults = {};
+
+// ── Build mode buttons ──
+(function() {
+  const area = document.getElementById('optBtnArea');
+  if (!area) return;
+  Object.entries(OPT_MODES).forEach(([id, m]) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-mode-btn';
+    btn.id = 'optBtn_' + id;
+    btn.style.borderColor = m.color;
+    btn.innerHTML = `<div class="opt-icon">${m.icon}</div>
+      <div class="opt-name" style="color:${m.color}">${m.name}</div>
+      <div class="opt-arch">${m.arch}</div>`;
+    btn.onclick = () => optSelectMode(id);
+    area.appendChild(btn);
+  });
+})();
+
+function optSelectMode(modeId) {
+  if (optTimer) { clearInterval(optTimer); optTimer = null; }
+  optCurrentMode = modeId;
+  const mode = OPT_MODES[modeId];
+  optNet = new FlexNet(mode.layers, mode.lr);
+  optStep = 0;
+  optAccHist = [];
+
+  Object.keys(OPT_MODES).forEach(id => {
+    const b = document.getElementById('optBtn_'+id);
+    if (!b) return;
+    b.classList.toggle('active', id === modeId);
+    b.style.background = id===modeId ? OPT_MODES[id].color+'22' : '#fff';
+  });
+
+  document.getElementById('optModeInfo').innerHTML =
+    `<span style="color:${mode.color};font-weight:bold">${mode.icon} ${mode.name}</span>
+     &nbsp;— ${mode.desc} &nbsp;|&nbsp; 架构：<code>${mode.arch}</code>`;
+  document.getElementById('optStatus').textContent = '训练中……';
+  document.getElementById('optHardResult').textContent = '';
+
+  optUpdateStats(); optDrawScatter(); optDrawCurve(); drawOptNet();
+
+  optTimer = setInterval(() => {
+    for (let i = 0; i < 6; i++) {
+      const p = optData[optStep % optData.length];
+      optNet.trainOne(mode.fx(p), p.label===0 ? [1,0] : [0,1]);
+      optStep++;
+    }
+    if (optStep % 40 === 0) optAccHist.push(optNet.accuracy(optData, mode.fx));
+    optUpdateStats(); optDrawScatter(); optDrawCurve(); drawOptNet();
+
+    if (optStep >= 1000) {
+      clearInterval(optTimer); optTimer = null;
+      const acc = optNet.accuracy(optData, mode.fx);
+      const predA = optNet.predict(mode.fx(optData[OPT_HARD_A]));
+      const predB = optNet.predict(mode.fx(optData[OPT_HARD_B]));
+      const okA = predA[0] >= 0.5;
+      const okB = predB[1] > predB[0];
+      optFinalResults[modeId] = {acc, okA, okB};
+      document.getElementById('optStatus').innerHTML =
+        `<span style="color:#2e7d32;font-weight:bold">✅ 训练完成！准确率 <span style="font-size:1.15em">${(acc*100).toFixed(0)}%</span></span>`;
+      document.getElementById('optHardResult').innerHTML =
+        `难题苹果：${okA?'<span style="color:#2e7d32">✅ 猜对了！</span>':'<span style="color:#e53935">❌ 猜错了</span>'}
+         &nbsp; 难题香蕉：${okB?'<span style="color:#2e7d32">✅ 猜对了！</span>':'<span style="color:#e53935">❌ 猜错了</span>'}`;
+      optUpdateStats(); optDrawScatter(); optDrawCurve(); drawOptNet();
+      optUpdateComparison();
+    }
+  }, 55);
+}
+
+function optUpdateStats() {
+  if (!optNet || !optCurrentMode) return;
+  const acc = optNet.accuracy(optData, OPT_MODES[optCurrentMode].fx);
+  const pct = (acc*100).toFixed(0);
+  document.getElementById('optAccNum').textContent = pct + '%';
+  document.getElementById('optAccNum').style.color =
+    acc>=0.99?'#2e7d32':acc>=0.9?'#e65100':'#c62828';
+  const bar = document.getElementById('optAccBar');
+  bar.style.width = pct + '%';
+  bar.style.background = acc>=0.99?'#4caf50':acc>=0.9?'#ff9800':'#f44336';
+  document.getElementById('optSteps').textContent = optStep;
+}
+
+// ── Network architecture diagram ──
+// Shows the model's structure + activations for the hard apple sample.
+function drawOptNet() {
+  const cv = document.getElementById('optNetCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f8f9fa'; ctx.fillRect(0, 0, W, H);
+
+  if (!optNet || !optCurrentMode) {
+    ctx.fillStyle = '#bbb'; ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('选择一个方案后，这里展示神经网络架构与信号流动', W/2, H/2);
+    return;
+  }
+
+  const mode = OPT_MODES[optCurrentMode];
+  const sizes = mode.layers;
+  const nL = sizes.length;
+
+  // Forward pass on hard apple as the example input
+  const sampleFeat = mode.fx(optData[OPT_HARD_A]);
+  const acts = optNet.forward(sampleFeat);
+  const pred = acts[nL - 1];  // forward() returns nL arrays (input + nW layers), index 0..nL-1
+
+  // ── Layout ──
+  const MX = 58, MY = 20;
+  const xStep = (W - 2*MX) / (nL - 1);
+  const layerX = Array.from({length: nL}, (_, i) => MX + i * xStep);
+  const MAX_VIS = 7;  // max visible nodes per hidden layer
+
+  function nodeR(li) {
+    const n = Math.min(sizes[li], MAX_VIS);
+    return Math.max(7, Math.min(11, (H - 2*MY - 22) / (n * 2.6)));
+  }
+
+  function nodePts(li) {
+    const n = Math.min(sizes[li], MAX_VIS);
+    const r = nodeR(li);
+    const sp = Math.max(r*2+2, (H - 2*MY - 22) / Math.max(n-1, 1));
+    const totalH = (n-1) * sp;
+    return Array.from({length: n}, (_, ni) => ({
+      x: layerX[li],
+      y: MY + 10 + totalH/2 + (ni - (n-1)/2) * sp
+    }));
+  }
+
+  const ptsAll = Array.from({length: nL}, (_, li) => nodePts(li));
+
+  // ── Connections (skip for very wide layers to avoid clutter) ──
+  for (let l = 0; l < nL - 1; l++) {
+    const fromPts = ptsAll[l], toPts = ptsAll[l+1];
+    const nFrom = Math.min(sizes[l], MAX_VIS);
+    const nTo   = Math.min(sizes[l+1], MAX_VIS);
+    // For large layers, only draw connections for the top activated source nodes
+    const drawFrom = nFrom <= 4 ? nFrom : 4;
+    // Sort hidden nodes by abs(activation) descending to pick the most "active" ones
+    const fromIdxs = Array.from({length: nFrom}, (_, i) => i)
+      .sort((a, b) => Math.abs(acts[l][b]) - Math.abs(acts[l][a]))
+      .slice(0, drawFrom);
+
+    for (const fi of fromIdxs) {
+      for (let ti = 0; ti < nTo; ti++) {
+        const w = optNet.W[l][ti] ? (optNet.W[l][ti][fi] || 0) : 0;
+        const aVal = acts[l][fi];
+        const signal = w * aVal;
+        const isPos = signal >= 0;
+        const alpha = Math.max(0.04, Math.min(0.55, Math.abs(signal) * 0.45));
+        ctx.strokeStyle = isPos ? `rgba(30,140,30,${alpha})` : `rgba(200,40,40,${alpha})`;
+        ctx.lineWidth = Math.max(0.3, Math.abs(signal) * 1.3);
+        ctx.beginPath();
+        const R0 = nodeR(l), R1 = nodeR(l+1);
+        ctx.moveTo(fromPts[fi].x + R0, fromPts[fi].y);
+        ctx.lineTo(toPts[ti].x - R1, toPts[ti].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // ── Nodes ──
+  const FEAT_NAMES  = ['圆度', '黄度', '甜度'];
+  const FEAT_COLORS = ['#4a90d9', '#e8a000', '#d06a40'];
+
+  for (let l = 0; l < nL; l++) {
+    const nVis = Math.min(sizes[l], MAX_VIS);
+    const pts  = ptsAll[l];
+    const R    = nodeR(l);
+
+    for (let ni = 0; ni < nVis; ni++) {
+      const {x, y} = pts[ni];
+      const v = acts[l][ni];
+
+      // Glow for strongly activated hidden nodes
+      if (l > 0 && l < nL-1 && Math.abs(v) > 0.5) {
+        ctx.save();
+        const gc = ctx.createRadialGradient(x, y, 0, x, y, R+9);
+        gc.addColorStop(0, `rgba(255,190,40,${(Math.abs(v)-0.5)*0.55})`);
+        gc.addColorStop(1, 'rgba(255,190,40,0)');
+        ctx.fillStyle = gc;
+        ctx.beginPath(); ctx.arc(x, y, R+9, 0, 2*Math.PI); ctx.fill();
+        ctx.restore();
+      }
+
+      ctx.beginPath(); ctx.arc(x, y, R, 0, 2*Math.PI);
+
+      if (l === 0) {
+        // Input layer: color by feature type
+        ctx.fillStyle = FEAT_COLORS[ni] || '#999';
+      } else if (l === nL-1) {
+        // Output layer: intensity by probability
+        ctx.fillStyle = ni===0
+          ? `rgba(220,80,60,${0.35+v*0.65})`
+          : `rgba(230,160,0,${0.35+v*0.65})`;
+      } else {
+        // Hidden (tanh): map [-1,1] → nnNodeColor via (v+1)/2
+        ctx.fillStyle = nnNodeColor((v+1)/2);
+      }
+      ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      // Text inside node
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if (l === 0) {
+        ctx.fillStyle = 'white'; ctx.font = `bold ${R < 9 ? 7 : 8}px sans-serif`;
+        ctx.fillText(FEAT_NAMES[ni] || '', x, y);
+        // Input value below node
+        ctx.fillStyle = '#666'; ctx.font = `${R < 9 ? 6.5 : 7.5}px sans-serif`;
+        ctx.fillText(sampleFeat[ni].toFixed(2), x, y + R + 8);
+      } else if (l === nL-1) {
+        ctx.font = `${R < 9 ? 10 : 12}px sans-serif`;
+        ctx.fillText(ni===0?'🍎':'🍌', x, y+1);
+        ctx.fillStyle = '#555'; ctx.font = `bold ${R < 9 ? 7 : 8}px sans-serif`;
+        ctx.fillText((v*100).toFixed(0)+'%', x, y + R + 9);
+      } else {
+        ctx.fillStyle = 'white'; ctx.font = `bold ${R < 9 ? 6.5 : 7.5}px sans-serif`;
+        ctx.fillText(v.toFixed(2), x, y);
+      }
+    }
+
+    // Ellipsis for truncated layers
+    if (sizes[l] > MAX_VIS && l > 0 && l < nL-1) {
+      const last = pts[pts.length-1];
+      ctx.fillStyle = '#aaa'; ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText('…', last.x, last.y + nodeR(l) + 3);
+    }
+
+    // Layer label at bottom
+    const layerLabel = l===0
+      ? `输入层\n${sizes[l]}个特征`
+      : l===nL-1
+        ? `输出层`
+        : `隐藏层${l}\n${sizes[l]}节点`;
+    ctx.fillStyle = '#999'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center';
+    layerLabel.split('\n').forEach((ln, k) => {
+      ctx.fillText(ln, layerX[l], H - 13 + k*9);
+    });
+  }
+
+  // ── Title bar ──
+  const isCorrect = pred[0] >= 0.5;
+  const hasSweet = sizes[0] === 3;
+  ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#444';
+  ctx.fillText(`架构 ${sizes.join('→')}  ·  输入：难点苹果（圆度5.0  黄度5.5${hasSweet ? '  甜度7.5' : '  无甜度特征'}）`, 6, 14);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = isCorrect ? '#2e7d32' : '#c62828';
+  ctx.fillText(isCorrect ? '→ 正确识别为 🍎 ✅' : `→ 误判为 🍌 ❌（${(pred[0]*100).toFixed(0)}%苹果）`, W-6, 14);
+}
+
+function optDrawScatter() {
+  const cv = document.getElementById('optScatter');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+
+  const px = 30, py = 12, pw = W-px-10, ph = H-py-24;
+  function toC(xD, yD) { return { cx: px + xD/10*pw, cy: py + (1-yD/10)*ph }; }
+
+  // Decision region background
+  if (optNet && optCurrentMode) {
+    const mode = OPT_MODES[optCurrentMode];
+    const RES = 36;
+    for (let gi = 0; gi <= RES; gi++) {
+      for (let gj = 0; gj <= RES; gj++) {
+        const xD = gi*10/RES, yD = gj*10/RES;
+        const inp = mode.layers[0]===3 ? [xD/10,yD/10,5.0/10] : [xD/10,yD/10];
+        const out = optNet.predict(inp);
+        const t = out[0];
+        const {cx, cy} = toC(xD, yD);
+        const cw = pw/RES+1.5, ch = ph/RES+1.5;
+        ctx.fillStyle = t>0.5
+          ? `rgba(229,115,115,${0.25+t*0.32})`
+          : `rgba(255,213,79,${0.25+(1-t)*0.32})`;
+        ctx.fillRect(cx-cw/2, cy-ch/2, cw, ch);
+      }
+    }
+  } else {
+    ctx.fillStyle = '#f5f5f5'; ctx.fillRect(px, py, pw, ph);
+  }
+
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1.2;
+  ctx.strokeRect(px, py, pw, ph);
+
+  optData.forEach((p, idx) => {
+    const {cx, cy} = toC(p.x, p.y);
+    const isHard = (idx===OPT_HARD_A || idx===OPT_HARD_B);
+    let isWrong = false;
+    if (optNet && optCurrentMode) {
+      const out = optNet.predict(OPT_MODES[optCurrentMode].fx(p));
+      isWrong = (out[0]>=0.5?0:1)!==p.label;
+    }
+    if (isHard) {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, 14, 0, 2*Math.PI);
+      ctx.strokeStyle = '#7b1fa2'; ctx.lineWidth = 2;
+      ctx.setLineDash([3,2]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.restore();
+    }
+    if (isWrong) {
+      ctx.beginPath(); ctx.arc(cx, cy, 11, 0, 2*Math.PI);
+      ctx.strokeStyle = '#c62828'; ctx.lineWidth = 2.5; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, 10, 0, 2*Math.PI);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fill();
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.label===0?'🍎':'🍌', cx, cy+1);
+  });
+
+  ctx.fillStyle = '#888'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('圆度 →', px+pw/2, H-4);
+  ctx.save(); ctx.translate(10, py+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('黄度 →', 0, 0); ctx.restore();
+}
+
+function optDrawCurve() {
+  const cv = document.getElementById('optLossCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#f8f9fa'; ctx.fillRect(0, 0, W, H);
+
+  const px = 28, py = 8, pw = W-px-8, ph = H-py-18;
+  [0, 0.5, 1.0].forEach(v => {
+    const y = py + (1-v)*ph;
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.8; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(px, y); ctx.lineTo(px+pw, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#aaa'; ctx.font = '8px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((v*100).toFixed(0)+'%', px-2, y+3);
+  });
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1; ctx.strokeRect(px, py, pw, ph);
+
+  if (optAccHist.length < 2) return;
+  const mode = OPT_MODES[optCurrentMode];
+  ctx.strokeStyle = mode.color; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  optAccHist.forEach((v, i) => {
+    const x = px + i/(optAccHist.length-1)*pw;
+    const y = py + (1-v)*ph;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  const lv = optAccHist[optAccHist.length-1];
+  ctx.beginPath(); ctx.arc(px+pw, py+(1-lv)*ph, 4, 0, 2*Math.PI);
+  ctx.fillStyle = mode.color; ctx.fill();
+  ctx.fillStyle = '#888'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('训练步数 →', px+pw/2, H-2);
+}
+
+function optUpdateComparison() {
+  const el = document.getElementById('optComparison');
+  if (!el || Object.keys(optFinalResults).length===0) return;
+  let html = `<div style="font-weight:bold;font-size:0.9em;margin-bottom:6px;color:#444">📊 方案对比（已完成的实验）</div>
+  <table style="width:100%;border-collapse:collapse;font-size:0.88em">
+  <tr style="background:#f5f5f5;font-weight:bold">
+    <td style="padding:6px 10px">方案</td>
+    <td style="padding:6px 10px">架构</td>
+    <td style="padding:6px 10px;text-align:center">准确率</td>
+    <td style="padding:6px 10px;text-align:center">难题苹果</td>
+    <td style="padding:6px 10px;text-align:center">难题香蕉</td>
+  </tr>`;
+  Object.entries(OPT_MODES).forEach(([id, m]) => {
+    const r = optFinalResults[id];
+    if (!r) return;
+    const pct = (r.acc*100).toFixed(0)+'%';
+    const acol = r.acc>=0.99?'#2e7d32':r.acc>=0.9?'#e65100':'#c62828';
+    html += `<tr style="border-bottom:1px solid #eee">
+      <td style="padding:6px 10px">${m.icon} <strong style="color:${m.color}">${m.name}</strong></td>
+      <td style="padding:6px 10px;color:#777;font-size:0.85em">${m.arch}</td>
+      <td style="padding:6px 10px;text-align:center;font-weight:bold;color:${acol}">${pct}</td>
+      <td style="padding:6px 10px;text-align:center">${r.okA?'✅':'❌'}</td>
+      <td style="padding:6px 10px;text-align:center">${r.okB?'✅':'❌'}</td>
+    </tr>`;
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+// ─────────────────────────────────────────────────────────
+//  ADVANCED CARD: Backpropagation Step-by-Step Demo
+// ─────────────────────────────────────────────────────────
+
+class BpDemo {
+  constructor() {
+    this.W1 = [[ 0.5,-0.3],[-0.4, 0.5],[ 0.2, 0.2]];
+    this.b1 = [ 0.1,  0.1, -0.1];
+    this.W2 = [[ 0.4,-0.3, 0.2],[-0.3, 0.4,-0.2]];
+    this.b2 = [0.0, 0.0];
+    this.lr = 0.9;
+    this._clear();
+  }
+  _clear() {
+    this.step = 0; this.sample = null;
+    this.x = null; this.target = null;
+    this.z1 = null; this.a1 = null;
+    this.z2 = null; this.a2 = null;
+    this.loss = null; this.d2 = null; this.d1 = null;
+    this.dW2 = null; this.dW1 = null;
+    this.loss_new = null;
+  }
+  sig(v) { return 1/(1+Math.exp(-Math.max(-20,Math.min(20,v)))); }
+  setSample(p) {
+    this._clear();
+    this.sample = p;
+    this.x = [p.x/10, p.y/10];
+    this.target = p.label===0 ? [1,0] : [0,1];
+    // Precompute entire forward + backward pass for step-by-step display
+    this.z1 = this.W1.map((row,i) => row.reduce((s,w,j)=>s+w*this.x[j], this.b1[i]));
+    this.a1 = this.z1.map(z => this.sig(z));
+    this.z2 = this.W2.map((row,i) => row.reduce((s,w,j)=>s+w*this.a1[j], this.b2[i]));
+    this.a2 = this.z2.map(z => this.sig(z));
+    this.loss = this.target.reduce((s,t,i) => s+0.5*(this.a2[i]-t)**2, 0);
+    this.d2 = this.a2.map((a,i) => (a-this.target[i])*a*(1-a));
+    this.dW2 = this.W2.map((row,i) => this.a1.map((_,j) => this.lr*this.d2[i]*this.a1[j]));
+    this.d1 = this.a1.map((a,j) => {
+      const e = this.W2.reduce((s,row,i)=>s+row[j]*this.d2[i], 0);
+      return e*a*(1-a);
+    });
+    this.dW1 = this.W1.map((_,j) => this.x.map(xk => this.lr*this.d1[j]*xk));
+    this.step = 1;
+  }
+  advance() {
+    if (this.step === 5) {
+      // Apply weight updates when moving to step 6
+      for(let i=0;i<2;i++){
+        for(let j=0;j<3;j++) this.W2[i][j] -= this.dW2[i][j];
+        this.b2[i] -= this.lr*this.d2[i];
+      }
+      for(let j=0;j<3;j++){
+        for(let k=0;k<2;k++) this.W1[j][k] -= this.dW1[j][k];
+        this.b1[j] -= this.lr*this.d1[j];
+      }
+      const a1n = this.W1.map((row,i) => this.sig(row.reduce((s,w,j)=>s+w*this.x[j], this.b1[i])));
+      const a2n = this.W2.map((row,i) => this.sig(row.reduce((s,w,j)=>s+w*a1n[j], this.b2[i])));
+      this.loss_new = this.target.reduce((s,t,i) => s+0.5*(a2n[i]-t)**2, 0);
+    }
+    if (this.step < 6) this.step++;
+  }
+}
+
+const BP_SAMPLES = [
+  { x:7.5, y:2.0, label:0 },
+  { x:2.0, y:8.5, label:1 },
+  { x:5.0, y:5.5, label:0 },
+];
+let bpDemo = new BpDemo();
+
+const BP_STEP_NAMES = ['选择样本','前向①','前向②','计算损失','δ₂输出层','δ₁隐藏层','更新权重'];
+
+function bpSelectSample(idx) {
+  bpDemo.setSample(BP_SAMPLES[idx]);
+  document.getElementById('bpNextBtn').disabled = false;
+  bpRefresh();
+}
+function bpNext() {
+  if (!bpDemo.sample) return;
+  bpDemo.advance();
+  if (bpDemo.step >= 6) document.getElementById('bpNextBtn').disabled = true;
+  bpRefresh();
+}
+function bpReset() {
+  bpDemo._clear();
+  document.getElementById('bpNextBtn').disabled = true;
+  bpRefresh();
+}
+function bpRefresh() { bpUpdateBar(); bpDraw(); bpUpdateMath(); }
+
+function bpUpdateBar() {
+  const bar = document.getElementById('bpStepBar');
+  if (!bar) return;
+  bar.innerHTML = BP_STEP_NAMES.map((s,i) => {
+    const active = i===bpDemo.step, done = i<bpDemo.step;
+    return `<div style="padding:5px 11px;border-radius:20px;font-size:0.8em;font-weight:700;
+      background:${active?'#e91e63':done?'#66bb6a':'#e0e0e0'};
+      color:${active||done?'#fff':'#999'}">${s}</div>`;
+  }).join('');
+}
+
+function bpDraw() {
+  const cv = document.getElementById('bpCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const CW = cv.width, CH = cv.height;
+  ctx.clearRect(0,0,CW,CH);
+  ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0,0,CW,CH);
+
+  const step = bpDemo.step;
+  const d = bpDemo;
+  const R = 26;
+
+  // Full-width network layout
+  const IX = 90,  IY = [100, 260];
+  const HX = 300, HY = [60,  175, 290];
+  const OX = 530, OY = [100, 260];
+
+  // ── weight pill drawn at position (lx, ly) ──
+  // mode: 'normal' | 'fwd' | 'delta' | 'updated' | 'dim'
+  // At step 6 weights are already updated: wVal=new, wVal+dw=old
+  // At steps 4-5 weights not yet updated: wVal=old, wVal-dw=new
+  function wPill(lx, ly, wVal, dw, mode) {
+    const fmt = v => (v>=0?'+':'')+v.toFixed(2);
+    let line1, line2=null, col1, col2, bg;
+
+    if (mode==='updated') {
+      line1=fmt(wVal+dw)+'→'; col1='#ef9a9a';
+      line2=fmt(wVal);         col2='#a5d6a7';
+      bg='rgba(8,45,18,0.96)';
+    } else if (mode==='delta') {
+      line1=fmt(wVal);         col1='#ffcc80';
+      line2='→'+fmt(wVal-dw); col2='#ff7096';
+      bg='rgba(65,8,22,0.96)';
+    } else if (mode==='fwd') {
+      line1=fmt(wVal); col1=wVal>=0?'#90caf9':'#ff8a80';
+      bg='rgba(55,32,4,0.93)';
+    } else if (mode==='dim') {
+      line1=fmt(wVal); col1='#3a3a5a';
+      bg='rgba(18,18,32,0.5)';
+    } else { // normal
+      line1=fmt(wVal); col1=wVal>=0?'#7eb8f7':'#f08080';
+      bg=wVal>=0?'rgba(16,32,68,0.92)':'rgba(52,10,10,0.92)';
+    }
+
+    ctx.save();
+    ctx.font='8px monospace';
+    const tw=Math.max(ctx.measureText(line1).width, line2?ctx.measureText(line2).width:0);
+    const pw=tw+10, ph=line2?24:14;
+
+    ctx.fillStyle=bg;
+    ctx.beginPath(); ctx.roundRect(lx-pw/2, ly-ph/2, pw, ph, 3); ctx.fill();
+
+    if (mode==='delta'||mode==='updated') {
+      ctx.strokeStyle=mode==='updated'?'#66bb6a':'#e91e63';
+      ctx.lineWidth=1.2; ctx.stroke();
+    } else if (mode==='fwd') {
+      ctx.strokeStyle='#ff9800'; ctx.lineWidth=1; ctx.stroke();
+    }
+
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    if (line2) {
+      ctx.fillStyle=col1; ctx.fillText(line1, lx, ly-6);
+      ctx.fillStyle=col2; ctx.fillText(line2, lx, ly+6);
+    } else {
+      ctx.fillStyle=col1; ctx.fillText(line1, lx, ly);
+    }
+    ctx.restore();
+  }
+
+  // ── draw one edge + its weight label ──
+  function edgePill(x1,y1,x2,y2, eCol,alpha,lw, wVal,dw, lx,ly, mode) {
+    ctx.save();
+    ctx.globalAlpha=alpha; ctx.strokeStyle=eCol; ctx.lineWidth=lw;
+    ctx.beginPath(); ctx.moveTo(x1+R,y1); ctx.lineTo(x2-R,y2); ctx.stroke();
+    ctx.restore();
+    wPill(lx, ly, wVal, dw, mode);
+  }
+
+  // ════ INPUT → HIDDEN edges ════
+  // i=0: label at t=0.30 (near input);  i=1: label at t=0.70 (near hidden)
+  // This places i=0 labels at x≈153 and i=1 labels at x≈220 — 67 px apart, no overlap.
+  for (let i=0; i<2; i++) for (let j=0; j<3; j++) {
+    const wVal=d.W1[j][i], dw=d.dW1?d.dW1[j][i]:0;
+    const ax=IX+R, ay=IY[i], bx=HX-R, by=HY[j];
+    const t = i===0 ? 0.30 : 0.70;
+    const lx=ax+t*(bx-ax), ly=ay+t*(by-ay);
+
+    let eCol='#2a2a4a', alp=0.5, lw=1.2, mode='normal';
+    if (step===1)       { eCol='#ff9800'; alp=0.9; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='fwd'; }
+    else if (step===5)  { eCol='#e91e63'; alp=0.9; lw=Math.max(1.5,Math.abs(dw)*32+1);  mode='delta'; }
+    else if (step===6)  { eCol='#66bb6a'; alp=0.85; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='updated'; }
+    else if (step>=2)   { eCol='#445'; alp=0.4; lw=1.5; mode='dim'; }
+
+    edgePill(IX,IY[i],HX,HY[j], eCol,alp,lw, wVal,dw, lx,ly, mode);
+  }
+
+  // ════ HIDDEN → OUTPUT edges ════
+  // All 6 midpoints share the same x = (ax+bx)/2.
+  // Split into two x-columns by output index k:
+  //   k=0 (apple)  → lx = midx - 30  (left column)
+  //   k=1 (banana) → lx = midx + 30  (right column)
+  // Within each column the 3 labels are 57 px apart vertically — no overlap
+  // even with 2-line pills (24 px tall). Cross-column pairs are 60 px apart
+  // in x, exceeding the max pill width (~44 px) — no overlap there either.
+  const H_ax=HX+R, H_bx=OX-R, H_midx=(H_ax+H_bx)/2;
+
+  for (let j=0; j<3; j++) for (let k=0; k<2; k++) {
+    const wVal=d.W2[k][j], dw=d.dW2?d.dW2[k][j]:0;
+    const ay=HY[j], by=OY[k];
+    const lx = H_midx + (k===0 ? -30 : +30);
+    const ly = (ay+by)/2;
+
+    let eCol='#2a2a4a', alp=0.5, lw=1.2, mode='normal';
+    if (step===2)               { eCol='#ff9800'; alp=0.9; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='fwd'; }
+    else if (step===3||step===4){ eCol='#e91e63'; alp=0.9; lw=Math.max(1.5,Math.abs(dw)*22+1);  mode='delta'; }
+    else if (step===6)          { eCol='#66bb6a'; alp=0.85; lw=Math.max(1.5,Math.abs(wVal)*5.5); mode='updated'; }
+    else if (step>=2)           { eCol='#445'; alp=0.4; lw=1.5; mode='dim'; }
+
+    edgePill(HX,HY[j],OX,OY[k], eCol,alp,lw, wVal,dw, lx,ly, mode);
+  }
+
+  // ════ nodes ════
+  function node(cx,cy,top,bot,glow) {
+    ctx.save();
+    if (glow) { ctx.shadowColor=glow; ctx.shadowBlur=22; }
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,2*Math.PI);
+    ctx.fillStyle=glow?glow+'28':'#1e1e38'; ctx.fill();
+    ctx.strokeStyle=glow||'#555'; ctx.lineWidth=2.5; ctx.stroke();
+    ctx.restore();
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    if (bot!=null) {
+      ctx.font='bold 9px sans-serif'; ctx.fillStyle='#ccc'; ctx.fillText(top,cx,cy-9);
+      ctx.font='10px monospace'; ctx.fillStyle=glow||'#aaa'; ctx.fillText(bot,cx,cy+8);
+    } else {
+      ctx.font='bold 11px sans-serif'; ctx.fillStyle='#ddd'; ctx.fillText(top,cx,cy);
+    }
+  }
+
+  for (let i=0; i<2; i++)
+    node(IX,IY[i], i===0?'圆度':'黄度', d.x?d.x[i].toFixed(2):null, step>=1?'#667eea':null);
+
+  for (let j=0; j<3; j++) {
+    let g = step===1?'#ff9800' : step===4||step===5?'#e91e63' : step>=2?'#66bb6a' : null;
+    if (step===6) g='#66bb6a';
+    node(HX,HY[j], `h${j+1}`, step>=1&&d.a1?d.a1[j].toFixed(2):null, g);
+    if (step>=4 && d.d1) {
+      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.fillStyle='#ff7096';
+      ctx.fillText(`δ=${d.d1[j].toFixed(3)}`, HX, HY[j]+R+13);
+    }
+  }
+
+  for (let k=0; k<2; k++) {
+    const g = step===2?'#ff9800' : step>=3&&step<=5?'#e91e63' : step===6?'#66bb6a' : null;
+    node(OX,OY[k], k===0?'🍎':'🍌', step>=2&&d.a2?d.a2[k].toFixed(2):null, g);
+    if (step>=3 && d.d2) {
+      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.fillStyle='#ff7096';
+      ctx.fillText(`δ=${d.d2[k].toFixed(3)}`, OX, OY[k]+R+13);
+    }
+  }
+
+  // layer labels
+  ctx.fillStyle='#555'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('输入层',IX,CH-8); ctx.fillText('隐藏层',HX,CH-8); ctx.fillText('输出层',OX,CH-8);
+
+  // direction arrows
+  const AMY=CH/2;
+  if (step===1||step===2) {
+    ctx.fillStyle='rgba(255,152,0,0.38)'; ctx.font='20px sans-serif'; ctx.textAlign='center';
+    if (step===1) ctx.fillText('→',(IX+HX)/2+15,AMY);
+    if (step===2) { ctx.fillText('→',(IX+HX)/2+15,AMY); ctx.fillText('→',(HX+OX)/2+15,AMY); }
+  }
+  if (step>=3&&step<=5) {
+    ctx.fillStyle='rgba(233,30,99,0.38)'; ctx.font='20px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('←',(IX+HX)/2+15,AMY); ctx.fillText('←',(HX+OX)/2+15,AMY);
+  }
+
+  if (step===0) {
+    ctx.fillStyle='#555'; ctx.font='14px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('请先从上方选择一个样本', CW/2, CH/2);
+  }
+
+  // mini legend (top-right corner)
+  const LX=CW-170, LY=14;
+  ctx.fillStyle='rgba(255,255,255,0.05)'; ctx.fillRect(LX-6,LY-4,168,step>=4?66:46);
+  ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillStyle='#555'; ctx.fillText('线宽 = |权重|',LX,LY+11);
+  ctx.fillStyle='#7eb8f7'; ctx.fillRect(LX,LY+20,10,8);
+  ctx.fillStyle='#666';    ctx.fillText('正权重',LX+13,LY+28);
+  ctx.fillStyle='#f08080'; ctx.fillRect(LX+62,LY+20,10,8);
+  ctx.fillStyle='#666';    ctx.fillText('负权重',LX+75,LY+28);
+  if (step>=4&&step<=5) {
+    ctx.fillStyle='#ffcc80'; ctx.fillText('橙=旧值',LX,LY+44);
+    ctx.fillStyle='#ff7096'; ctx.fillText('粉=新值(将改)',LX+60,LY+44);
+  }
+  if (step===6) {
+    ctx.fillStyle='#ef9a9a'; ctx.fillText('红=旧值',LX,LY+44);
+    ctx.fillStyle='#a5d6a7'; ctx.fillText('绿=新值(已改)',LX+60,LY+44);
+  }
+}
+
+function bpUpdateMath() {
+  const el = document.getElementById('bpMath');
+  if (!el) return;
+  const d = bpDemo;
+  const step = d.step;
+  const f2 = v => (+v).toFixed(2);
+  const f3 = v => (+v).toFixed(3);
+  const f4 = v => (+v).toFixed(4);
+
+  let lines = [];
+
+  if (step===0) {
+    lines = ['<span style="color:#666">请从上方选择一个样本，然后点击【下一步】逐步演示反向传播。</span>'];
+  }
+  else if (step===1) {
+    const s = d.sample;
+    lines = [
+      `<span style="color:#ff9800;font-weight:bold">▶ 第①步：前向传播——输入层 → 隐藏层</span>`,
+      ``,
+      `输入  x = [${f2(d.x[0])}, ${f2(d.x[1])}]   (圆度=${s.x}/10, 黄度=${s.y}/10)`,
+      `目标  t = [${d.target.join(', ')}]   (${s.label===0?'🍎苹果':'🍌香蕉'})`,
+      ``,
+      `对每个隐藏神经元：z = W·x + b,   a = σ(z) = 1/(1+e⁻ᶻ)`,
+      ...d.z1.map((z,j) =>
+        `  h${j+1}: ${f2(d.W1[j][0])}×${f2(d.x[0])} + ${f2(d.W1[j][1])}×${f2(d.x[1])} + (${f2(d.b1[j])}) = ${f3(z)}   → σ = <span style="color:#ffa726">${f3(d.a1[j])}</span>`
+      ),
+    ];
+  }
+  else if (step===2) {
+    lines = [
+      `<span style="color:#ff9800;font-weight:bold">▶ 第②步：前向传播——隐藏层 → 输出层</span>`,
+      ``,
+      `隐藏层输出 a₁ = [${d.a1.map(f3).join(', ')}]`,
+      ``,
+      `对每个输出神经元：z = W₂·a₁ + b₂,   a₂ = σ(z)`,
+      ...d.z2.map((z,k) =>
+        `  ${k===0?'🍎':'🍌'}: ${d.W2[k].map((w,j)=>`${f2(w)}×${f3(d.a1[j])}`).join(' + ')} + (${f2(d.b2[k])}) = ${f3(z)}   → σ = <span style="color:#ffa726">${f3(d.a2[k])}</span>`
+      ),
+    ];
+  }
+  else if (step===3) {
+    lines = [
+      `<span style="color:#e91e63;font-weight:bold">▶ 第③步：计算损失（Loss）</span>`,
+      ``,
+      `预测 a₂ = [${d.a2.map(f3).join(', ')}]`,
+      `目标  t  = [${d.target.join(', ')}]`,
+      ``,
+      `L = ½(a₂₁-t₁)² + ½(a₂₂-t₂)²`,
+      `  = ½(${f3(d.a2[0])}-${d.target[0]})² + ½(${f3(d.a2[1])}-${d.target[1]})²`,
+      `  = <span style="color:#ef9a9a">${f4(d.loss)}</span>`,
+      ``,
+      `💡 损失越大 → 权重需要调整越多`,
+    ];
+  }
+  else if (step===4) {
+    lines = [
+      `<span style="color:#e91e63;font-weight:bold">▶ 第④步：输出层误差 δ₂（链式法则第一步）</span>`,
+      ``,
+      `∂L/∂z₂ = ∂L/∂a₂ × ∂a₂/∂z₂ = (a₂-t) × σ'(z₂) = (a₂-t) × a₂(1-a₂)`,
+      `                                                     ↑ sigmoid 导数！`,
+      ``,
+      ...d.d2.map((d2v,k) => [
+        `  ${k===0?'🍎':'🍌'}: δ = (${f3(d.a2[k])}-${d.target[k]}) × ${f3(d.a2[k])} × ${f3(1-d.a2[k])} = <span style="color:#ff7096">${f3(d2v)}</span>  ${d2v<0?'← 该输出要增大':'← 该输出要减小'}`,
+      ]).flat(),
+      ``,
+      `W₂更新量预览：ΔW = -lr × δ × a₁ᵀ  (lr=${d.lr})`,
+      `  W₂[🍎,h₁]: ${f3(d.W2[0][0])} − (${f3(d.dW2[0][0])}) = ${f3(d.W2[0][0]-d.dW2[0][0])}`,
+    ];
+  }
+  else if (step===5) {
+    lines = [
+      `<span style="color:#e91e63;font-weight:bold">▶ 第⑤步：隐藏层误差 δ₁（链式法则继续反传）</span>`,
+      ``,
+      `δ₁ⱼ = (Σᵢ W₂ᵢⱼ·δ₂ᵢ) × a₁ⱼ(1-a₁ⱼ)     ← 误差从输出层反向流回！`,
+      ``,
+      ...d.d1.map((d1v,j) => {
+        const bf = d.W2.reduce((s,row,i)=>s+row[j]*d.d2[i], 0);
+        return `  h${j+1}: (${d.W2.map((row,i)=>`${f2(row[j])}×${f3(d.d2[i])}`).join('+')}) × ${f3(d.a1[j])}×${f3(1-d.a1[j])} = <span style="color:#ff7096">${f3(d1v)}</span>`;
+      }),
+      ``,
+      `W₁更新量预览：`,
+      `  W₁[h₁,圆度]: ${f3(d.W1[0][0])} − (${f3(d.dW1[0][0])}) = ${f3(d.W1[0][0]-d.dW1[0][0])}`,
+    ];
+  }
+  else if (step===6) {
+    lines = [
+      `<span style="color:#66bb6a;font-weight:bold">▶ 第⑥步：权重已更新！ ✅</span>`,
+      ``,
+      `损失: <span style="color:#ef9a9a">${f4(d.loss)}</span>  →  <span style="color:#a5d6a7">${f4(d.loss_new)}</span>  ${d.loss_new<d.loss?'↓ 下降了 🎉':'（继续训练会下降）'}`,
+      ``,
+      `新 W₂（输出层权重）：`,
+      ...d.W2.map((row,i) => `  ${i===0?'🍎':'🍌'}行: [${row.map(f3).join(', ')}]`),
+      `新 W₁（隐藏层权重）：`,
+      ...d.W1.map((row,j) => `  h${j+1}行: [${row.map(f3).join(', ')}]`),
+      ``,
+      `🔁 再选一个样本继续训练——反复训练 = 学习！`,
+    ];
+  }
+
+  el.innerHTML = lines.join('<br>');
+}
+
+// ── Init backprop card ──
+bpUpdateBar();
+bpDraw();
+bpUpdateMath();
+
+// Initial render (blank)
+drawOptNet();
+optDrawScatter();
+</script>
+</body>
+</html>
