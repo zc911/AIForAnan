@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎨 AI 魔法课堂 · 第五课 · AI 的调色板</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', '微软雅黑', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+.container { max-width: 920px; margin: 0 auto; }
+
+/* ── Header ── */
+.header { text-align: center; padding: 40px 0 30px; }
+.lesson-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  color: #d8b4fe;
+  border: 1px solid rgba(216,180,254,0.3);
+  border-radius: 20px;
+  padding: 4px 18px;
+  font-size: 0.9em;
+  margin-bottom: 14px;
+}
+.header h1 {
+  font-size: 2.8em;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(168,85,247,0.9), 0 0 80px rgba(168,85,247,0.4);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.header p { color: #d8b4fe; font-size: 1.15em; line-height: 1.7; }
+
+/* ── Cards ── */
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px;
+  margin: 24px 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+}
+.card-c1::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
+.card-c2::before { background: linear-gradient(90deg, #8b5cf6, #06b6d4); }
+.card-c3::before { background: linear-gradient(90deg, #ec4899, #f97316); }
+.card-c4::before { background: linear-gradient(90deg, #06b6d4, #10b981); }
+.card-c5::before { background: linear-gradient(90deg, #f59e0b, #a855f7); }
+.card-c6::before { background: linear-gradient(90deg, #10b981, #3b82f6); }
+.card-dark { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.card-dark::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
+
+.card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.badge {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6em; flex-shrink: 0;
+}
+.badge-purple { background: linear-gradient(135deg, #a855f7, #ec4899); }
+.badge-blue   { background: linear-gradient(135deg, #8b5cf6, #06b6d4); }
+.badge-pink   { background: linear-gradient(135deg, #ec4899, #f97316); }
+.badge-cyan   { background: linear-gradient(135deg, #06b6d4, #10b981); }
+.badge-amber  { background: linear-gradient(135deg, #f59e0b, #a855f7); }
+.badge-green  { background: linear-gradient(135deg, #10b981, #3b82f6); }
+.badge-dim    { background: rgba(255,255,255,0.12); }
+
+.card-header h2 { font-size: 1.5em; color: #1a1a2e; margin-bottom: 4px; }
+.card-dark .card-header h2 { color: #fff; }
+.subtitle { color: #999; font-size: 0.88em; }
+.card-dark .subtitle { color: #7888aa; }
+
+p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
+
+/* ── Boxes ── */
+.analogy-box {
+  background: #fdf4ff;
+  border-left: 4px solid #a855f7;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  color: #555;
+  line-height: 1.8;
+}
+.analogy-box strong { color: #7e22ce; }
+.tip-box {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  color: #444;
+  line-height: 1.8;
+}
+.ok-box {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+  color: #064e3b;
+  line-height: 1.8;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 10px 22px; border: none; border-radius: 50px;
+  font-size: 0.95em; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+.btn:hover:not(:disabled):not(.btn-dim) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.btn-purple { background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; }
+.btn-cyan   { background: linear-gradient(135deg, #06b6d4, #10b981); color: #fff; }
+.btn-amber  { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
+.btn-ghost  { background: rgba(255,255,255,0.1); color: #d8b4fe; border: 1px solid rgba(216,180,254,0.3); }
+.btn-dim    { background: rgba(255,255,255,0.06); color: #6a7fad; border: 1px solid rgba(255,255,255,0.1); cursor: default; }
+
+/* ── Summary ── */
+.summary-list { list-style: none; }
+.summary-list li {
+  color: #c0d4ff; padding: 6px 0; font-size: 0.93em;
+  line-height: 1.65; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.summary-list li:last-child { border-bottom: none; }
+.summary-list li::before { content: '✦ '; color: #a855f7; font-size: 0.8em; }
+.summary-list strong { color: #fff; }
+
+/* ── Quiz ── */
+.quiz-dots { display: flex; gap: 7px; margin-bottom: 22px; }
+.qdot { width: 13px; height: 13px; border-radius: 50%; background: #e0e0e0; transition: background 0.3s; }
+.qdot.done    { background: #10b981; }
+.qdot.current { background: #a855f7; }
+
+#quiz-question { font-size: 1.1em; font-weight: 700; color: #1a1a2e; margin-bottom: 18px; line-height: 1.65; }
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.qopt {
+  background: #f4f7ff; border: 2px solid #e0e4ff;
+  border-radius: 12px; padding: 12px 18px;
+  cursor: pointer; font-family: inherit; font-size: 0.93em;
+  color: #333; text-align: left; transition: all 0.15s; line-height: 1.5;
+}
+.qopt:hover { border-color: #a855f7; background: #f5f0ff; }
+.qopt.correct { border-color: #10b981; background: #f0fdf4; color: #064e3b; font-weight: 600; }
+.qopt.wrong   { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+#quiz-feedback {
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 0.92em; line-height: 1.65; margin-bottom: 14px; display: none;
+}
+#quiz-feedback.fb-right { background: #f0fdf4; border: 1.5px solid #10b981; color: #064e3b; }
+#quiz-feedback.fb-wrong { background: #fef2f2; border: 1.5px solid #ef4444; color: #991b1b; }
+#quiz-score { text-align: center; display: none; padding: 10px 0; }
+.score-big {
+  font-size: 4.5em; font-weight: 900;
+  background: linear-gradient(135deg, #a855f7, #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.1;
+}
+.score-label { color: #888; font-size: 0.9em; margin: 6px 0 20px; }
+.score-msg   { font-size: 1.25em; color: #333; font-weight: 600; }
+
+/* ── Prompt Buttons ── */
+.prompt-btn {
+  background: #f4f7ff; border: 2px solid #e0e4ff;
+  border-radius: 12px; padding: 8px 14px;
+  cursor: pointer; font-family: inherit; font-size: 0.85em;
+  color: #555; transition: all 0.15s;
+}
+.prompt-btn:hover { border-color: #a855f7; color: #a855f7; }
+.prompt-btn.active-prompt { background: #a855f7; color: #fff; border-color: #a855f7; }
+
+/* ── Nav ── */
+.nav-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28px 0 52px; flex-wrap: wrap; gap: 12px;
+}
+.nav-bar a { text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="lesson-badge">第五课 · 创作篇</div>
+  <h1>🎨 AI 的调色板</h1>
+  <p>安安的 AI 探索之旅 · 第五站<br>生成式AI的秘密——创造力，是一种数学</p>
+</div>
+
+<!-- Cards: Tasks 2-8 will be inserted here -->
+
+<!-- ── Nav ── -->
+<div class="nav-bar">
+  <a href="ai-for-anan-4.html"><button class="btn btn-ghost">← 第四课</button></a>
+  <button class="btn btn-dim" title="即将上线">第六课：敬请期待 →</button>
+</div>
+
+</div>
+<script><!-- JS: Tasks 2-8 --></script>
+</body>
+</html>
