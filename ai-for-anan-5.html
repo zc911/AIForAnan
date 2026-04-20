@@ -225,6 +225,37 @@ p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
   </div>
 </div>
 
+<!-- ── Card 2: 词向量图 ── -->
+<div class="card card-c2">
+  <div class="card-header">
+    <div class="badge badge-blue">🧠</div>
+    <div>
+      <h2>AI 没有眼睛，但它有"感觉"</h2>
+      <div class="subtitle">词语和概念，在 AI 眼里是一张"地图"</div>
+    </div>
+  </div>
+
+  <p class="body">AI 不是把图片、文字"记住"——它把所有东西都变成<strong>数字</strong>，然后把意思相近的东西放在"地图"上相近的位置。这叫做<strong>向量（Vector）</strong>。</p>
+
+  <div class="analogy-box">
+    <strong>🎵 比喻：音乐的感觉</strong><br>
+    你不用记住每首歌的每个音符，但你知道「快乐的音乐」和「悲伤的音乐」听起来不一样。AI 也一样——它把「猫」和「爪子」放在地图上很近的位置，因为它们经常一起出现。
+  </div>
+
+  <p class="body">点击下面地图上的任意词语，看看它的"邻居们"：</p>
+
+  <div style="background:#0f0c29;border-radius:20px;padding:16px;margin:16px 0">
+    <svg id="word-map" width="100%" viewBox="0 0 500 320" style="display:block"></svg>
+  </div>
+  <div id="word-info" style="min-height:40px;padding:10px 14px;background:#f5f3ff;border-radius:12px;font-size:0.9em;color:#555;line-height:1.7">
+    👆 点击任意词语，看它和哪些词"住得近"
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>💡 编程小知识：</strong>「向量」就是一串数字。比如「猫」= [0.8, 0.2, 0.9, …]（共768个数字）。数字越像，意思越接近。程序员可以用数学计算两个词有多"相似"——这就是AI理解语言的秘密。
+  </div>
+</div>
+
 <!-- ── Nav ── -->
 <div class="nav-bar">
   <a href="ai-for-anan-4.html"><button class="btn btn-ghost">← 第四课</button></a>
@@ -401,6 +432,118 @@ function drawChildCat(ctx) {
   });
 }
 
-initArtGrid();</script>
+initArtGrid();
+
+// ─── Card 2: Word Map ─────────────────────────────────────────────────────────
+
+const WORD_CLUSTERS = [
+  {
+    name: '猫咪世界', color: '#f97316',
+    words: [
+      { text: '猫', x: 130, y: 80 },
+      { text: '爪子', x: 80, y: 130 },
+      { text: '毛茸茸', x: 170, y: 50 },
+      { text: '喵', x: 60, y: 80 },
+      { text: '胡须', x: 150, y: 130 },
+    ]
+  },
+  {
+    name: '开心世界', color: '#10b981',
+    words: [
+      { text: '开心', x: 330, y: 70 },
+      { text: '笑', x: 390, y: 50 },
+      { text: '彩虹', x: 420, y: 110 },
+      { text: '派对', x: 350, y: 130 },
+      { text: '礼物', x: 290, y: 110 },
+    ]
+  },
+  {
+    name: '悲伤世界', color: '#8b5cf6',
+    words: [
+      { text: '悲伤', x: 230, y: 230 },
+      { text: '哭', x: 180, y: 270 },
+      { text: '雨', x: 280, y: 260 },
+      { text: '灰色', x: 150, y: 240 },
+      { text: '孤独', x: 270, y: 210 },
+    ]
+  },
+  {
+    name: '宇宙世界', color: '#06b6d4',
+    words: [
+      { text: '星星', x: 410, y: 220 },
+      { text: '火箭', x: 450, y: 260 },
+      { text: '宇宙', x: 380, y: 260 },
+      { text: '月亮', x: 440, y: 190 },
+      { text: '飞船', x: 400, y: 290 },
+    ]
+  }
+];
+
+function initWordMap() {
+  const svg = document.getElementById('word-map');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  WORD_CLUSTERS.forEach(cluster => {
+    cluster.words.forEach((w1, i) => {
+      cluster.words.forEach((w2, j) => {
+        if (j <= i) return;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', w1.x); line.setAttribute('y1', w1.y);
+        line.setAttribute('x2', w2.x); line.setAttribute('y2', w2.y);
+        line.setAttribute('stroke', cluster.color);
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('opacity', '0');
+        line.classList.add('cluster-line', `cluster-${cluster.name}`);
+        line.style.transition = 'opacity 0.3s';
+        svg.appendChild(line);
+      });
+    });
+  });
+
+  WORD_CLUSTERS.forEach(cluster => {
+    cluster.words.forEach(word => {
+      const g = document.createElementNS(ns, 'g');
+      g.style.cursor = 'pointer';
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', word.x); circle.setAttribute('cy', word.y);
+      circle.setAttribute('r', '18');
+      circle.setAttribute('fill', cluster.color);
+      circle.setAttribute('opacity', '0.15');
+      circle.classList.add('word-circle', `cluster-${cluster.name}`);
+      circle.style.transition = 'opacity 0.3s';
+
+      const text = document.createElementNS(ns, 'text');
+      text.setAttribute('x', word.x); text.setAttribute('y', word.y + 5);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', cluster.color);
+      text.setAttribute('font-size', '14');
+      text.setAttribute('font-weight', '700');
+      text.setAttribute('font-family', 'PingFang SC, 微软雅黑, sans-serif');
+      text.textContent = word.text;
+
+      g.appendChild(circle); g.appendChild(text);
+      g.addEventListener('click', () => highlightCluster(cluster));
+      svg.appendChild(g);
+    });
+  });
+}
+
+function highlightCluster(targetCluster) {
+  document.querySelectorAll('.cluster-line').forEach(el => el.setAttribute('opacity', '0'));
+  document.querySelectorAll('.word-circle').forEach(el => el.setAttribute('opacity', '0.15'));
+
+  document.querySelectorAll(`.cluster-${targetCluster.name}`).forEach(el => {
+    el.setAttribute('opacity', el.tagName === 'line' ? '0.6' : '0.4');
+  });
+
+  document.getElementById('word-info').innerHTML =
+    `<strong style="color:${targetCluster.color}">「${targetCluster.name}」</strong> ——
+    这个区域里的词，在AI的"地图"上住得很近：
+    <strong>${targetCluster.words.map(w => w.text).join('、')}</strong>。
+    因为它们经常出现在同样的句子里，AI 把它们的"数字地址"也排在一起。`;
+}
+
+initWordMap();</script>
 </body>
 </html>
