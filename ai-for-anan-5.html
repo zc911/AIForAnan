@@ -256,6 +256,58 @@ p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
   </div>
 </div>
 
+<!-- ── Card 3: 扩散动画 ── -->
+<div class="card card-c3">
+  <div class="card-header">
+    <div class="badge badge-pink">✨</div>
+    <div>
+      <h2>从噪点到图像</h2>
+      <div class="subtitle">AI 是怎么「想象」出一张画的？</div>
+    </div>
+  </div>
+
+  <p class="body">生成式AI用的核心技术叫<strong>扩散模型（Diffusion Model）</strong>——它的工作方式让人吃惊：<strong>先把画面变成一片随机噪点，再一步步把噪点"去掉"，直到图像慢慢浮现。</strong></p>
+
+  <div class="analogy-box">
+    <strong>📸 比喻：暗房冲洗照片</strong><br>
+    胶片时代，照片要在暗房里慢慢显影——一开始什么都看不出来，在化学液体里泡着，图像才一点点出现。扩散模型就像反过来的这个过程：从"什么都看不见"开始，一步步把图像"冲"出来。
+  </div>
+
+  <p class="body">选一个主题，然后拖动滑块——看看 AI 是怎么从一片雪花噪点里"想象"出图像的：</p>
+
+  <div style="display:flex;gap:10px;margin:16px 0;flex-wrap:wrap">
+    <button class="btn btn-purple" id="subj-cat"    onclick="setSubject('cat')"    >🐱 小猫</button>
+    <button class="btn btn-ghost"  id="subj-rocket" onclick="setSubject('rocket')" >🚀 宇宙飞船</button>
+    <button class="btn btn-ghost"  id="subj-cake"   onclick="setSubject('cake')"   >🎂 彩虹蛋糕</button>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin:16px 0">
+    <div style="flex:0 0 auto">
+      <canvas id="diffusion-canvas" width="260" height="260"
+        style="border-radius:16px;border:3px solid #e0e4ff;display:block"></canvas>
+      <div id="step-label" style="text-align:center;margin-top:8px;font-size:0.85em;color:#888">
+        步骤 0 / 20 · 纯噪点
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:0.9em;font-weight:700;color:#555;margin-bottom:12px">🎚️ 去噪步骤</div>
+      <input type="range" id="diffusion-slider" min="0" max="20" value="0"
+        style="width:100%;accent-color:#a855f7;cursor:pointer"
+        oninput="onSliderChange(this.value)">
+      <div style="display:flex;justify-content:space-between;font-size:0.78em;color:#aaa;margin-top:4px">
+        <span>纯噪点</span><span>清晰图像</span>
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn btn-purple" onclick="animateDiffusion()" id="anim-btn">▶ 自动播放</button>
+        <button class="btn btn-ghost" onclick="resetDiffusion()" style="margin-left:8px">🔄 重置</button>
+      </div>
+      <div id="diffusion-hint" style="margin-top:16px;padding:12px;background:#f5f3ff;border-radius:12px;font-size:0.85em;color:#555;line-height:1.7">
+        👆 拖动滑块到中间，看看 AI 脑中模糊的"幽灵图"！
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Nav ── -->
 <div class="nav-bar">
   <a href="ai-for-anan-4.html"><button class="btn btn-ghost">← 第四课</button></a>
@@ -544,6 +596,170 @@ function highlightCluster(targetCluster) {
     因为它们经常出现在同样的句子里，AI 把它们的"数字地址"也排在一起。`;
 }
 
-initWordMap();</script>
+initWordMap();
+
+// ─── Card 3: Diffusion Animation ─────────────────────────────────────────────
+
+let currentSubject = 'cat';
+let animTimer = null;
+const noiseSeeds = Array.from({length: 260*260}, () => Math.random());
+
+function setSubject(subj) {
+  currentSubject = subj;
+  ['cat','rocket','cake'].forEach(s => {
+    const btn = document.getElementById('subj-' + s);
+    btn.className = s === subj ? 'btn btn-purple' : 'btn btn-ghost';
+  });
+  resetDiffusion();
+}
+
+function resetDiffusion() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  document.getElementById('diffusion-slider').value = 0;
+  document.getElementById('anim-btn').disabled = false;
+  onSliderChange(0);
+}
+
+function onSliderChange(step) {
+  step = parseInt(step);
+  renderDiffusionFrame(step);
+  const labels = [
+    '纯噪点——什么都看不出来','还是噪点……','好像有点什么？','隐约有个形状',
+    '越来越清晰了！','慢慢显现……','能猜出来是什么吗？','越来越像了',
+    '轮廓出现了！','细节增加中','基本成形了','图像越来越真实',
+    '快完成了！','细节丰富起来','非常接近了！','几乎完美',
+    '精细细节出现','非常清晰','几近完成','最后润色','✨ 完成！清晰图像生成！'
+  ];
+  document.getElementById('step-label').textContent = `步骤 ${step} / 20 · ${labels[step] || ''}`;
+  document.getElementById('diffusion-hint').textContent =
+    step === 0 ? '👆 拖动滑块到中间，看看 AI 脑中模糊的"幽灵图"！' :
+    step < 10  ? `🌫️ AI 正在从随机噪点里"想象"——这个混沌里藏着${currentSubject === 'cat' ? '一只小猫' : currentSubject === 'rocket' ? '一艘飞船' : '一个蛋糕'}！` :
+    step < 18  ? '🎨 越来越清晰了！AI 每一步都在减少噪点、增加细节。' :
+    '✅ 这就是扩散模型——从随机噪点出发，一步步"去噪"，想象出图像！';
+}
+
+function renderDiffusionFrame(step) {
+  const canvas = document.getElementById('diffusion-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 260, H = 260;
+  const progress = step / 20;
+
+  ctx.clearRect(0, 0, W, H);
+  drawCleanSubject(ctx, currentSubject, W, H);
+  const cleanData = ctx.getImageData(0, 0, W, H);
+
+  const noiseData = ctx.createImageData(W, H);
+  const noiseAmount = 1 - progress;
+  for (let i = 0; i < W * H; i++) {
+    const pi = i * 4;
+    const noise = noiseSeeds[i] * 255;
+    noiseData.data[pi]   = cleanData.data[pi]   * progress + noise * noiseAmount;
+    noiseData.data[pi+1] = cleanData.data[pi+1] * progress + noise * noiseAmount;
+    noiseData.data[pi+2] = cleanData.data[pi+2] * progress + noise * noiseAmount;
+    noiseData.data[pi+3] = 255;
+  }
+  ctx.putImageData(noiseData, 0, 0);
+}
+
+function drawCleanSubject(ctx, subj, W, H) {
+  if (subj === 'cat') drawDiffCat(ctx, W, H);
+  else if (subj === 'rocket') drawDiffRocket(ctx, W, H);
+  else drawDiffCake(ctx, W, H);
+}
+
+function drawDiffCat(ctx, W, H) {
+  ctx.fillStyle = '#fef9c3'; ctx.fillRect(0, 0, W, H);
+  ctx.beginPath(); ctx.ellipse(130, 180, 70, 65, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  ctx.beginPath(); ctx.ellipse(130, 100, 55, 50, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  [[95,60,75,30,110,65],[165,60,185,30,150,65]].forEach(([x1,y1,x2,y2,x3,y3]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.closePath();
+    ctx.fillStyle = '#fb923c'; ctx.fill();
+  });
+  ctx.beginPath(); ctx.ellipse(112, 95, 10, 12, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#16a34a'; ctx.fill();
+  ctx.beginPath(); ctx.ellipse(148, 95, 10, 12, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#16a34a'; ctx.fill();
+  [[112,95],[148,95]].forEach(([x,y]) => {
+    ctx.beginPath(); ctx.ellipse(x, y, 5, 7, 0, 0, Math.PI*2);
+    ctx.fillStyle = '#111'; ctx.fill();
+  });
+  ctx.beginPath(); ctx.arc(130, 113, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#fda4af'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(200, 200); ctx.bezierCurveTo(240,160,250,120,220,100);
+  ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.stroke();
+}
+
+function drawDiffRocket(ctx, W, H) {
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0c0a1e'); bg.addColorStop(1,'#1e1b4b');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+  for (let i=0;i<40;i++){
+    ctx.beginPath();
+    ctx.arc(Math.sin(i*137)*130+130, Math.cos(i*97)*130+130, 1.5, 0, Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+  }
+  ctx.beginPath(); ctx.roundRect(100, 80, 60, 120, 30);
+  const rBody = ctx.createLinearGradient(100,0,160,0);
+  rBody.addColorStop(0,'#c7d2fe'); rBody.addColorStop(1,'#818cf8');
+  ctx.fillStyle = rBody; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(130,30); ctx.lineTo(100,80); ctx.lineTo(160,80); ctx.closePath();
+  ctx.fillStyle='#f43f5e'; ctx.fill();
+  ctx.beginPath(); ctx.arc(130,120,22,0,Math.PI*2);
+  ctx.fillStyle='#bae6fd'; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.stroke();
+  [[80,170,100,160,100,200],[180,170,160,160,160,200]].forEach(([x1,y1,x2,y2,x3,y3]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.closePath();
+    ctx.fillStyle='#6366f1'; ctx.fill();
+  });
+  ctx.beginPath(); ctx.moveTo(110,200); ctx.bezierCurveTo(110,240,130,250,130,250);
+  ctx.bezierCurveTo(130,250,150,240,150,200);
+  ctx.fillStyle='#f97316'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(118,200); ctx.bezierCurveTo(118,230,130,240,130,240);
+  ctx.bezierCurveTo(130,240,142,230,142,200);
+  ctx.fillStyle='#fde68a'; ctx.fill();
+}
+
+function drawDiffCake(ctx, W, H) {
+  ctx.fillStyle='#fff0f9'; ctx.fillRect(0,0,W,H);
+  const layers=[{y:190,h:50,c:'#fca5a5'},{y:148,h:42,c:'#86efac'},{y:110,h:38,c:'#93c5fd'},{y:76,h:34,c:'#fde68a'}];
+  layers.forEach(({y,h,c}) => {
+    ctx.beginPath(); ctx.roundRect(55,y,150,h,6); ctx.fillStyle=c; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    for(let x=70;x<200;x+=20){
+      ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+    }
+  });
+  [[90,60],[130,50],[170,60]].forEach(([x,y]) => {
+    ctx.fillStyle='#a855f7'; ctx.fillRect(x-5,y,10,30);
+    ctx.beginPath(); ctx.ellipse(x,y,5,8,0,0,Math.PI*2);
+    const flameGrad = ctx.createRadialGradient(x,y,0,x,y,8);
+    flameGrad.addColorStop(0,'#fde68a'); flameGrad.addColorStop(1,'#f97316');
+    ctx.fillStyle=flameGrad; ctx.fill();
+  });
+  ['#f87171','#fb923c','#fbbf24','#4ade80','#60a5fa','#a78bfa'].forEach((c,i) => {
+    ctx.beginPath(); ctx.arc(130,230,80-i*8,Math.PI,0,false);
+    ctx.strokeStyle=c; ctx.lineWidth=4; ctx.stroke();
+  });
+  ctx.font='20px serif';
+  ['⭐','✨','🌟'].forEach((s,i) => ctx.fillText(s, 30+i*90, 90));
+}
+
+function animateDiffusion() {
+  if (animTimer) return;
+  const slider = document.getElementById('diffusion-slider');
+  slider.value = 0; onSliderChange(0);
+  let step = 0;
+  document.getElementById('anim-btn').disabled = true;
+  animTimer = setInterval(() => {
+    step++;
+    slider.value = step;
+    onSliderChange(step);
+    if (step >= 20) { clearInterval(animTimer); animTimer = null; document.getElementById('anim-btn').disabled = false; }
+  }, 200);
+}
+
+onSliderChange(0);</script>
 </body>
 </html>
