@@ -1,0 +1,1655 @@
+# 第5课：生成式AI / AI的调色板 Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** 创建 `ai-for-anan-5.html`——一节让9岁安安理解生成式AI原理并对编程产生兴趣的互动课程，同时更新 `index.html` 激活第5课入口。
+
+**Architecture:** 单文件HTML，内联CSS+JS，无外部依赖，与现有 ai-for-anan-1~4.html 架构完全一致。6张交互卡片 + 测验 + 总结，Canvas负责扩散动画，SVG负责词向量图。
+
+**Tech Stack:** HTML5, CSS3 (Grid/Flex), JavaScript (Canvas API, SVG), 无构建工具
+
+---
+
+## 文件变更清单
+
+| 操作 | 文件 | 说明 |
+|------|------|------|
+| Create | `ai-for-anan-5.html` | 第5课主体，全部逻辑内联 |
+| Modify | `index.html` | 第5课卡片从 coming-soon 改为可点击 |
+
+---
+
+## Task 1: HTML 骨架 + CSS + 页头 + 导航
+
+**Files:**
+- Create: `ai-for-anan-5.html`
+
+- [ ] **Step 1: 创建文件骨架，复用现有课程 CSS 基础**
+
+创建 `ai-for-anan-5.html`，内容如下（含完整 CSS，第5课主色调为紫色系 `#a855f7 → #ec4899`）：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 AI 魔法课堂 · 第五课 · AI 的调色板</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', '微软雅黑', 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  min-height: 100vh;
+  padding: 20px;
+  color: #333;
+}
+.container { max-width: 920px; margin: 0 auto; }
+
+/* ── Header ── */
+.header { text-align: center; padding: 40px 0 30px; }
+.lesson-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  color: #d8b4fe;
+  border: 1px solid rgba(216,180,254,0.3);
+  border-radius: 20px;
+  padding: 4px 18px;
+  font-size: 0.9em;
+  margin-bottom: 14px;
+}
+.header h1 {
+  font-size: 2.8em;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(168,85,247,0.9), 0 0 80px rgba(168,85,247,0.4);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+.header p { color: #d8b4fe; font-size: 1.15em; line-height: 1.7; }
+
+/* ── Cards ── */
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px;
+  margin: 24px 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+}
+.card-c1::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
+.card-c2::before { background: linear-gradient(90deg, #8b5cf6, #06b6d4); }
+.card-c3::before { background: linear-gradient(90deg, #ec4899, #f97316); }
+.card-c4::before { background: linear-gradient(90deg, #06b6d4, #10b981); }
+.card-c5::before { background: linear-gradient(90deg, #f59e0b, #a855f7); }
+.card-c6::before { background: linear-gradient(90deg, #10b981, #3b82f6); }
+.card-dark { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.card-dark::before { background: linear-gradient(90deg, #a855f7, #ec4899); }
+
+.card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.badge {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6em; flex-shrink: 0;
+}
+.badge-purple { background: linear-gradient(135deg, #a855f7, #ec4899); }
+.badge-blue   { background: linear-gradient(135deg, #8b5cf6, #06b6d4); }
+.badge-pink   { background: linear-gradient(135deg, #ec4899, #f97316); }
+.badge-cyan   { background: linear-gradient(135deg, #06b6d4, #10b981); }
+.badge-amber  { background: linear-gradient(135deg, #f59e0b, #a855f7); }
+.badge-green  { background: linear-gradient(135deg, #10b981, #3b82f6); }
+.badge-dim    { background: rgba(255,255,255,0.12); }
+
+.card-header h2 { font-size: 1.5em; color: #1a1a2e; margin-bottom: 4px; }
+.card-dark .card-header h2 { color: #fff; }
+.subtitle { color: #999; font-size: 0.88em; }
+.card-dark .subtitle { color: #7888aa; }
+
+p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
+
+/* ── Boxes ── */
+.analogy-box {
+  background: #fdf4ff;
+  border-left: 4px solid #a855f7;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  color: #555;
+  line-height: 1.8;
+}
+.analogy-box strong { color: #7e22ce; }
+.tip-box {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  color: #444;
+  line-height: 1.8;
+}
+.ok-box {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+  border-radius: 0 12px 12px 0;
+  padding: 14px 18px;
+  margin: 14px 0;
+  color: #064e3b;
+  line-height: 1.8;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 10px 22px; border: none; border-radius: 50px;
+  font-size: 0.95em; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+.btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn-purple { background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; }
+.btn-cyan   { background: linear-gradient(135deg, #06b6d4, #10b981); color: #fff; }
+.btn-amber  { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
+.btn-ghost  { background: rgba(255,255,255,0.1); color: #d8b4fe; border: 1px solid rgba(216,180,254,0.3); }
+.btn-dim    { background: rgba(255,255,255,0.06); color: #6a7fad; border: 1px solid rgba(255,255,255,0.1); cursor: default; }
+
+/* ── Summary ── */
+.summary-list { list-style: none; }
+.summary-list li {
+  color: #c0d4ff; padding: 6px 0; font-size: 0.93em;
+  line-height: 1.65; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.summary-list li:last-child { border-bottom: none; }
+.summary-list li::before { content: '✦ '; color: #a855f7; font-size: 0.8em; }
+.summary-list strong { color: #fff; }
+
+/* ── Quiz ── */
+.quiz-dots { display: flex; gap: 7px; margin-bottom: 22px; }
+.qdot { width: 13px; height: 13px; border-radius: 50%; background: #e0e0e0; transition: background 0.3s; }
+.qdot.done    { background: #10b981; }
+.qdot.current { background: #a855f7; }
+#quiz-question { font-size: 1.1em; font-weight: 700; color: #1a1a2e; margin-bottom: 18px; line-height: 1.65; }
+.quiz-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.qopt {
+  background: #f5f3ff; border: 2px solid #ede9fe;
+  border-radius: 12px; padding: 12px 18px;
+  cursor: pointer; font-family: inherit; font-size: 0.93em;
+  color: #333; text-align: left; transition: all 0.15s; line-height: 1.5;
+}
+.qopt:hover { border-color: #a855f7; background: #faf5ff; }
+.qopt.correct { border-color: #10b981; background: #f0fdf4; color: #065f46; font-weight: 600; }
+.qopt.wrong   { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+#quiz-feedback {
+  border-radius: 12px; padding: 12px 16px;
+  font-size: 0.92em; line-height: 1.65; margin-bottom: 14px; display: none;
+}
+#quiz-feedback.fb-right { background: #f0fdf4; border: 1.5px solid #10b981; color: #065f46; }
+#quiz-feedback.fb-wrong { background: #fef2f2; border: 1.5px solid #ef4444; color: #991b1b; }
+#quiz-score { text-align: center; display: none; padding: 10px 0; }
+.score-big {
+  font-size: 4.5em; font-weight: 900;
+  background: linear-gradient(135deg, #a855f7, #10b981);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1.1;
+}
+.score-label { color: #888; font-size: 0.9em; margin: 6px 0 20px; }
+.score-msg   { font-size: 1.25em; color: #333; font-weight: 600; }
+
+/* ── Nav ── */
+.nav-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28px 0 52px; flex-wrap: wrap; gap: 12px;
+}
+.nav-bar a { text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="lesson-badge">第五课 · 创作篇</div>
+  <h1>🎨 AI 的调色板</h1>
+  <p>安安的 AI 探索之旅 · 第五站<br>生成式AI的秘密——创造力，是一种数学</p>
+</div>
+
+<!-- Cards go here (Tasks 2-8) -->
+
+<!-- ── Nav ── -->
+<div class="nav-bar">
+  <a href="ai-for-anan-4.html"><button class="btn btn-ghost">← 第四课</button></a>
+  <button class="btn btn-dim" title="即将上线">第六课：敬请期待 →</button>
+</div>
+
+</div>
+<script>
+// JS goes here (Tasks 2-8)
+</script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: 浏览器打开验证**
+
+```bash
+open ai-for-anan-5.html
+```
+
+预期：页面显示紫色星空背景，标题"🎨 AI 的调色板"，底部导航"← 第四课"可点击。
+
+- [ ] **Step 3: 提交骨架**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 scaffold: header, CSS, nav"
+```
+
+---
+
+## Task 2: Card 1 — 开场谜题「你能看出来吗？」
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+4张用Canvas绘制的"画作"（2张AI风格：精确几何；2张人类风格：手绘感），用户逐张猜测后统一揭晓。
+
+- [ ] **Step 1: 在 `<!-- Cards go here -->` 处插入 Card 1 HTML**
+
+```html
+<!-- ── Card 1: 开场谜题 ── -->
+<div class="card card-c1">
+  <div class="card-header">
+    <div class="badge badge-purple">🔍</div>
+    <div>
+      <h2>你能看出来吗？</h2>
+      <div class="subtitle">4张画，哪些是 AI 画的？</div>
+    </div>
+  </div>
+
+  <p class="body">AI 可以画画、写诗、作曲……但它是真的"懂"艺术吗？先来一个小测试——下面4张作品，有些是 AI 生成的，有些是人类画的。你能分辨吗？</p>
+  <p class="body">点击每张画，选择你的判断，然后点「揭晓答案」！</p>
+
+  <div id="art-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0"></div>
+
+  <div style="text-align:center;margin-top:8px">
+    <button class="btn btn-purple" id="reveal-btn" onclick="revealArt()">🎭 揭晓答案</button>
+  </div>
+  <div id="reveal-result" style="display:none;margin-top:16px"></div>
+
+  <div class="analogy-box" style="margin-top:16px">
+    <strong>🤔 为什么这么难分辨？</strong><br>
+    因为 AI 学习了数十亿张图片里的规律——什么样的线条、色彩、构图会让人觉得"好看"。它不是在"想象"，而是在用数学重新组合这些规律。这节课就来揭开这个秘密。
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 在 `<script>` 里加入 Card 1 的 JS（Canvas绘制 + 猜测交互）**
+
+```javascript
+// ─── Card 1: Art Guess ────────────────────────────────────────────────────────
+
+const ART_PIECES = [
+  { id: 'art0', label: '作品 A', isAI: true,  draw: drawMandala,    hint: '精确的数学对称——AI的最爱' },
+  { id: 'art1', label: '作品 B', isAI: false, draw: drawWobblyFlower, hint: '线条有点歪，像小朋友用画笔画的' },
+  { id: 'art2', label: '作品 C', isAI: true,  draw: drawGradientLandscape, hint: '完美渐变和几何——数学生成的' },
+  { id: 'art3', label: '作品 D', isAI: false, draw: drawChildCat,   hint: '可爱的手绘风格，有真实的"手感"' },
+];
+
+const artGuesses = { art0: null, art1: null, art2: null, art3: null };
+
+function initArtGrid() {
+  const grid = document.getElementById('art-grid');
+  ART_PIECES.forEach(piece => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'text-align:center';
+
+    const canvas = document.createElement('canvas');
+    canvas.id = piece.id;
+    canvas.width = 200; canvas.height = 200;
+    canvas.style.cssText = 'border-radius:16px;cursor:pointer;border:3px solid #e0e0e0;transition:border-color 0.2s;display:block;margin:0 auto';
+    piece.draw(canvas.getContext('2d'));
+
+    const label = document.createElement('div');
+    label.style.cssText = 'font-weight:700;margin:8px 0 6px;color:#333';
+    label.textContent = piece.label;
+
+    const btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px;justify-content:center';
+
+    ['🤖 AI画的', '🧑 人类画的'].forEach((text, i) => {
+      const b = document.createElement('button');
+      b.textContent = text;
+      b.dataset.pieceId = piece.id;
+      b.dataset.guess = i === 0 ? 'ai' : 'human';
+      b.style.cssText = 'padding:5px 12px;border-radius:20px;border:2px solid #ddd;background:#fff;cursor:pointer;font-size:0.82em;font-family:inherit;transition:all 0.15s';
+      b.onclick = () => selectGuess(piece.id, b.dataset.guess, btns);
+      btns.appendChild(b);
+    });
+
+    wrapper.appendChild(canvas);
+    wrapper.appendChild(label);
+    wrapper.appendChild(btns);
+    grid.appendChild(wrapper);
+  });
+}
+
+function selectGuess(pieceId, guess, btnsEl) {
+  artGuesses[pieceId] = guess;
+  Array.from(btnsEl.children).forEach(b => {
+    b.style.background = b.dataset.guess === guess ? (guess === 'ai' ? '#a855f7' : '#06b6d4') : '#fff';
+    b.style.color = b.dataset.guess === guess ? '#fff' : '#333';
+    b.style.borderColor = b.dataset.guess === guess ? 'transparent' : '#ddd';
+  });
+}
+
+function revealArt() {
+  const result = document.getElementById('reveal-result');
+  let correct = 0;
+  let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  ART_PIECES.forEach(piece => {
+    const guess = artGuesses[piece.id];
+    const guessedAI = guess === 'ai';
+    const isCorrect = (guessedAI === piece.isAI);
+    if (isCorrect) correct++;
+    html += `<div style="padding:12px;border-radius:12px;background:${isCorrect ? '#f0fdf4' : '#fef2f2'};border:1.5px solid ${isCorrect ? '#10b981' : '#ef4444'}">
+      <div style="font-weight:700;font-size:0.9em">${piece.label} ${isCorrect ? '✅' : '❌'}</div>
+      <div style="font-size:0.82em;color:#555;margin-top:4px">${piece.isAI ? '🤖 AI生成' : '🧑 人类创作'}</div>
+      <div style="font-size:0.78em;color:#888;margin-top:3px">${piece.hint}</div>
+    </div>`;
+  });
+  html += '</div>';
+  html += `<div style="text-align:center;margin-top:16px;font-size:1.1em;font-weight:700;color:#7e22ce">你猜对了 ${correct}/4 张！${correct === 4 ? ' 🏆 全对！' : correct >= 2 ? ' 👏 不错！' : ' 💪 很难分辨对吧？'}</div>`;
+  result.innerHTML = html;
+  result.style.display = 'block';
+  document.getElementById('reveal-btn').disabled = true;
+}
+
+// Canvas drawing functions
+
+function drawMandala(ctx) {
+  const cx = 100, cy = 100;
+  ctx.fillStyle = '#1a0533'; ctx.fillRect(0, 0, 200, 200);
+  for (let r = 0; r < 6; r++) {
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const radius = 20 + r * 12;
+      const x = cx + Math.cos(angle) * radius;
+      const y = cy + Math.sin(angle) * radius;
+      ctx.beginPath();
+      ctx.arc(x, y, 4 - r * 0.4, 0, Math.PI * 2);
+      const hue = (i * 30 + r * 20) % 360;
+      ctx.fillStyle = `hsl(${hue},90%,70%)`;
+      ctx.fill();
+    }
+  }
+  ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+}
+
+function drawWobblyFlower(ctx) {
+  ctx.fillStyle = '#fffbeb'; ctx.fillRect(0, 0, 200, 200);
+  // Stem (slightly wobbly)
+  ctx.beginPath(); ctx.moveTo(100, 170); ctx.bezierCurveTo(95, 140, 108, 120, 100, 100);
+  ctx.strokeStyle = '#4a7c59'; ctx.lineWidth = 4; ctx.stroke();
+  // Petals (hand-drawn imperfect)
+  const petalColors = ['#f9a8d4','#fca5a5','#fdba74','#fde68a','#a7f3d0','#bae6fd'];
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2 - 0.2;
+    const wobble = (Math.sin(i * 2.7) * 4); // imperfection
+    ctx.beginPath();
+    ctx.ellipse(
+      100 + Math.cos(angle) * (30 + wobble),
+      100 + Math.sin(angle) * (30 + wobble),
+      12, 20, angle, 0, Math.PI * 2
+    );
+    ctx.fillStyle = petalColors[i]; ctx.fill();
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(100, 100, 16, 0, Math.PI * 2);
+  ctx.fillStyle = '#fde68a'; ctx.fill();
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+function drawGradientLandscape(ctx) {
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, 130);
+  sky.addColorStop(0, '#0ea5e9'); sky.addColorStop(1, '#e0f2fe');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, 200, 130);
+  // Sun (perfect circle)
+  ctx.beginPath(); ctx.arc(150, 40, 28, 0, Math.PI * 2);
+  const sunGrad = ctx.createRadialGradient(150,40,0,150,40,28);
+  sunGrad.addColorStop(0,'#fde68a'); sunGrad.addColorStop(1,'#f97316');
+  ctx.fillStyle = sunGrad; ctx.fill();
+  // Mountain (perfect triangle)
+  ctx.beginPath(); ctx.moveTo(0, 130); ctx.lineTo(80, 50); ctx.lineTo(160, 130);
+  ctx.fillStyle = '#6366f1'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(60, 130); ctx.lineTo(130, 70); ctx.lineTo(200, 130);
+  ctx.fillStyle = '#818cf8'; ctx.fill();
+  // Ground
+  ctx.fillStyle = '#4ade80'; ctx.fillRect(0, 130, 200, 70);
+}
+
+function drawChildCat(ctx) {
+  ctx.fillStyle = '#fef9c3'; ctx.fillRect(0, 0, 200, 200);
+  // Body (slightly lopsided circle)
+  ctx.beginPath(); ctx.ellipse(100, 130, 48, 45, 0.1, 0, Math.PI * 2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2.5; ctx.stroke();
+  // Head
+  ctx.beginPath(); ctx.ellipse(100, 82, 38, 35, -0.05, 0, Math.PI * 2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2.5; ctx.stroke();
+  // Ears (triangles, not perfectly placed)
+  ctx.beginPath(); ctx.moveTo(68, 60); ctx.lineTo(58, 40); ctx.lineTo(82, 52); ctx.closePath();
+  ctx.fillStyle = '#fb923c'; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(132, 60); ctx.lineTo(142, 40); ctx.lineTo(118, 52); ctx.closePath();
+  ctx.fillStyle = '#fb923c'; ctx.fill(); ctx.stroke();
+  // Eyes (slightly different sizes - hand drawn)
+  ctx.beginPath(); ctx.ellipse(88, 78, 7, 8, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e293b'; ctx.fill();
+  ctx.beginPath(); ctx.ellipse(113, 79, 6, 7, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e293b'; ctx.fill();
+  // Nose + mouth
+  ctx.beginPath(); ctx.arc(100, 90, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#fda4af'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(96, 93); ctx.quadraticCurveTo(100, 98, 104, 93);
+  ctx.strokeStyle = '#78350f'; ctx.lineWidth = 2; ctx.stroke();
+  // Whiskers (slightly uneven)
+  [[70,88,90,87],[68,91,90,91],[70,94,90,95]].forEach(([x1,y1,x2,y2]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+  [[130,88,110,87],[132,91,110,91],[130,94,110,95]].forEach(([x1,y1,x2,y2]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+}
+
+initArtGrid();
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+打开 `ai-for-anan-5.html`：
+- 4张Canvas画作正确渲染（曼陀罗/歪花/风景/猫咪）
+- 点击"🤖 AI画的"/"🧑 人类画的"按钮有颜色高亮
+- 点击"揭晓答案"后显示每张画的正确答案和解释
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 1: art guess game with canvas drawings"
+```
+
+---
+
+## Task 3: Card 2 — AI没有眼睛，但它有"感觉"（词向量图）
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+SVG交互词语地图，点击词语高亮所在概念簇。
+
+- [ ] **Step 1: 在 Card 1 后插入 Card 2 HTML**
+
+```html
+<!-- ── Card 2: 词向量图 ── -->
+<div class="card card-c2">
+  <div class="card-header">
+    <div class="badge badge-blue">🧠</div>
+    <div>
+      <h2>AI 没有眼睛，但它有"感觉"</h2>
+      <div class="subtitle">词语和概念，在 AI 眼里是一张"地图"</div>
+    </div>
+  </div>
+
+  <p class="body">AI 不是把图片、文字"记住"——它把所有东西都变成<strong>数字</strong>，然后把意思相近的东西放在"地图"上相近的位置。这叫做<strong>向量（Vector）</strong>。</p>
+
+  <div class="analogy-box">
+    <strong>🎵 比喻：音乐的感觉</strong><br>
+    你不用记住每首歌的每个音符，但你知道「快乐的音乐」和「悲伤的音乐」听起来不一样。AI 也一样——它把「猫」和「爪子」放在地图上很近的位置，因为它们经常一起出现。
+  </div>
+
+  <p class="body">点击下面地图上的任意词语，看看它的"邻居们"：</p>
+
+  <div style="background:#0f0c29;border-radius:20px;padding:16px;margin:16px 0">
+    <svg id="word-map" width="100%" viewBox="0 0 500 320" style="display:block"></svg>
+  </div>
+  <div id="word-info" style="min-height:40px;padding:10px 14px;background:#f5f3ff;border-radius:12px;font-size:0.9em;color:#555;line-height:1.7">
+    👆 点击任意词语，看它和哪些词"住得近"
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>💡 编程小知识：</strong>「向量」就是一串数字。比如「猫」= [0.8, 0.2, 0.9, …]（共768个数字）。数字越像，意思越接近。程序员可以用数学计算两个词有多"相似"——这就是AI理解语言的秘密。
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 在 `<script>` 中加入 Card 2 的词向量图 JS**
+
+```javascript
+// ─── Card 2: Word Map ─────────────────────────────────────────────────────────
+
+const WORD_CLUSTERS = [
+  {
+    name: '猫咪世界', color: '#f97316',
+    words: [
+      { text: '猫', x: 130, y: 80 },
+      { text: '爪子', x: 80, y: 130 },
+      { text: '毛茸茸', x: 170, y: 50 },
+      { text: '喵', x: 60, y: 80 },
+      { text: '胡须', x: 150, y: 130 },
+    ]
+  },
+  {
+    name: '开心世界', color: '#10b981',
+    words: [
+      { text: '开心', x: 330, y: 70 },
+      { text: '笑', x: 390, y: 50 },
+      { text: '彩虹', x: 420, y: 110 },
+      { text: '派对', x: 350, y: 130 },
+      { text: '礼物', x: 290, y: 110 },
+    ]
+  },
+  {
+    name: '悲伤世界', color: '#8b5cf6',
+    words: [
+      { text: '悲伤', x: 230, y: 230 },
+      { text: '哭', x: 180, y: 270 },
+      { text: '雨', x: 280, y: 260 },
+      { text: '灰色', x: 150, y: 240 },
+      { text: '孤独', x: 270, y: 210 },
+    ]
+  },
+  {
+    name: '宇宙世界', color: '#06b6d4',
+    words: [
+      { text: '星星', x: 410, y: 220 },
+      { text: '火箭', x: 450, y: 260 },
+      { text: '宇宙', x: 380, y: 260 },
+      { text: '月亮', x: 440, y: 190 },
+      { text: '飞船', x: 400, y: 290 },
+    ]
+  }
+];
+
+function initWordMap() {
+  const svg = document.getElementById('word-map');
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // Draw connection lines within each cluster (initially hidden)
+  WORD_CLUSTERS.forEach(cluster => {
+    cluster.words.forEach((w1, i) => {
+      cluster.words.forEach((w2, j) => {
+        if (j <= i) return;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', w1.x); line.setAttribute('y1', w1.y);
+        line.setAttribute('x2', w2.x); line.setAttribute('y2', w2.y);
+        line.setAttribute('stroke', cluster.color);
+        line.setAttribute('stroke-width', '1.5');
+        line.setAttribute('opacity', '0');
+        line.classList.add('cluster-line', `cluster-${cluster.name}`);
+        line.style.transition = 'opacity 0.3s';
+        svg.appendChild(line);
+      });
+    });
+  });
+
+  // Draw word labels
+  WORD_CLUSTERS.forEach(cluster => {
+    cluster.words.forEach(word => {
+      const g = document.createElementNS(ns, 'g');
+      g.style.cursor = 'pointer';
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', word.x); circle.setAttribute('cy', word.y);
+      circle.setAttribute('r', '18');
+      circle.setAttribute('fill', cluster.color);
+      circle.setAttribute('opacity', '0.15');
+      circle.classList.add('word-circle', `cluster-${cluster.name}`);
+      circle.style.transition = 'opacity 0.3s, r 0.3s';
+
+      const text = document.createElementNS(ns, 'text');
+      text.setAttribute('x', word.x); text.setAttribute('y', word.y + 5);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', cluster.color);
+      text.setAttribute('font-size', '14');
+      text.setAttribute('font-weight', '700');
+      text.setAttribute('font-family', 'PingFang SC, 微软雅黑, sans-serif');
+      text.textContent = word.text;
+
+      g.appendChild(circle); g.appendChild(text);
+      g.addEventListener('click', () => highlightCluster(cluster));
+      svg.appendChild(g);
+    });
+  });
+}
+
+function highlightCluster(targetCluster) {
+  // Reset all
+  document.querySelectorAll('.cluster-line').forEach(el => el.setAttribute('opacity', '0'));
+  document.querySelectorAll('.word-circle').forEach(el => el.setAttribute('opacity', '0.15'));
+
+  // Highlight target cluster
+  document.querySelectorAll(`.cluster-${targetCluster.name}`).forEach(el => {
+    el.setAttribute('opacity', el.tagName === 'line' ? '0.6' : '0.4');
+  });
+
+  document.getElementById('word-info').innerHTML =
+    `<strong style="color:${targetCluster.color}">「${targetCluster.name}」</strong> ——
+    这个区域里的词，在AI的"地图"上住得很近：
+    <strong>${targetCluster.words.map(w => w.text).join('、')}</strong>。
+    因为它们经常出现在同样的句子里，AI 把它们的"数字地址"也排在一起。`;
+}
+
+initWordMap();
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+- SVG词语地图在深色背景上正确渲染4个彩色词簇
+- 点击任意词语，同簇词语之间出现连线，说明文字更新
+- 点击不同簇，高亮切换正确
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 2: word embedding visualization"
+```
+
+---
+
+## Task 4: Card 3 — 从噪点到图像（扩散动画，核心交互）
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+Canvas动画：0步=纯噪点，20步=清晰图像，滑块控制。3个主题可切换。
+
+- [ ] **Step 1: 插入 Card 3 HTML**
+
+```html
+<!-- ── Card 3: 扩散动画 ── -->
+<div class="card card-c3">
+  <div class="card-header">
+    <div class="badge badge-pink">✨</div>
+    <div>
+      <h2>从噪点到图像</h2>
+      <div class="subtitle">AI 是怎么「想象」出一张画的？</div>
+    </div>
+  </div>
+
+  <p class="body">生成式AI用的核心技术叫<strong>扩散模型（Diffusion Model）</strong>——它的工作方式让人吃惊：<strong>先把画面变成一片随机噪点，再一步步把噪点"去掉"，直到图像慢慢浮现。</strong></p>
+
+  <div class="analogy-box">
+    <strong>📸 比喻：暗房冲洗照片</strong><br>
+    胶片时代，照片要在暗房里慢慢显影——一开始什么都看不出来，在化学液体里泡着，图像才一点点出现。扩散模型就像反过来的这个过程：从"什么都看不见"开始，一步步把图像"冲"出来。
+  </div>
+
+  <p class="body">选一个主题，然后拖动滑块——看看 AI 是怎么从一片雪花噪点里"想象"出图像的：</p>
+
+  <!-- Subject picker -->
+  <div style="display:flex;gap:10px;margin:16px 0;flex-wrap:wrap">
+    <button class="btn btn-purple" id="subj-cat"    onclick="setSubject('cat')"     >🐱 小猫</button>
+    <button class="btn btn-ghost"  id="subj-rocket" onclick="setSubject('rocket')"  >🚀 宇宙飞船</button>
+    <button class="btn btn-ghost"  id="subj-cake"   onclick="setSubject('cake')"    >🎂 彩虹蛋糕</button>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin:16px 0">
+    <div style="flex:0 0 auto">
+      <canvas id="diffusion-canvas" width="260" height="260"
+        style="border-radius:16px;border:3px solid #e0e4ff;display:block"></canvas>
+      <div id="step-label" style="text-align:center;margin-top:8px;font-size:0.85em;color:#888">
+        步骤 0 / 20 · 纯噪点
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:0.9em;font-weight:700;color:#555;margin-bottom:12px">🎚️ 去噪步骤</div>
+      <input type="range" id="diffusion-slider" min="0" max="20" value="0"
+        style="width:100%;accent-color:#a855f7;cursor:pointer"
+        oninput="onSliderChange(this.value)">
+      <div style="display:flex;justify-content:space-between;font-size:0.78em;color:#aaa;margin-top:4px">
+        <span>纯噪点</span><span>清晰图像</span>
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn btn-purple" onclick="animateDiffusion()" id="anim-btn">▶ 自动播放</button>
+        <button class="btn btn-ghost" onclick="resetDiffusion()" style="margin-left:8px">🔄 重置</button>
+      </div>
+      <div id="diffusion-hint" style="margin-top:16px;padding:12px;background:#f5f3ff;border-radius:12px;font-size:0.85em;color:#555;line-height:1.7">
+        👆 拖动滑块到中间，看看 AI 脑中模糊的"幽灵图"！
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 加入扩散动画 JS**
+
+```javascript
+// ─── Card 3: Diffusion Animation ─────────────────────────────────────────────
+
+let currentSubject = 'cat';
+let animTimer = null;
+// Seeded noise for consistent frames
+const noiseSeeds = Array.from({length: 260*260*4}, () => Math.random());
+
+function setSubject(subj) {
+  currentSubject = subj;
+  ['cat','rocket','cake'].forEach(s => {
+    const btn = document.getElementById('subj-' + s);
+    btn.className = s === subj ? 'btn btn-purple' : 'btn btn-ghost';
+  });
+  resetDiffusion();
+}
+
+function resetDiffusion() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  document.getElementById('diffusion-slider').value = 0;
+  document.getElementById('anim-btn').disabled = false;
+  onSliderChange(0);
+}
+
+function onSliderChange(step) {
+  step = parseInt(step);
+  renderDiffusionFrame(step);
+  const labels = ['纯噪点——什么都看不出来','还是噪点……','好像有点什么？','隐约有个形状','越来越清晰了！','慢慢显现……','能猜出来是什么吗？','越来越像了','轮廓出现了！','细节增加中','基本成形了','图像越来越真实','快完成了！','细节丰富起来','非常接近了！','几乎完美','精细细节出现','非常清晰','几近完成','最后润色','✨ 完成！清晰图像生成！'];
+  document.getElementById('step-label').textContent = `步骤 ${step} / 20 · ${labels[step] || ''}`;
+  document.getElementById('diffusion-hint').textContent =
+    step === 0 ? '👆 拖动滑块到中间，看看 AI 脑中模糊的"幽灵图"！' :
+    step < 10  ? `🌫️ AI 正在从随机噪点里"想象"——这个混沌里藏着${currentSubject === 'cat' ? '一只小猫' : currentSubject === 'rocket' ? '一艘飞船' : '一个蛋糕'}！` :
+    step < 18  ? '🎨 越来越清晰了！AI 每一步都在减少噪点、增加细节。' :
+    '✅ 这就是扩散模型——从随机噪点出发，一步步"去噪"，想象出图像！';
+}
+
+function renderDiffusionFrame(step) {
+  const canvas = document.getElementById('diffusion-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = 260, H = 260;
+  const progress = step / 20;
+
+  // Draw clean image
+  ctx.clearRect(0, 0, W, H);
+  drawCleanSubject(ctx, currentSubject, W, H);
+  const cleanData = ctx.getImageData(0, 0, W, H);
+
+  // Create noise overlay
+  const noiseData = ctx.createImageData(W, H);
+  const noiseAmount = 1 - progress;
+  for (let i = 0; i < W * H * 4; i += 4) {
+    const ni = (i / 4 | 0);
+    const noise = noiseSeeds[ni] * 255;
+    // Blend clean pixel with noise
+    noiseData.data[i]   = cleanData.data[i]   * progress + noise * noiseAmount;
+    noiseData.data[i+1] = cleanData.data[i+1] * progress + noise * noiseAmount;
+    noiseData.data[i+2] = cleanData.data[i+2] * progress + noise * noiseAmount;
+    noiseData.data[i+3] = 255;
+  }
+  ctx.putImageData(noiseData, 0, 0);
+}
+
+function drawCleanSubject(ctx, subj, W, H) {
+  if (subj === 'cat') drawDiffCat(ctx, W, H);
+  else if (subj === 'rocket') drawDiffRocket(ctx, W, H);
+  else drawDiffCake(ctx, W, H);
+}
+
+function drawDiffCat(ctx, W, H) {
+  // Background
+  ctx.fillStyle = '#fef9c3'; ctx.fillRect(0, 0, W, H);
+  // Body
+  ctx.beginPath(); ctx.ellipse(130, 180, 70, 65, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  // Head
+  ctx.beginPath(); ctx.ellipse(130, 100, 55, 50, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#fb923c'; ctx.fill();
+  // Ears
+  [[95,60,75,30,110,65],[165,60,185,30,150,65]].forEach(([x1,y1,x2,y2,x3,y3]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.closePath();
+    ctx.fillStyle = '#fb923c'; ctx.fill();
+  });
+  // Eyes
+  ctx.beginPath(); ctx.ellipse(112, 95, 10, 12, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#16a34a'; ctx.fill();
+  ctx.beginPath(); ctx.ellipse(148, 95, 10, 12, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#16a34a'; ctx.fill();
+  [[112,95],[148,95]].forEach(([x,y]) => {
+    ctx.beginPath(); ctx.ellipse(x, y, 5, 7, 0, 0, Math.PI*2);
+    ctx.fillStyle = '#111'; ctx.fill();
+  });
+  // Nose
+  ctx.beginPath(); ctx.arc(130, 113, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#fda4af'; ctx.fill();
+  // Tail
+  ctx.beginPath(); ctx.moveTo(200, 200); ctx.bezierCurveTo(240,160,250,120,220,100);
+  ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.stroke();
+}
+
+function drawDiffRocket(ctx, W, H) {
+  // Space background
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#0c0a1e'); bg.addColorStop(1,'#1e1b4b');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+  // Stars
+  for (let i=0;i<40;i++){
+    ctx.beginPath();
+    ctx.arc(Math.sin(i*137)*130+130, Math.cos(i*97)*130+130, 1.5, 0, Math.PI*2);
+    ctx.fillStyle='#fff'; ctx.fill();
+  }
+  // Rocket body
+  ctx.beginPath(); ctx.roundRect(100, 80, 60, 120, 30);
+  const rBody = ctx.createLinearGradient(100,0,160,0);
+  rBody.addColorStop(0,'#c7d2fe'); rBody.addColorStop(1,'#818cf8');
+  ctx.fillStyle = rBody; ctx.fill();
+  // Nose cone
+  ctx.beginPath(); ctx.moveTo(130,30); ctx.lineTo(100,80); ctx.lineTo(160,80); ctx.closePath();
+  ctx.fillStyle='#f43f5e'; ctx.fill();
+  // Window
+  ctx.beginPath(); ctx.arc(130,120,22,0,Math.PI*2);
+  ctx.fillStyle='#bae6fd'; ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.stroke();
+  // Fins
+  [[80,170,100,160,100,200],[180,170,160,160,160,200]].forEach(([x1,y1,x2,y2,x3,y3]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3); ctx.closePath();
+    ctx.fillStyle='#6366f1'; ctx.fill();
+  });
+  // Flame
+  ctx.beginPath(); ctx.moveTo(110,200); ctx.bezierCurveTo(110,240,130,250,130,250);
+  ctx.bezierCurveTo(130,250,150,240,150,200);
+  ctx.fillStyle='#f97316'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(118,200); ctx.bezierCurveTo(118,230,130,240,130,240);
+  ctx.bezierCurveTo(130,240,142,230,142,200);
+  ctx.fillStyle='#fde68a'; ctx.fill();
+}
+
+function drawDiffCake(ctx, W, H) {
+  ctx.fillStyle='#fff0f9'; ctx.fillRect(0,0,W,H);
+  // Layers (bottom to top)
+  const layers=[{y:190,h:50,c:'#fca5a5'},{y:148,h:42,c:'#86efac'},{y:110,h:38,c:'#93c5fd'},{y:76,h:34,c:'#fde68a'}];
+  layers.forEach(({y,h,c}) => {
+    ctx.beginPath(); ctx.roundRect(55,y,150,h,6); ctx.fillStyle=c; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+    // frosting drips
+    for(let x=70;x<200;x+=20){
+      ctx.beginPath(); ctx.arc(x,y,8,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+    }
+  });
+  // Candles
+  [[90,60],[130,50],[170,60]].forEach(([x,y]) => {
+    ctx.fillStyle='#a855f7'; ctx.fillRect(x-5,y,10,30); // candle
+    ctx.beginPath(); ctx.ellipse(x,y,5,8,0,0,Math.PI*2); // flame
+    const flameGrad = ctx.createRadialGradient(x,y,0,x,y,8);
+    flameGrad.addColorStop(0,'#fde68a'); flameGrad.addColorStop(1,'#f97316');
+    ctx.fillStyle=flameGrad; ctx.fill();
+  });
+  // Rainbow decoration
+  ['#f87171','#fb923c','#fbbf24','#4ade80','#60a5fa','#a78bfa'].forEach((c,i) => {
+    ctx.beginPath(); ctx.arc(130,230,80-i*8,Math.PI,0,false);
+    ctx.strokeStyle=c; ctx.lineWidth=4; ctx.stroke();
+  });
+  // Stars around cake
+  ['⭐','✨','🌟'].forEach((s,i) => {
+    ctx.font='20px serif'; ctx.fillText(s, 30+i*90, 90);
+  });
+}
+
+function animateDiffusion() {
+  if (animTimer) return;
+  const slider = document.getElementById('diffusion-slider');
+  slider.value = 0; onSliderChange(0);
+  let step = 0;
+  document.getElementById('anim-btn').disabled = true;
+  animTimer = setInterval(() => {
+    step++;
+    slider.value = step;
+    onSliderChange(step);
+    if (step >= 20) { clearInterval(animTimer); animTimer = null; document.getElementById('anim-btn').disabled = false; }
+  }, 200);
+}
+
+onSliderChange(0);
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+- 3个主题按钮切换正确，默认显示小猫
+- 滑块从0（噪点）到20（清晰图像）连续变化
+- 停在步骤10左右能看到"幽灵图"（图像与噪点各半）
+- "自动播放"按钮触发动画，约4秒完成
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 3: diffusion animation with noise-to-image slider"
+```
+
+---
+
+## Task 5: Card 4 — 你来当提示工程师
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+3×3×3 = 27种组合的Prompt构建器，每种组合显示对应的模拟生成结果文字。
+
+- [ ] **Step 1: 插入 Card 4 HTML**
+
+```html
+<!-- ── Card 4: Prompt 组合器 ── -->
+<div class="card card-c4">
+  <div class="card-header">
+    <div class="badge badge-cyan">🎛️</div>
+    <div>
+      <h2>你来当提示工程师</h2>
+      <div class="subtitle">组合参数，生成专属 Prompt</div>
+    </div>
+  </div>
+
+  <p class="body">告诉 AI 你想要什么，它就画什么——这就是<strong>提示工程（Prompt Engineering）</strong>。一个好的 Prompt 是由多个「参数」组合而成的。</p>
+
+  <p class="body">选择下面三行的选项，看看你组合出的 Prompt 会让 AI 画出什么：</p>
+
+  <!-- Row 1: Subject -->
+  <div style="margin:16px 0">
+    <div style="font-size:0.82em;font-weight:700;color:#888;margin-bottom:8px;letter-spacing:1px">🎯 主题（Subject）</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="subj-row">
+      <button class="prompt-btn active-prompt" data-row="subj" data-val="cat" onclick="setPrompt('subj','cat',this)">🐱 一只猫</button>
+      <button class="prompt-btn" data-row="subj" data-val="dragon" onclick="setPrompt('subj','dragon',this)">🐉 一条龙</button>
+      <button class="prompt-btn" data-row="subj" data-val="astronaut" onclick="setPrompt('subj','astronaut',this)">👩‍🚀 宇航员</button>
+    </div>
+  </div>
+
+  <!-- Row 2: Style -->
+  <div style="margin:16px 0">
+    <div style="font-size:0.82em;font-weight:700;color:#888;margin-bottom:8px;letter-spacing:1px">🎨 风格（Style）</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="prompt-btn active-prompt" data-row="style" data-val="watercolor" onclick="setPrompt('style','watercolor',this)">🖌️ 水彩画</button>
+      <button class="prompt-btn" data-row="style" data-val="pixel" onclick="setPrompt('style','pixel',this)">👾 像素风</button>
+      <button class="prompt-btn" data-row="style" data-val="oilpaint" onclick="setPrompt('style','oilpaint',this)">🖼️ 油画</button>
+    </div>
+  </div>
+
+  <!-- Row 3: Mood -->
+  <div style="margin:16px 0">
+    <div style="font-size:0.82em;font-weight:700;color:#888;margin-bottom:8px;letter-spacing:1px">💫 心情（Mood）</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="prompt-btn active-prompt" data-row="mood" data-val="happy" onclick="setPrompt('mood','happy',this)">😊 开心</button>
+      <button class="prompt-btn" data-row="mood" data-val="mystery" onclick="setPrompt('mood','mystery',this)">🌙 神秘</button>
+      <button class="prompt-btn" data-row="mood" data-val="epic" onclick="setPrompt('mood','epic',this)">⚡ 壮观</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div style="background:#f8f9ff;border:1.5px solid #e0e4ff;border-radius:16px;padding:18px;margin-top:8px">
+    <div style="font-size:0.78em;color:#aaa;margin-bottom:10px;display:flex;align-items:center;gap:5px">
+      🤖 生成的 Prompt
+    </div>
+    <div id="prompt-text" style="font-family:monospace;background:#1a1a2e;color:#a5f3fc;padding:10px 14px;border-radius:8px;font-size:0.88em;line-height:1.6;margin-bottom:12px"></div>
+    <div style="font-size:0.82em;color:#888;margin-bottom:6px">✨ 如果真的发给AI，它可能会画出这样的画：</div>
+    <div id="prompt-result" style="color:#333;font-size:0.92em;line-height:1.8;min-height:60px"></div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>💡 编程钩子：</strong>你刚才选的「主题」「风格」「心情」，在程序里叫做<strong>「参数（Parameters）」</strong>——就像 Scratch 里你往积木里拖进去的那个数字或颜色。<br>
+    函数 <code style="background:#ede9fe;padding:2px 6px;border-radius:4px">generateImage(subject="猫", style="水彩", mood="开心")</code>——这就是程序员写出来的样子。
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 加入 CSS（prompt-btn）到 `<style>` 块中**
+
+```css
+/* ── Prompt Builder ── */
+.prompt-btn {
+  padding: 8px 18px; border: 2px solid #e0e4ff;
+  border-radius: 30px; background: #f5f3ff;
+  cursor: pointer; font-family: inherit; font-size: 0.9em;
+  color: #555; transition: all 0.15s;
+}
+.prompt-btn:hover { border-color: #a855f7; }
+.prompt-btn.active-prompt { background: #a855f7; color: #fff; border-color: #a855f7; }
+```
+
+- [ ] **Step 3: 加入 Card 4 的 JS**
+
+```javascript
+// ─── Card 4: Prompt Builder ───────────────────────────────────────────────────
+
+const promptState = { subj: 'cat', style: 'watercolor', mood: 'happy' };
+
+const PROMPT_SUBJECTS = {
+  cat:       '一只可爱的猫咪',
+  dragon:    '一条威风的东方龙',
+  astronaut: '一位勇敢的女宇航员',
+};
+const PROMPT_STYLES = {
+  watercolor: '水彩画风格，颜色柔和，笔触温暖',
+  pixel:      '像素艺术风格，8-bit复古游戏感',
+  oilpaint:   '古典油画风格，光影细腻，纹理丰富',
+};
+const PROMPT_MOODS = {
+  happy:   '阳光明媚，充满活力，色彩鲜艳',
+  mystery: '月光下，神秘幽深，薄雾缭绕',
+  epic:    '史诗壮观，雷电交加，气势磅礴',
+};
+
+const PROMPT_RESULTS = {
+  cat_watercolor_happy:       '🐱 画面中央是一只圆滚滚的橙色小猫，正在草地上打滚。水彩晕染出温柔的光晕，猫咪的胡须根根分明，大眼睛里倒映着蓝天白云。',
+  cat_watercolor_mystery:     '🌙 月光下，一只银灰色的猫静静坐在屋顶上。水彩渲染出朦胧的雾气，猫咪的眼睛是神秘的金色，周围散落着淡蓝色的星光。',
+  cat_watercolor_epic:        '⚡ 一只巨大的猫咪俯瞰大地，身后是翻腾的乌云和闪电。水彩笔触奔放，猫咪的毛发随风飞扬，气势震撼，仿佛是守护大地的神灵。',
+  cat_pixel_happy:            '👾 一只8-bit风格的橙色小猫，正在像素化的草地上蹦跳。背景是清晰的像素化蓝天，猫咪每走一步都会有小星星✨蹦出来。复古游戏感十足！',
+  cat_pixel_mystery:          '🌙 像素风格的深夜场景，一只蓝色的猫正透过8-bit风格的窗户望向像素化的月亮。画面只有4种颜色，像最老的Game Boy游戏。',
+  cat_pixel_epic:             '⚡ 像素化的史诗战场！一只像素猫骑着像素龙，背后是像素化的爆炸和烟火。就算只有几十个像素，气势一点也不输！',
+  cat_oilpaint_happy:         '🖼️ 一幅仿佛来自17世纪的油画——小猫懒洋洋地躺在锦缎坐垫上，阳光从窗帘缝隙间斜射进来，在金黄色的毛发上打出细腻的高光。',
+  cat_oilpaint_mystery:       '🎨 黑暗背景中，一只白色的猫从阴影里探出脑袋，只有眼睛和胡须被烛光照亮。油画笔触厚重，光影戏剧化，充满悬疑。',
+  cat_oilpaint_epic:          '⚡ 如同史诗历史画的巨幅油画——猫咪将军站在山巅，带领数百只猫大军准备战斗，乌云和闪电在背后翻涌，磅礴大气。',
+  dragon_watercolor_happy:    '🐉 一条彩虹色的东方龙飞翔在云朵间，水彩晕染出梦幻的七彩光芒。龙须随风飘动，爪子捧着一颗闪亮的宝珠，神气又可爱！',
+  dragon_watercolor_mystery:  '🌙 水墨与水彩交融的画面——一条古老的龙若隐若现在云雾之中，只能看见鳞片的轮廓和一双深邃的眼睛，神秘莫测。',
+  dragon_watercolor_epic:     '⚡ 史诗级水彩——东方神龙破云而出，九节龙身在烈风中翻腾，鳞片迸射光芒，每一片云彩都被它的气息染成金红色。',
+  dragon_pixel_happy:         '👾 可爱的像素小龙！只有16×16像素，却活灵活现——绿色的身体，黄色的肚皮，每秒8帧的像素动画让它不停摇摆尾巴。',
+  dragon_pixel_mystery:       '🌙 8-bit风格的地下城，一条暗紫色的像素龙盘踞在宝藏前，只有它眼睛的红色像素在闪烁。背景音效一定是那种神秘的8-bit旋律。',
+  dragon_pixel_epic:          '⚡ 像素化的终极BOSS战！一条巨大的红色像素龙占满整个画面，正在喷射像素化的火焰，屏幕都在"像素化震动"！',
+  dragon_oilpaint_happy:      '🖼️ 仿宋代的油画风格——彩云之间，一条五彩祥龙正在追逐一颗金色宝珠，笑眯眯地。神话里的龙，原来这么可爱。',
+  dragon_oilpaint_mystery:    '🎨 黑暗系古典油画——蛟龙在墨色的深渊中游动，只有鳞片反光的银色和眼睛发出的幽光，神秘而古老。',
+  dragon_oilpaint_epic:       '⚡ 宏大的史诗油画——神龙啸天，雷霆万钧，山河大地都在颤抖。笔触厚重有力，每一片鳞片都有金属般的质感，震撼人心。',
+  astronaut_watercolor_happy: '👩‍🚀 水彩风格的太空漫步——女宇航员在蔚蓝地球背景下伸出手，仿佛要摘下一颗小星星。头盔里倒映着温柔的星河，笑容灿烂。',
+  astronaut_watercolor_mystery:'🌙 深空中，宇航员独自漂浮，身后是无尽的宇宙黑暗。水彩晕染出神秘的星云，远方有一个她还不知道是什么的发光体……',
+  astronaut_watercolor_epic:  '⚡ 史诗水彩——宇航员站在一颗即将爆炸的行星表面，星球背后是超新星的光芒，她的姿态沉着而勇敢，光芒将她的剪影燃成金色。',
+  astronaut_pixel_happy:      '👾 像素风太空探险！8-bit女宇航员跳上一颗像素化的小星球，发现了一朵会发光的像素花，背景循环播放欢快的8-bit旋律。',
+  astronaut_pixel_mystery:    '🌙 像素版的太空悬疑游戏——宇航员在废弃空间站里探索，只有手电筒的像素光圈可见，黑暗中有奇怪的像素移动……',
+  astronaut_pixel_epic:       '⚡ 像素化的宇宙大战！宇航员驾驶像素飞船冲向巨型像素外星人，激光交错，像素爆炸漫天，经典太空射击游戏即视感！',
+  astronaut_oilpaint_happy:   '🖼️ 文艺复兴风格的太空油画——宇航员如同圣母一样温柔，漂浮在宇宙中，一只空间猫咪蜷缩在她怀里，古典的光芒照亮她的头盔。',
+  astronaut_oilpaint_mystery: '🎨 黑暗系古典油画——只有宇航服的金属反光照亮画面，她面对的是完全未知的漆黑宇宙，光与暗的极致对比，充满哲学感。',
+  astronaut_oilpaint_epic:    '⚡ 史诗级宇宙史画——女宇航员张开双臂，身后是正在坍塌的巨型星系，光芒将她的剪影染成神明，见证宇宙的诞生与消亡。',
+};
+
+function setPrompt(row, val, btn) {
+  promptState[row] = val;
+  btn.closest('div').querySelectorAll('.prompt-btn').forEach(b => b.classList.remove('active-prompt'));
+  btn.classList.add('active-prompt');
+  renderPrompt();
+}
+
+function renderPrompt() {
+  const { subj, style, mood } = promptState;
+  const promptText = `一幅${PROMPT_STYLES[style]}的图画：${PROMPT_SUBJECTS[subj]}，${PROMPT_MOODS[mood]}。`;
+  document.getElementById('prompt-text').textContent = promptText;
+  const key = `${subj}_${style}_${mood}`;
+  document.getElementById('prompt-result').textContent = PROMPT_RESULTS[key] || '✨ 一幅独特的AI生成图像……';
+}
+
+renderPrompt();
+```
+
+- [ ] **Step 4: 浏览器验证**
+
+- 三行按钮选择有高亮效果
+- Prompt文字随选择实时更新
+- 27种组合（3×3×3）均有对应的结果文字
+- 编程钩子的 `generateImage(...)` 代码样例正确显示
+
+- [ ] **Step 5: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 4: prompt composer with 27 combinations"
+```
+
+---
+
+## Task 6: Card 5 — 从Scratch到AI（进化链）
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+可展开的3行概念对比：Scratch积木 → Python代码 → AI中的对应概念。
+
+- [ ] **Step 1: 插入 Card 5 HTML**
+
+```html
+<!-- ── Card 5: Scratch→Python→AI ── -->
+<div class="card card-c5">
+  <div class="card-header">
+    <div class="badge badge-amber">🚀</div>
+    <div>
+      <h2>从 Scratch 到 AI：一步步</h2>
+      <div class="subtitle">你已经在做 AI 在做的事了！</div>
+    </div>
+  </div>
+
+  <p class="body">你用过 Scratch 吗？里面的积木其实就是编程的基础。而编程的基础，正是 AI 运转的底层逻辑。点击每一行，看看它们的联系：</p>
+
+  <div id="scratch-chain" style="margin:20px 0;display:flex;flex-direction:column;gap:12px"></div>
+
+  <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:20px;padding:24px;margin-top:8px;text-align:center">
+    <div style="font-size:1.2em;font-weight:700;color:#fff;line-height:1.8;margin-bottom:8px">
+      "你在 Scratch 里做的事，和 AI 做的事是同一件事——<br>只是<span style="color:#fde68a">规模不同</span>。"
+    </div>
+    <div style="color:#a5f3fc;font-size:1em;line-height:1.7">
+      程序员用数字创造艺术。<br>
+      <strong style="color:#f0abfc">这就是你可以成为的人。</strong>
+    </div>
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 加入 Card 5 的 JS**
+
+```javascript
+// ─── Card 5: Scratch → Python → AI Chain ─────────────────────────────────────
+
+const CHAIN_ITEMS = [
+  {
+    icon: '🎲',
+    title: '随机 · 创造未知',
+    scratch: { color: '#f59e0b', text: '随机数 (1 到 10)', label: 'Scratch 积木' },
+    python: 'import random\nrandom.randint(1, 10)',
+    ai: '扩散模型从「纯随机噪点」出发——每一个像素都是随机数。这团随机，就是AI创作一切的起点。',
+    expanded: false,
+  },
+  {
+    icon: '🔀',
+    title: '规则 · 做出决策',
+    scratch: { color: '#10b981', text: '如果 <条件> 那么…否则…', label: 'Scratch 积木' },
+    python: 'if temperature > 0.5:\n    add_detail()\nelse:\n    keep_noise()',
+    ai: 'AI每一步"去噪"都在做判断：这个像素应该更亮还是更暗？更接近猫的颜色还是背景？无数个"如果…那么"，合起来就是智能。',
+    expanded: false,
+  },
+  {
+    icon: '🔁',
+    title: '循环 · 不断改进',
+    scratch: { color: '#8b5cf6', text: '重复 (20) 次', label: 'Scratch 积木' },
+    python: 'for step in range(20):\n    denoise_one_step(image)',
+    ai: '你刚才拖动的那个滑块——从第0步到第20步——正是AI在循环执行去噪。训练一个大模型需要循环数百亿次，每次都在微调参数，让结果更好。',
+    expanded: false,
+  },
+];
+
+function initChain() {
+  const container = document.getElementById('scratch-chain');
+  CHAIN_ITEMS.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'border:2px solid #e0e4ff;border-radius:16px;overflow:hidden;transition:border-color 0.2s';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;background:#f9f7ff';
+    header.innerHTML = `
+      <span style="font-size:1.6em">${item.icon}</span>
+      <div style="flex:1">
+        <div style="font-weight:700;color:#1a1a2e">${item.title}</div>
+        <div style="font-size:0.8em;color:#888;margin-top:2px">点击展开对比</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:0.75em;background:#f0fdf4;color:#065f46;border-radius:10px;padding:2px 8px;border:1px solid #bbf7d0">Scratch</span>
+        <span style="font-size:0.75em;background:#eff6ff;color:#1e40af;border-radius:10px;padding:2px 8px;border:1px solid #bfdbfe">Python</span>
+        <span style="font-size:0.75em;background:#fdf4ff;color:#7e22ce;border-radius:10px;padding:2px 8px;border:1px solid #e9d5ff">AI</span>
+        <span id="arrow-${i}" style="font-size:1.2em;color:#aaa;transition:transform 0.2s">›</span>
+      </div>`;
+    header.onclick = () => toggleChain(i, row);
+
+    const body = document.createElement('div');
+    body.id = `chain-body-${i}`;
+    body.style.cssText = 'display:none;padding:16px 18px;border-top:1.5px solid #e0e4ff;background:#fff';
+    body.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div style="background:${item.scratch.color}22;border:1.5px solid ${item.scratch.color}66;border-radius:12px;padding:12px">
+          <div style="font-size:0.72em;font-weight:700;color:${item.scratch.color};margin-bottom:6px">🟨 ${item.scratch.label}</div>
+          <div style="font-size:0.9em;font-weight:700;color:#333;background:#fff;border-radius:8px;padding:6px 10px;border:1.5px solid ${item.scratch.color}">${item.scratch.text}</div>
+        </div>
+        <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:12px">
+          <div style="font-size:0.72em;font-weight:700;color:#1e40af;margin-bottom:6px">🐍 Python 代码</div>
+          <pre style="font-family:monospace;font-size:0.82em;color:#1e40af;white-space:pre-wrap;margin:0">${item.python}</pre>
+        </div>
+        <div style="background:#fdf4ff;border:1.5px solid #e9d5ff;border-radius:12px;padding:12px">
+          <div style="font-size:0.72em;font-weight:700;color:#7e22ce;margin-bottom:6px">🤖 AI 中的对应</div>
+          <div style="font-size:0.82em;color:#555;line-height:1.6">${item.ai}</div>
+        </div>
+      </div>`;
+
+    row.appendChild(header);
+    row.appendChild(body);
+    container.appendChild(row);
+  });
+}
+
+function toggleChain(i, row) {
+  const body = document.getElementById(`chain-body-${i}`);
+  const arrow = document.getElementById(`arrow-${i}`);
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
+  row.style.borderColor = isOpen ? '#e0e4ff' : '#a855f7';
+}
+
+initChain();
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+- 3行概念对比，点击展开显示三列（Scratch / Python / AI）
+- Scratch积木样式有黄色/绿色/紫色色块区分
+- Python代码用等宽字体正确显示换行
+- 底部深色引语卡片样式正确
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 5: scratch-to-python-to-ai evolution chain"
+```
+
+---
+
+## Task 7: Card 6 — 生成式AI能创造什么？
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+6个应用领域的展示网格。
+
+- [ ] **Step 1: 插入 Card 6 HTML**
+
+```html
+<!-- ── Card 6: 应用画廊 ── -->
+<div class="card card-c6">
+  <div class="card-header">
+    <div class="badge badge-green">🌍</div>
+    <div>
+      <h2>生成式 AI 能创造什么？</h2>
+      <div class="subtitle">这些，都是程序员在创造的东西</div>
+    </div>
+  </div>
+
+  <p class="body">生成式AI不只会画画——它正在改变创作的每一个领域。点击任意卡片，看看你也能参与的方式：</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0" id="app-gallery"></div>
+
+  <div class="analogy-box" style="margin-top:8px">
+    <strong>🎯 关键：这些都需要程序员</strong><br>
+    Midjourney 需要工程师写扩散模型的代码。Suno 需要工程师设计音频神经网络。Sora 需要工程师实现视频生成架构。<br>
+    <strong>每一个"魔法"背后，都有一个会编程的人。</strong>
+  </div>
+</div>
+```
+
+- [ ] **Step 2: 加入 Card 6 的 JS**
+
+```javascript
+// ─── Card 6: Application Gallery ─────────────────────────────────────────────
+
+const APPS = [
+  {
+    icon: '🖼️', title: '图像生成', tool: 'Midjourney · DALL-E',
+    desc: '输入一句话，AI就能画出世界上从未存在过的画面。',
+    you: '你可以：用 Midjourney 给你的故事配插图',
+    color: '#f97316',
+  },
+  {
+    icon: '🎵', title: '音乐创作', tool: 'Suno · Udio',
+    desc: '告诉AI你想要什么风格，它能在30秒内创作一首完整歌曲。',
+    you: '你可以：用 Suno 给你的 Scratch 游戏配上原创背景音乐',
+    color: '#10b981',
+  },
+  {
+    icon: '📖', title: '故事写作', tool: 'Claude · ChatGPT',
+    desc: 'AI能和你共同创作故事，理解情节、人物，续写无限可能。',
+    you: '你可以：让AI帮你写一个有你当主角的冒险故事',
+    color: '#8b5cf6',
+  },
+  {
+    icon: '🎬', title: '视频生成', tool: 'Sora · Runway',
+    desc: '从文字描述生成高质量视频——这个领域现在发展最快。',
+    you: '你可以：等你长大一点，这个工具会更强大，更好用',
+    color: '#ec4899',
+  },
+  {
+    icon: '💻', title: '代码生成', tool: 'Claude Code · Copilot',
+    desc: '描述你想要的功能，AI写出代码——编程正在被重新发明。',
+    you: '你可以：用 Claude Code 把你的 Scratch 游戏做成真正的网页游戏',
+    color: '#3b82f6',
+  },
+  {
+    icon: '🎮', title: '游戏关卡', tool: 'AI 游戏设计工具',
+    desc: 'AI可以自动生成无限不重样的游戏关卡、角色、道具。',
+    you: '你可以：未来的游戏程序员会用 AI 工具，你现在就在学它的原理！',
+    color: '#f59e0b',
+  },
+];
+
+function initGallery() {
+  const gallery = document.getElementById('app-gallery');
+  APPS.forEach(app => {
+    const card = document.createElement('div');
+    card.style.cssText = `border:2px solid ${app.color}33;border-radius:16px;padding:18px;background:${app.color}0a;cursor:pointer;transition:all 0.2s`;
+    card.innerHTML = `
+      <div style="font-size:2em;margin-bottom:8px">${app.icon}</div>
+      <div style="font-weight:700;color:#1a1a2e;margin-bottom:2px">${app.title}</div>
+      <div style="font-size:0.75em;color:${app.color};font-weight:600;margin-bottom:8px">${app.tool}</div>
+      <div style="font-size:0.85em;color:#555;line-height:1.6;margin-bottom:10px">${app.desc}</div>
+      <div id="you-${app.title}" style="display:none;font-size:0.82em;background:${app.color}15;border-left:3px solid ${app.color};border-radius:0 8px 8px 0;padding:8px 10px;color:#333;line-height:1.6">
+        ${app.you}
+      </div>
+      <div style="font-size:0.78em;color:${app.color};margin-top:8px;font-weight:600">👆 点击看你能做什么</div>`;
+    card.onmouseenter = () => { card.style.transform='translateY(-3px)'; card.style.borderColor=app.color; };
+    card.onmouseleave = () => { card.style.transform=''; card.style.borderColor=`${app.color}33`; };
+    card.onclick = () => {
+      const you = document.getElementById(`you-${app.title}`);
+      you.style.display = you.style.display === 'none' ? 'block' : 'none';
+    };
+    gallery.appendChild(card);
+  });
+}
+
+initGallery();
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+- 6个应用卡片网格正确显示
+- 鼠标悬停有上移效果和边框高亮
+- 点击展开"你可以..."说明，再次点击收起
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 card 6: generative AI applications gallery"
+```
+
+---
+
+## Task 8: 测验 + 总结卡片
+
+**Files:**
+- Modify: `ai-for-anan-5.html`
+
+5道测验题 + 深色总结卡片，沿用现有课程的 quiz 系统。
+
+- [ ] **Step 1: 插入测验和总结 HTML（在 nav-bar 前）**
+
+```html
+<!-- ── Quiz ── -->
+<div class="card" style="position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#a855f7,#ec4899,#06b6d4,#10b981)"></div>
+  <div class="card-header">
+    <div class="badge badge-amber">🎮</div>
+    <div>
+      <h2>知识大闯关</h2>
+      <div class="subtitle">看看今天你掌握了多少！</div>
+    </div>
+  </div>
+  <div class="quiz-dots" id="quiz-dots"></div>
+  <div id="quiz-body">
+    <div id="quiz-question"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div id="quiz-feedback"></div>
+    <button class="btn btn-purple" id="quiz-next" onclick="quizNext()" style="display:none">下一题 →</button>
+  </div>
+  <div id="quiz-score">
+    <div class="score-big" id="score-num"></div>
+    <div class="score-label">答对题数</div>
+    <div class="score-msg" id="score-msg"></div>
+    <button class="btn btn-cyan" onclick="quizRestart()" style="margin-top:22px">🔄 再来一次</button>
+  </div>
+</div>
+
+<!-- ── Summary ── -->
+<div class="card card-dark">
+  <div class="card-header">
+    <div class="badge badge-dim">📋</div>
+    <div>
+      <h2 style="color:#fff">今天学了什么？</h2>
+      <div class="subtitle">第五课 · 知识总结</div>
+    </div>
+  </div>
+  <ul class="summary-list">
+    <li><strong>生成式AI</strong>不是"记住"图片，而是学习数十亿张图里的规律，用数学重新创造</li>
+    <li><strong>扩散模型</strong>从随机噪点出发，一步步"去噪"，让图像慢慢浮现——像暗房里的照片</li>
+    <li>AI把意思相近的词放在"地图"上相近的位置，这叫<strong>向量（Vector）</strong></li>
+    <li>Prompt 是参数的组合：主题 + 风格 + 心情，就是程序里的<strong>函数传参</strong></li>
+    <li>Scratch的随机数 → Python的random() → AI的噪点：<strong>同一件事，不同规模</strong></li>
+    <li>生成式AI能创造图像、音乐、故事、视频、代码——<strong>背后都有程序员</strong></li>
+  </ul>
+</div>
+```
+
+- [ ] **Step 2: 加入测验 JS**
+
+```javascript
+// ─── Quiz ────────────────────────────────────────────────────────────────────
+
+const QUIZ = [
+  {
+    q: '扩散模型生成图像时，从哪里开始？',
+    opts: ['一张白色空白画布', '一片随机的噪点', '用户画的草图', '一张相关的照片'],
+    ans: 1,
+    tip: '扩散模型从「纯随机噪点」出发，每一步去掉一些噪点，最终浮现出清晰图像——就像暗房冲洗照片。'
+  },
+  {
+    q: 'AI 把词语的意思变成什么来进行计算？',
+    opts: ['图片', '声音', '数字（向量）', '颜色'],
+    ans: 2,
+    tip: '向量（Vector）就是一串数字。AI把每个词的意思变成数百个数字，数字越接近，意思越相似。这样AI就能"计算"语义！'
+  },
+  {
+    q: '在 Prompt 组合器里，选择「主题」「风格」「心情」，对应编程里的什么概念？',
+    opts: ['函数名称', '参数（Parameters）', '注释', '变量类型'],
+    ans: 1,
+    tip: '给函数传入的「值」叫参数。generateImage(subject="猫", style="水彩", mood="开心")——你就是在给AI函数传参！'
+  },
+  {
+    q: 'Scratch里的「重复(20)次」积木，对应的AI过程是什么？',
+    opts: ['AI保存20张图片', '扩散模型的20步去噪循环', 'AI学习了20个词', '神经网络有20层'],
+    ans: 1,
+    tip: '扩散模型的「去噪步骤」就是循环！每循环一次，图像就清晰一点点。Scratch里的重复、Python里的for循环、AI里的训练迭代——都是同一件事。'
+  },
+  {
+    q: '下面哪句话对生成式AI的描述是错误的？',
+    opts: [
+      '生成式AI学习了大量数据中的规律',
+      '生成式AI是在重新"回忆"并复制它见过的图片',
+      '生成式AI可以创作从未存在过的图像',
+      'Prompt的质量会影响生成结果的质量'
+    ],
+    ans: 1,
+    tip: '错误！生成式AI不是在复制或"记住"图片——它学习的是规律，然后用这些规律从随机噪点出发，重新生成从未存在过的新图像。'
+  }
+];
+
+let qIdx = 0, qScore = 0, qDone = false;
+
+function renderDots() {
+  const dots = document.getElementById('quiz-dots');
+  dots.innerHTML = '';
+  QUIZ.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'qdot' + (i < qIdx ? ' done' : i === qIdx ? ' current' : '');
+    dots.appendChild(d);
+  });
+}
+
+function renderQuestion() {
+  qDone = false;
+  const q = QUIZ[qIdx];
+  document.getElementById('quiz-question').textContent = `Q${qIdx + 1}. ${q.q}`;
+  const area = document.getElementById('quiz-opts');
+  area.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'qopt';
+    b.textContent = `${'ABCD'[i]}. ${o}`;
+    b.onclick = () => answerQuiz(i);
+    area.appendChild(b);
+  });
+  document.getElementById('quiz-feedback').style.display = 'none';
+  document.getElementById('quiz-next').style.display = 'none';
+}
+
+function answerQuiz(idx) {
+  if (qDone) return;
+  qDone = true;
+  const q = QUIZ[qIdx];
+  document.querySelectorAll('.qopt').forEach(o => o.onclick = null);
+  document.querySelectorAll('.qopt')[idx].classList.add(idx === q.ans ? 'correct' : 'wrong');
+  if (idx !== q.ans) document.querySelectorAll('.qopt')[q.ans].classList.add('correct');
+  if (idx === q.ans) qScore++;
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = idx === q.ans ? 'fb-right' : 'fb-wrong';
+  fb.innerHTML = (idx === q.ans ? '✅ 正确！' : '❌ 答错了。') + q.tip;
+  fb.style.display = 'block';
+  const nb = document.getElementById('quiz-next');
+  nb.textContent = qIdx + 1 < QUIZ.length ? '下一题 →' : '查看结果 🎉';
+  nb.style.display = 'inline-block';
+}
+
+function quizNext() {
+  qIdx++;
+  if (qIdx >= QUIZ.length) { showScore(); return; }
+  renderDots(); renderQuestion();
+}
+
+function showScore() {
+  document.getElementById('quiz-body').style.display = 'none';
+  document.getElementById('quiz-score').style.display = 'block';
+  document.getElementById('score-num').textContent = `${qScore}/${QUIZ.length}`;
+  const msgs = [[5,5,'🎉🏆 全对！安安是 AI 艺术家！'],[4,4,'🌟 棒极了！差一步就完美！'],[2,3,'🤔 不错！有些概念再想想。'],[0,1,'💪 没关系，复习一下再来！']];
+  const m = msgs.find(([a,b]) => qScore >= a && qScore <= b);
+  document.getElementById('score-msg').textContent = m ? m[2] : '';
+  renderDots();
+}
+
+function quizRestart() {
+  qIdx = 0; qScore = 0; qDone = false;
+  document.getElementById('quiz-score').style.display = 'none';
+  document.getElementById('quiz-body').style.display = 'block';
+  renderDots(); renderQuestion();
+}
+
+renderDots();
+renderQuestion();
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+- 5道测验题正确显示，答题流程顺畅
+- 答对/答错样式（绿色/红色）正确
+- 最终得分显示，"再来一次"重置正常
+- 总结卡片6条内容完整显示
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add ai-for-anan-5.html
+git commit -m "add lesson 5 quiz (5 questions) and summary card"
+```
+
+---
+
+## Task 9: 更新 index.html，激活第5课入口
+
+**Files:**
+- Modify: `index.html`
+
+- [ ] **Step 1: 在 `index.html` 中找到第5课占位并替换**
+
+将现有的 coming-soon 占位块：
+```html
+<!-- Lesson 5 - Coming soon -->
+<div class="lesson-card coming-soon">
+  <div class="lesson-icon">🔮</div>
+  <div class="lesson-content">
+    <div class="lesson-num">第五课</div>
+    <div class="lesson-title">敬请期待…</div>
+    <div class="lesson-desc">下一堂课正在制作中。</div>
+    <span class="coming-badge">即将上线</span>
+  </div>
+</div>
+```
+
+替换为：
+```html
+<!-- Lesson 5 -->
+<a class="lesson-link" href="ai-for-anan-5.html">
+  <div class="lesson-card lesson-5">
+    <div class="lesson-icon">🎨</div>
+    <div class="lesson-content">
+      <div class="lesson-num">第五课</div>
+      <div class="lesson-title">AI 的调色板——生成式AI的秘密</div>
+      <div class="lesson-desc">创造力不是魔法，是数学。探索扩散模型如何从随机噪点"想象"出图像，发现 Scratch 和 AI 的惊人联系。</div>
+      <div class="lesson-topics">
+        <span class="topic-tag">生成式AI</span>
+        <span class="topic-tag">扩散模型</span>
+        <span class="topic-tag">词向量</span>
+        <span class="topic-tag">提示工程</span>
+        <span class="topic-tag">编程入门</span>
+      </div>
+    </div>
+    <div class="lesson-arrow">›</div>
+  </div>
+</a>
+```
+
+- [ ] **Step 2: 在 `index.html` 的 `<style>` 中加入第5课的色条样式**
+
+```css
+.lesson-card.lesson-5::before { background: linear-gradient(90deg, #a855f7, #ec4899, #06b6d4); }
+```
+
+同时将第6课 coming-soon 占位更新为：
+```html
+<!-- Lesson 6 - Coming soon -->
+<div class="lesson-card coming-soon">
+  <div class="lesson-icon">🔮</div>
+  <div class="lesson-content">
+    <div class="lesson-num">第六课</div>
+    <div class="lesson-title">敬请期待…</div>
+    <div class="lesson-desc">下一堂课正在制作中。</div>
+    <span class="coming-badge">即将上线</span>
+  </div>
+</div>
+```
+
+- [ ] **Step 3: 浏览器验证**
+
+打开 `index.html`：
+- 第5课卡片可点击，顶部色条为紫色渐变
+- 点击跳转到 `ai-for-anan-5.html` 正常
+- 第6课显示为 coming-soon 灰色
+
+- [ ] **Step 4: 提交**
+
+```bash
+git add index.html ai-for-anan-5.html
+git commit -m "activate lesson 5 in index.html, add lesson-6 coming-soon placeholder"
+```
+
+---
+
+## 自查
+
+**Spec 覆盖检查：**
+- ✅ Card 1 开场谜题 → Task 2
+- ✅ Card 2 词向量图 → Task 3
+- ✅ Card 3 扩散动画（含3个主题、滑块、自动播放）→ Task 4
+- ✅ Card 4 Prompt组合器（27种组合）→ Task 5
+- ✅ Card 5 Scratch→Python→AI进化链 → Task 6
+- ✅ Card 6 应用画廊 → Task 7
+- ✅ 5道测验 → Task 8
+- ✅ 总结卡片 → Task 8
+- ✅ 导航栏（← 第四课 / 第六课敬请期待）→ Task 1
+- ✅ index.html 激活第5课 → Task 9
+- ✅ 紫色主色调 → Task 1 CSS
+- ✅ 无外部依赖 → 全程内联
+- ✅ 编程钩子（Card 4 + Card 5）→ Task 5 + Task 6
+
+**类型一致性：**
+- `currentSubject` 在 `setSubject()`、`renderDiffusionFrame()`、`drawCleanSubject()` 中名称一致
+- `promptState` 在 `setPrompt()` 和 `renderPrompt()` 中一致
+- `QUIZ` 数组在 `renderQuestion()`、`answerQuiz()`、`showScore()` 中统一引用
