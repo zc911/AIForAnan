@@ -377,15 +377,29 @@ p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
 .summary-list strong { color: #fff; }
 
 /* ── Nav ── */
+.home-logo {
+  display: block; text-align: center;
+  color: rgba(255,255,255,0.45); text-decoration: none;
+  font-size: 0.82em; padding: 14px 0 0; letter-spacing: 0.5px;
+  transition: color 0.2s;
+}
+.home-logo:hover { color: rgba(255,255,255,0.9); }
 .nav-bar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 28px 0 52px; flex-wrap: wrap; gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 28px 0 52px;
+  gap: 12px;
 }
 .nav-bar a { text-decoration: none; }
+.nav-left  { display: flex; justify-content: flex-start; }
+.nav-right { display: flex; justify-content: flex-end; }
 </style>
 </head>
 <body>
 <div class="container">
+
+<a href="index.html" class="home-logo">🤖 AI 魔法课堂</a>
 
 <!-- ─── Header ── -->
 <div class="header">
@@ -715,8 +729,9 @@ p.body { color: #444; line-height: 1.8; margin-bottom: 12px; }
 
 <!-- ─── Nav ── -->
 <div class="nav-bar">
-  <a href="index.html"><button class="btn btn-ghost">← 返回目录</button></a>
-  <button class="btn btn-dim" title="即将上线">第五课：敬请期待 →</button>
+  <div class="nav-left"><a href="ai-for-anan-3.html"><button class="btn btn-ghost">← 第三课</button></a></div>
+  <a href="index.html"><button class="btn btn-ghost">🏠 返回目录</button></a>
+  <div class="nav-right"><a href="ai-for-anan-5.html"><button class="btn btn-purple">第五课 →</button></a></div>
 </div>
 
 </div>
